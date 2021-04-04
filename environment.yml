@@ -18,10 +18,12 @@ dependencies:
     - backcall==0.2.0
     - bleach==3.3.0
     - cffi==1.14.5
+    - chardet==4.0.0
     - colorama==0.4.4
     - decorator==4.4.2
     - defusedxml==0.7.1
     - entrypoints==0.3
+    - idna==2.10
     - importlib-metadata==3.9.0
     - ipykernel==5.5.0
     - ipython==7.16.1
@@ -39,6 +41,7 @@ dependencies:
     - nbformat==5.1.2
     - nest-asyncio==1.5.1
     - notebook==6.3.0
+    - notebooktoall==0.2.3
     - packaging==20.9
     - pandocfilters==1.4.3
     - parso==0.8.1
@@ -53,6 +56,7 @@ dependencies:
     - pywin32==300
     - pywinpty==0.5.7
     - pyzmq==22.0.3
+    - requests==2.25.1
     - send2trash==1.5.0
     - six==1.15.0
     - terminado==0.9.3
@@ -60,6 +64,7 @@ dependencies:
     - tornado==6.1
     - traitlets==4.3.3
     - typing-extensions==3.7.4.3
+    - urllib3==1.26.4
     - wcwidth==0.2.5
     - webencodings==0.5.1
     - zipp==3.4.1
