@@ -20,9 +20,7 @@ def notebookToPyFile(filename):
     return filename.replace(".ipynb",".py")
 
 def functionsNumber(filename):
-    #The function takes the desired .ipynb file in the target notebooks folder, 
-    #converts to a .py it thanks to the notebookToPyFile function
-    #and returns the number of function definitions thanks to the parse tree of the .py file
+    #The function takes a .py file and returns the number of function definitions thanks to the parse tree of the .py file
     with open(filename, 'r') as f:
         tree = ast.parse(f.read())
         f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
