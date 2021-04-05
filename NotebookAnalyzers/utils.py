@@ -14,13 +14,12 @@ def notebookToCode(filename):
     return code
 
 def notebookToPyFile(filename):
-    #The function takes the name of the desired .ipynb file in the target notebooks folder, converts it into a .py file,
-    #and returns the name of the .py file
+    """The function takes the name of the desired .ipynb file in the target notebooks folder, converts it into a .py file, and returns the name of the .py file"""
     transform_notebook(ipynb_file="../TargetNotebooks/"+(filename), export_list=["py"])
     return filename.replace(".ipynb",".py")
 
 def functionsNumber(filename):
-    #The function takes a .py file and returns the number of function definitions thanks to the parse tree of the .py file
+    """The function takes a .py file and returns the number of function definitions thanks to the parse tree of the .py file"""
     with open(filename, 'r') as f:
         tree = ast.parse(f.read())
         f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
