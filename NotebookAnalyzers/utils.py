@@ -6,6 +6,7 @@ def notebookToJson(filename):
     """The function takes the .ipynb file and returns it as a dictionary python object"""
     f=open("../TargetNotebooks/"+(filename),)
     data = json.load(f)
+    f.close()
     return data
 
 #def notebookToCode(data):
@@ -22,6 +23,7 @@ def notebookToCode(filename):
     transform_notebook(ipynb_file="../TargetNotebooks/"+(filename), export_list=["py"])
     f = open(filename.replace(".ipynb",".py"),'r')
     py_code = f.read()
+    f.close() 
     return py_code
 
 def functionsNumber(code):
