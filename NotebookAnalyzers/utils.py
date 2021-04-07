@@ -27,7 +27,20 @@ def notebookToCode(filename):
     return py_code
 
 def functionsNumber(code):
-    """The function takes a python code sintax tree and returns the number of function definitions"""
+    """The function takes a python code and returns the number of function definitions"""
     tree = ast.parse(code)
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
+
+def cellsCorrectOrder(notebook):
+    """The function takes the notebook dictionary, it returns True if the cells are executed in the correct orded and False otherwise"""
+    correct_exec=True
+    counter=1
+    for cell in notebook["cells"]:
+        if cell["cell_type"] == 'code':
+            if counter==cell['execution_count']:
+                counter=counter+1
+            else:
+                if cell['source']!=[]:
+                    correct_exec=False
+    return correct_exec
