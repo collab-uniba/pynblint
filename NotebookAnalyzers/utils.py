@@ -44,3 +44,10 @@ def cellsCorrectOrder(notebook):
                 if cell['source']!=[]:
                     correct_exec=False
     return correct_exec
+
+def classesNumber(code):
+    """The function takes a python code string and returns the number of class definitions"""
+    tree = ast.parse(code)
+    class_def_num=sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
+    return class_def_num
+
