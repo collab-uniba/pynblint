@@ -27,7 +27,7 @@ def notebookToCode(filename):
     return py_code
 
 def functionsNumber(code):
-    """The function takes a python code and returns the number of function definitions"""
+    """The function takes a python code string and returns the number of function definitions"""
     tree = ast.parse(code)
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
