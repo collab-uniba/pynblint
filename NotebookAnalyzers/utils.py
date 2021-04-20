@@ -27,19 +27,25 @@ def notebookToCode(filename):
     return py_code
 
 def functionsNumber(code):
-    """The function takes a python code and returns the number of function definitions"""
+    """The function takes a python code string and returns the number of function definitions"""
     tree = ast.parse(code)
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
 
 def notExecutedCells(notebook):
-    """The function takes the notebook dictionary and returns both the number empty cells in first position and the number of not executed cells in second position"""
-    empty_cells=0
+    """The function takes a dict representing a notebook and returns the number of not executed cells"""
     not_exec_cells=0
+    for cell in notebook["cells"]:
+        if cell["cell_type"] == 'code':
+            if cell['execution_count']==None and cell['source']!=[]:
+                not_exec_cells=not_exec_cells+1 #This is a not executed Python Cell containing actual code
+    return not_exec_cells
+
+def emptyCells(notebook):
+    """The function takes a dict representing a notebook and returns the number of empty cells"""
+    empty_cells=0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'code':
             if cell['execution_count']==None and cell['source']==[]:
                 empty_cells=empty_cells+1 #This is an empty Python Cell
-            elif cell['execution_count']==None and cell['source']!=[]:
-                    not_exec_cells=not_exec_cells+1 #This is a not executed Python Cell containing actual code
-    return empty_cells,not_exec_cells
+    return empty_cells
