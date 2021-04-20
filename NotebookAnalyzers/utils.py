@@ -33,7 +33,7 @@ def functionsNumber(code):
     return f_num
 
 def importsCorrectPosition(code):
-    """The function takes a python code and returns True if there are no imports other the ones in the first cell of code, False otherwise"""
+    """The function takes a python code string and returns True if there are no imports other than those in the first cell of code and False otherwise"""
     found_first_cell=False #when True it means we found the first cell of code that has to be ignored
     second_cell_not_reached = True #when set to False we are actually reading instructions from the second cell of code, from now on we need to analyze all the cells looking for import statements
     imports_correct_position= True
