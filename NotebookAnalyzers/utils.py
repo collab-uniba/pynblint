@@ -27,7 +27,7 @@ def notebookToCode(filename):
     return py_code
 
 def functionsNumber(code):
-    """The function takes a python code and returns the number of function definitions"""
+    """The function takes a python code string and returns the number of function definitions"""
     tree = ast.parse(code)
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
@@ -56,3 +56,23 @@ def importsCorrectPosition(code):
             #following instructions are from the second cell of code, the first one we have to analyze
                 second_cell_not_reached=False
     return imports_correct_position
+
+def cellsCorrectOrder(notebook):
+    """The function takes a dict representing notebook dictionary, it returns True if the cells are executed in sequential order, starting from 1, and False otherwise"""
+    correct_exec=True
+    counter=1
+    for cell in notebook["cells"]:
+        if cell["cell_type"] == 'code':
+            if counter==cell['execution_count']:
+                counter=counter+1
+            else:
+                if cell['source']!=[]:
+                    correct_exec=False
+    return correct_exec
+
+def classesNumber(code):
+    """The function takes a python code string and returns the number of class definitions"""
+    tree = ast.parse(code)
+    class_def_num=sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
+    return class_def_num
+
