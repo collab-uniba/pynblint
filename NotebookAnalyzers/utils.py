@@ -33,7 +33,7 @@ def functionsNumber(code):
     return f_num
 
 def cellsCorrectOrder(notebook):
-    """The function takes the notebook dictionary, it returns True if the cells are executed in the correct orded and False otherwise"""
+    """The function takes a dict representing notebook dictionary, it returns True if the cells are executed in sequential order, starting from 1, and False otherwise"""
     correct_exec=True
     counter=1
     for cell in notebook["cells"]:
