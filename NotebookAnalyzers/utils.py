@@ -32,22 +32,29 @@ def functionsNumber(code):
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
 
-def markdownNumber(notebook):
-    """The function takes the notebook dictionary and returns both the number of markdown wors and number of markdown titles"""
-    titles=0
+def markdownLines(notebook):
+    """The function takes a dict representing a notebook and returns the number of markdown lines"""
     markdowns=0
     for cell in notebook["cells"]:
         if cell["cell_type"]=='markdown':
             rows=len(cell['source'])
-            for row in cell['source']:
-                if row[0:2]=='# ':
-                       titles=titles+1
             markdowns=markdowns+rows
-    return markdowns,titles
+    return markdowns
+
+def markdownTitles(notebook):
+    """The function takes a dict representing a notebook and returns the number of markdown titles"""
+    titles=0
+    for cell in notebook["cells"]:
+        if cell["cell_type"]=='markdown':
+            for row in cell['source']:
+                if row.lstrip().startswith('#'):
+                       titles=titles+1
+    return titles
 
 def markdownDistribution(notebook):
-    """The function takes the notebook dictionary and, dividing the notebook in four sections, 
+    """The function takes a dict representing a notebook and, dividing the notebook in four sections, 
     returns the percentage of markdown rows in each section out of the totalt markdown rows"""
+    n_md_cells=0
     markdown_fir=0
     markdown_sec=0
     markdown_thi=0
@@ -58,6 +65,7 @@ def markdownDistribution(notebook):
     cell_portion=1
     for cell in notebook["cells"]:
         if cell["cell_type"]=='markdown':
+            n_md_cells=n_md_cells+1
             if cell_portion==1:
                 markdown_fir=markdown_fir+len(cell['source'])
             elif cell_portion==2:
@@ -74,4 +82,7 @@ def markdownDistribution(notebook):
             else:
                 break
     total_md_rows= markdown_fir+markdown_sec+markdown_thi+markdown_fou
-    return markdown_fir/total_md_rows,markdown_sec/total_md_rows,markdown_thi/total_md_rows,markdown_fou/total_md_rows
+    if(n_md_cells<4):
+        return None
+    else:
+        return markdown_fir/total_md_rows,markdown_sec/total_md_rows,markdown_thi/total_md_rows,markdown_fou/total_md_rows
