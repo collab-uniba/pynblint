@@ -27,7 +27,13 @@ def notebookToCode(filename):
     return py_code
 
 def functionsNumber(code):
-    """The function takes a python code sintax tree and returns the number of function definitions"""
+    """The function takes a python code string and returns the number of function definitions"""
     tree = ast.parse(code)
     f_num=sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
+
+def classesNumber(code):
+    """The function takes a python code string and returns the number of class definitions"""
+    tree = ast.parse(code)
+    class_def_num=sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
+    return class_def_num
