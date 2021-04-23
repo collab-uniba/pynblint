@@ -33,7 +33,7 @@ def functionsNumber(code):
     return f_num
 
 def notExecutedCells(notebook):
-    """The function takes a dict representing a notebook and returns the number of not executed cells"""
+    """The function takes a dict representing a notebook and returns the number of non-executed cells"""
     not_exec_cells=0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'code':
