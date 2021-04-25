@@ -5,7 +5,7 @@ from notebooktoall.transform import transform_notebook
 
 def notebook_to_json(filename):
     """
-       Turns a notebook into a dictionary
+       Turns a notebook into a dictionary object
 
        Args:
            filename(str): name of the notebook file in the TargetNotebooks folder
