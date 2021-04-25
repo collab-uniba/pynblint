@@ -4,25 +4,37 @@ from notebooktoall.transform import transform_notebook
 
 
 def notebook_to_json(filename):
-    """The function takes the .ipynb file and returns it as a dictionary python object"""
+    """
+       Turns a notebook into a dictionary
+
+       Args:
+           filename(str): name of the notebook file in the TargetNotebooks folder
+       Returns:
+           data: dictionary object representing the notebook
+
+       A way you might use me is
+
+       data = notebook_to_json("file.ipynb")
+    """
     f = open("../TargetNotebooks/" + filename, )
     data = json.load(f)
     f.close()
     return data
 
 
-# def notebookToCode(data):
-#    """The function takes the JSON of the target notebook and returns a python code string"""
-#    code=[]
-#    for cell in data["cells"]:
-#        if cell["cell_type"] == 'code':
-#            code.append(''.join(cell["source"]))
-#    code = '\n'.join(code)
-#    return code
-
 def notebook_to_code(filename):
-    """The function takes the name of the desired .ipynb file in the target notebooks folder,
-    and returns the python code syntax tree"""
+    """
+       Extracts the code from a jupyter notebook in the TargetNotebooks folder
+
+       Args:
+           filename(str): name of the notebook file in the TargetNotebook folder
+       Returns:
+           py_code: string containing the python code from the jupyter notebook
+
+       A way you might use me is
+
+       py_code = notebook_to_code("file.ipynb")
+    """
     transform_notebook(ipynb_file="../TargetNotebooks/" + filename, export_list=["py"])
     f = open(filename.replace(".ipynb", ".py"), 'r')
     py_code = f.read()
@@ -31,14 +43,36 @@ def notebook_to_code(filename):
 
 
 def functions_number(code):
-    """The function takes a python code string and returns the number of function definitions"""
+    """
+       Extracts the number of function definitions from a string of code
+
+       Args:
+           code(str): string of python code
+       Returns:
+           f_num: integer representing the number of function definitions in the code
+
+       A way you might use me is
+
+       f_num = functions_number(code)
+    """
     tree = ast.parse(code)
     f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
 
 
 def not_executed_cells(notebook):
-    """The function takes a dict representing a notebook and returns the number of non-executed cells"""
+    """
+        Number of non-executed cells from a dictionary representing the notebook
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            not_exec_cells: integer representing the number of non-executed cells in the notebook
+
+        A way you might use me is
+
+        not_exec_cells = not_executed_cells(notebook_dict)
+    """
     not_exec_cells = 0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'code':
@@ -48,7 +82,18 @@ def not_executed_cells(notebook):
 
 
 def empty_cells(notebook):
-    """The function takes a dict representing a notebook and returns the number of empty cells"""
+    """
+        Number of empty cells from a dictionary representing the notebook
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            empty_cells: integer representing the number of empty cells in the notebook
+
+        A way you might use me is
+
+        empty_cells = empty_cells(notebook_dict)
+    """
     empty_cell = 0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'code':
@@ -58,7 +103,18 @@ def empty_cells(notebook):
 
 
 def markdown_lines(notebook):
-    """The function takes a dict representing a notebook and returns the number of markdown lines"""
+    """
+        Number of markdown rows from a dictionary representing the notebook
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            markdowns: integer representing the number of markdown rows in the notebook
+
+        A way you might use me is
+
+        markdowns = markdowns(notebook_dict)
+    """
     markdowns = 0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'markdown':
@@ -68,7 +124,18 @@ def markdown_lines(notebook):
 
 
 def markdown_titles(notebook):
-    """The function takes a dict representing a notebook and returns the number of markdown titles"""
+    """
+        Number of markdown title rows from a dictionary representing the notebook
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            titles: integer representing the number of markdown title rows in the notebook
+
+        A way you might use me is
+
+        titles = markdown_titles(notebook_dict)
+    """
     titles = 0
     for cell in notebook["cells"]:
         if cell["cell_type"] == 'markdown':
@@ -79,8 +146,20 @@ def markdown_titles(notebook):
 
 
 def markdown_distribution(notebook):
-    """The function takes a dict representing a notebook and, dividing the notebook in four sections, 
-    returns the percentage of markdown rows in each section out of the total markdown rows"""
+    """
+        Distribution of markdown rows in the 4 sections of the notebook
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            distributions: array of 4 elements, each number representing, for each section, the percentage of markdown rows out of the total rows
+                           distributions[0] = percentage of markdown rows in the first section
+                           distributions[1] = percentage of markdown rows in the second section
+                           ...
+        A way you might use me is
+
+        distributions = markdown_distribution(notebook_dict)
+    """
     n_md_cells = 0
     markdown_fir = 0
     markdown_sec = 0
@@ -117,8 +196,18 @@ def markdown_distribution(notebook):
 
 
 def imports_correct_position(code):
-    """The function takes a python code string and returns True if there are no imports other than those in the first
-    cell of code and False otherwise """
+    """
+        Verifies if there are no import statements in cells that are not the first one
+
+        Args:
+            code(str): string of python code
+        Returns:
+            correct_position: boolean value that is True if there are no imports other than those in the first cell of code and False otherwise
+
+        A way you might use me is
+
+        correct_position = imports_correct_position(code)
+    """
     found_first_cell = False  # when True it means we found the first cell of code that has to be ignored
     second_cell_not_reached = True
     # when set to False we are actually reading instructions from the second cell of
@@ -151,6 +240,18 @@ def imports_correct_position(code):
 def cells_correct_order(notebook):
     """The function takes a dict representing notebook dictionary, it returns True if the cells are executed in
     sequential order,starting from 1, and False otherwise """
+    """
+        Verifies if the notebook has been run in sequential order, starting from 1
+
+        Args:
+            notebook(dic): python dictionary object representing the jupyter notebook
+        Returns:
+            correct_exec: boolean value that is True if the Notebook has been correctly run
+
+        A way you might use me is
+
+        correct_exec = cells_correct_order(notebook_dict)
+    """
     correct_exec = True
     counter = 1
     for cell in notebook["cells"]:
@@ -165,6 +266,18 @@ def cells_correct_order(notebook):
 
 def classes_number(code):
     """The function takes a python code string and returns the number of class definitions"""
+    """
+        Extract the number of class definitions from a python code
+
+        Args:
+            code(str): string of python code
+        Returns:
+            class_def_num: interger value representing the number of class definitions in the python code
+
+        A way you might use me is
+
+        class_def_num = classes_number(code)
+    """
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
     return class_def_num
