@@ -28,4 +28,4 @@ python -m ipykernel install --user --name myenv
 ```
 Now just select this kernel you created when running the NotebookAnalysisResults notebook.
 ## Reference paper
-["A large-scale study about quality and reproducibility of jupyter notebooks."](http://www2.ic.uff.br/~leomurta/papers/pimentel2019a.pdf)
+[1] [Pimentel et al., "A large-scale study about quality and reproducibility of jupyter notebooks."](http://www2.ic.uff.br/~leomurta/papers/pimentel2019a.pdf)
