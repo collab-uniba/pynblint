@@ -1,7 +1,9 @@
 # JupyterNotebooksQuality
 This repository contains the experimental work for the Bachelor Thesis by Vincenzo Romito.
 ## Description
-The **utils.py** module contains all the functions representing the operationalization of the main best practices that you should keep in mind when writing a jupyter notebook.
+In [1], Pimentel et al. report the results a large-scale study on the quality and reproducibility of Jupyter notebooks. At the end of the paper, in the light of their findings, the authors recommend a set of 8 best practices for Jupyter notebooks writing. 
+
+We operationalized some of these best practices and built a little library of functions (contained in the `utils.py` module) that enable the quantitative assessment of their adoption in a dataset of Jupyter notebooks.
 As shown in the NotebookAnalysisResults notebook it is possible to call these functions in order to determine the quality degree of the target notebooks.
 ## Prerequisites
 As a prerequisite you should have an installation of Anaconda or MiniConda on you device, check this link for more details https://docs.conda.io/projects/conda/en/latest/
