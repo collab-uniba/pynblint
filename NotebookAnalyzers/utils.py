@@ -152,9 +152,9 @@ def markdown_distribution(notebook):
         Args:
             notebook(dic): python dictionary object representing the jupyter notebook
         Returns:
-            distributions: array of 4 elements, each number representing, for each section, the percentage of markdown rows out of the total rows
-                           distributions[0] = percentage of markdown rows in the first section
-                           distributions[1] = percentage of markdown rows in the second section
+            distributions: array of 4 elements, each number representing, for each quarter, the percentage of markdown rows out of the total rows
+                           distributions[0] = percentage of markdown rows in the first 25% of the notebook
+                           distributions[1] = percentage of markdown rows in the second quarter of the notebook
                            ...
         A way you might use me is
 
@@ -246,7 +246,7 @@ def cells_correct_order(notebook):
         Args:
             notebook(dic): python dictionary object representing the jupyter notebook
         Returns:
-            correct_exec: boolean value that is True if the Notebook has been correctly run
+            correct_exec: boolean value that is True if notebook cells have been sequentially run top to bottom
 
         A way you might use me is
 
