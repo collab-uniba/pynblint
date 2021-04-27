@@ -189,7 +189,7 @@ def markdown_distribution(notebook):
                 break
     total_md_rows = markdown_fir + markdown_sec + markdown_thi + markdown_fou
     if n_md_cells < 4:
-        return None
+        return None, None, None, None
     else:
         return markdown_fir/total_md_rows, markdown_sec/total_md_rows, \
                markdown_thi/total_md_rows, markdown_fou/total_md_rows
