@@ -191,8 +191,8 @@ def markdown_distribution(notebook):
     if n_md_cells < 4:
         return None, None, None, None
     else:
-        return markdown_fir/total_md_rows, markdown_sec/total_md_rows, \
-               markdown_thi/total_md_rows, markdown_fou/total_md_rows
+        return markdown_fir / total_md_rows, markdown_sec / total_md_rows, \
+               markdown_thi / total_md_rows, markdown_fou / total_md_rows
 
 
 def imports_correct_position(code):
@@ -281,3 +281,83 @@ def classes_number(code):
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
     return class_def_num
+
+
+def count_cells(nb_dict):
+    """The function takes a dictionary representing the notebook and returns the number of cells"""
+    """
+        Extract the number of cells into the notebook
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            len(nb_dict["cells"]): integer value representing the number of cells into the notebook
+
+        A way you might use me is
+
+        cell_numb = count_cells(nb_dict)
+    """
+    return len(nb_dict["cells"])
+
+
+def count_md_cells(nb_dict):
+    """The function takes a dictionary representing the notebook and returns the number of markdown cells"""
+    """
+        Extract the number of markdown cells into the notebook
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of markdown cells into the notebook
+
+        A way you might use me is
+
+        md_cell_numb = count_md_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'markdown':
+            counter = counter + 1
+    return counter
+
+
+def count_code_cells(nb_dict):
+    """The function takes a dictionary representing the notebook and returns the number of code cells"""
+    """
+        Extract the number of code cells into the notebook
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of code cells into the notebook
+
+        A way you might use me is
+
+        code_cell_numb = count_code_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'code':
+            counter = counter + 1
+    return counter
+
+
+def count_raw_cells(nb_dict):
+    """The function takes a dictionary representing the notebook and returns the number of raw cells"""
+    """
+        Extract the number of raw cells into the notebook
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of raw cells into the notebook
+
+        A way you might use me is
+
+        raw_cell_numb = count_raw_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'raw':
+            counter = counter + 1
+    return counter
