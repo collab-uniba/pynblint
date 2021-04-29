@@ -270,7 +270,7 @@ def count_class_defs(code):
 
         A way you might use me is
 
-        class_def_num = count_class_defs(code)
+        class_def_count = count_class_defs(code)
     """
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
