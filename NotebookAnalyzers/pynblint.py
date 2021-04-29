@@ -149,7 +149,7 @@ def markdown_distribution(notebook):
     """
         Distribution of markdown rows in the 4 sections of the notebook
 
-        Args: notebook(dic): python dictionary object representing the jupyter notebook Returns: distributions: array
+        Args: notebook(dict): python dictionary object representing the jupyter notebook. Returns: distributions: array
         of 4 elements, each number representing, for each quarter, the percentage of markdown rows out of the total
         rows distributions[0] = percentage of markdown rows in the first 25% of the notebook distributions[1] =
         percentage of markdown rows in the second quarter of the notebook ... A way you might use me is
