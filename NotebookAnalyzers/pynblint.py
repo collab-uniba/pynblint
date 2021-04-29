@@ -244,7 +244,7 @@ def has_linear_execution_order(notebook):
 
         A way you might use me is
 
-        correct_exec = has_linear_execution_order(nb_dict)
+        linear_exec_order = has_linear_execution_order(nb_dict)
     """
     correct_exec = True
     counter = 1
