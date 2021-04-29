@@ -71,7 +71,7 @@ def count_non_executed_cells(notebook):
 
         A way you might use me is
 
-        not_exec_cells = count_non_executed_cells(nb_dict)
+        non-exec_cells_count = count_non_executed_cells(nb_dict)
     """
     not_exec_cells = 0
     for cell in notebook["cells"]:
