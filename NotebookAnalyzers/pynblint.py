@@ -92,7 +92,7 @@ def count_empty_cells(notebook):
 
         A way you might use me is
 
-        count_empty_cells = count_empty_cells(nb_dict)
+        empty_cells_count = count_empty_cells(nb_dict)
     """
     empty_cell = 0
     for cell in notebook["cells"]:
