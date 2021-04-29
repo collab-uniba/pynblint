@@ -310,7 +310,7 @@ def count_md_cells(nb_dict):
 
         A way you might use me is
 
-        md_cell_numb = count_md_cells(nb_dict)
+        md_cells_count = count_md_cells(nb_dict)
     """
     counter = 0
     for cell in nb_dict["cells"]:
