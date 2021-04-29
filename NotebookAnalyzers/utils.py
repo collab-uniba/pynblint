@@ -330,7 +330,7 @@ def count_code_cells(nb_dict):
 
         A way you might use me is
 
-        code_cell_numb = count_code_cells(nb_dict)
+        code_cell_count = count_code_cells(nb_dict)
     """
     counter = 0
     for cell in nb_dict["cells"]:
