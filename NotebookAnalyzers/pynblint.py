@@ -88,7 +88,7 @@ def count_empty_cells(notebook):
         Args:
             notebook(dic): python dictionary object representing the jupyter notebook
         Returns:
-            count_empty_cells: integer representing the number of empty cells in the notebook
+            empty_cells_count: integer representing the number of empty cells in the notebook
 
         A way you might use me is
 
