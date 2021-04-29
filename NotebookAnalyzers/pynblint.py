@@ -53,7 +53,7 @@ def count_func_defs(code):
 
        A way you might use me is
 
-       f_num = count_func_defs(code)
+       function_defs_count = count_func_defs(code)
     """
     tree = ast.parse(code)
     f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
