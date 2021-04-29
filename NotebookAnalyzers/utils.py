@@ -284,9 +284,8 @@ def classes_number(code):
 
 
 def count_cells(nb_dict):
-    """The function takes a dictionary representing the notebook and returns the number of cells"""
     """
-        Extract the number of cells into the notebook
+    The function takes a dictionary representing the notebook and returns the number of cells
 
         Args:
             nb_dict(dict): dictionary representing the notebook
@@ -301,9 +300,8 @@ def count_cells(nb_dict):
 
 
 def count_md_cells(nb_dict):
-    """The function takes a dictionary representing the notebook and returns the number of markdown cells"""
     """
-        Extract the number of markdown cells into the notebook
+    The function takes a dictionary representing the notebook and returns the number of markdown cells
 
         Args:
             nb_dict(dict): dictionary representing the notebook
@@ -322,9 +320,8 @@ def count_md_cells(nb_dict):
 
 
 def count_code_cells(nb_dict):
-    """The function takes a dictionary representing the notebook and returns the number of code cells"""
     """
-        Extract the number of code cells into the notebook
+    The function takes a dictionary representing the notebook and returns the number of code cells
 
         Args:
             nb_dict(dict): dictionary representing the notebook
@@ -343,10 +340,9 @@ def count_code_cells(nb_dict):
 
 
 def count_raw_cells(nb_dict):
-    """The function takes a dictionary representing the notebook and returns the number of raw cells"""
     """
-        Extract the number of raw cells into the notebook
-
+    The function takes a dictionary representing the notebook and returns the number of raw cells
+    
         Args:
             nb_dict(dict): dictionary representing the notebook
         Returns:
