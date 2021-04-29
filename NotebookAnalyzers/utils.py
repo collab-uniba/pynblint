@@ -350,7 +350,7 @@ def count_raw_cells(nb_dict):
 
         A way you might use me is
 
-        raw_cell_numb = count_raw_cells(nb_dict)
+        raw_cells_count = count_raw_cells(nb_dict)
     """
     counter = 0
     for cell in nb_dict["cells"]:
