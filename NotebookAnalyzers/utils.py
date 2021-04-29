@@ -294,7 +294,7 @@ def count_cells(nb_dict):
 
         A way you might use me is
 
-        cell_numb = count_cells(nb_dict)
+        cells_count = count_cells(nb_dict)
     """
     return len(nb_dict["cells"])
 
