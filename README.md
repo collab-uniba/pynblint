@@ -1,4 +1,4 @@
-# JupyterNotebooksQuality
+# pynblint
 This repository contains the experimental work for the Bachelor Thesis by Vincenzo Romito.
 ## Description
 In [1], Pimentel et al. report the results a large-scale study on the quality and reproducibility of Jupyter notebooks. At the end of the paper, in the light of their findings, the authors recommend a set of 8 best practices for Jupyter notebooks writing. 
