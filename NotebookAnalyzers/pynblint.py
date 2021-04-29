@@ -134,7 +134,7 @@ def count_md_titles(notebook):
 
         A way you might use me is
 
-        titles = count_md_titles(nb_dict)
+        titles_count = count_md_titles(nb_dict)
     """
     titles = 0
     for cell in notebook["cells"]:
