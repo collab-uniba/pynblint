@@ -113,7 +113,7 @@ def count_md_lines(notebook):
 
         A way you might use me is
 
-        markdowns = markdowns(nb_dict)
+        md_lines_count = count_md_lines(nb_dict)
     """
     markdowns = 0
     for cell in notebook["cells"]:
