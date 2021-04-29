@@ -87,7 +87,7 @@ def count_empty_cells(nb_dict):
 
         A way you might use me is
 
-        count_empty_cells = count_empty_cells(nb_dict)
+        empty_cells_count = count_empty_cells(nb_dict)
     """
     return _empty_cells_count(nb_dict["cells"])
 
