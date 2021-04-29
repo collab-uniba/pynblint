@@ -14,7 +14,7 @@ def notebook_to_dict(filename):
 
        A way you might use me is
 
-       data = notebook_to_dict("file.ipynb")
+       nb_dict = notebook_to_dict("file.ipynb")
     """
     f = open("../TargetNotebooks/" + filename, )
     data = json.load(f)
