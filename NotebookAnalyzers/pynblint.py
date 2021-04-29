@@ -200,7 +200,7 @@ def are_imports_in_first_cell(code):
 
         A way you might use me is
 
-        correct_position = are_imports_in_first_cell(code)
+        all_imports_in_first_cell = are_imports_in_first_cell(code)
     """
     found_first_cell = False  # when True it means we found the first cell of code that has to be ignored
     second_cell_not_reached = True
