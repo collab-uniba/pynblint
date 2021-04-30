@@ -145,52 +145,6 @@ def count_md_titles(notebook):
     return titles
 
 
-def markdown_distribution(notebook):
-    """
-        Distribution of markdown rows in the 4 sections of the notebook
-
-        Args: notebook(dict): python dictionary object representing the jupyter notebook. Returns: distributions: array
-        of 4 elements, each number representing, for each quarter, the percentage of markdown rows out of the total
-        rows distributions[0] = percentage of markdown rows in the first 25% of the notebook distributions[1] =
-        percentage of markdown rows in the second quarter of the notebook ... A way you might use me is
-
-        distributions = markdown_distribution(nb_dict)
-    """
-    n_md_cells = 0
-    markdown_fir = 0
-    markdown_sec = 0
-    markdown_thi = 0
-    markdown_fou = 0
-    cells_number = len(notebook["cells"])
-    cells_per_portion = int(cells_number / 4)
-    cell_count = 0
-    cell_portion = 1
-    for cell in notebook["cells"]:
-        if cell["cell_type"] == 'markdown':
-            n_md_cells = n_md_cells + 1
-            if cell_portion == 1:
-                markdown_fir = markdown_fir + len(cell['source'])
-            elif cell_portion == 2:
-                markdown_sec = markdown_sec + len(cell['source'])
-            elif cell_portion == 3:
-                markdown_thi = markdown_thi + len(cell['source'])
-            else:
-                markdown_fou = markdown_fou + len(cell['source'])
-        cell_count = cell_count + 1
-        if cell_count >= cells_per_portion:
-            if cell_portion < 4:
-                cell_count = 0
-                cell_portion = cell_portion + 1
-            else:
-                break
-    total_md_rows = markdown_fir + markdown_sec + markdown_thi + markdown_fou
-    if n_md_cells < 4:
-        return None, None, None, None
-    else:
-        return markdown_fir / total_md_rows, markdown_sec / total_md_rows, \
-               markdown_thi / total_md_rows, markdown_fou / total_md_rows
-
-
 def are_imports_in_first_cell(code):
     """
         Verifies if there are no import statements in cells that are not the first one
@@ -351,3 +305,31 @@ def count_raw_cells(nb_dict):
         if cell["cell_type"] == 'raw':
             counter = counter + 1
     return counter
+
+
+def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
+    """
+        Percentage of markdown rows in the last cells of the notebook out of the total of md rows
+
+        Args: nb_dict(dict): python dictionary object representing the jupyter notebook.
+
+        Returns: md_bottom_cells/md_first_cells: Percentage of markdown rows in the last cells of the notebook
+
+        A way you might use me is
+
+        last_ten_cells_md_ratio = get_bottom_md_lines_ratio(nb_dict, 10)
+    """
+    total_cells = count_cells(nb_dict)
+    if bottom_size < total_cells / 3:
+        md_first_cells = 0
+        md_bottom_cells = 0
+        cell_counter = 1
+        for cell in nb_dict["cells"]:
+            if cell_counter <= total_cells - bottom_size and cell["cell_type"] == "markdown":
+                md_first_cells = md_first_cells + len(cell["source"])
+            elif cell_counter > total_cells - bottom_size and cell["cell_type"] == "markdown":
+                md_bottom_cells = md_bottom_cells + len(cell["source"])
+            cell_counter = cell_counter + 1
+    else:
+        return None
+    return md_bottom_cells/md_first_cells
