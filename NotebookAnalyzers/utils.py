@@ -319,11 +319,16 @@ def count_bottom_non_executed_cells(nb_dict, bottom_size=4):
     """
         Number of non-executed cells between the last bottom-size-cells of the notebook
 
+        Precondition:In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+
         Args:
             nb_dict(dict): python dictionary object representing the jupyter notebook
             bottom_size(int): number of cells starting from the bottom of the dictionary
         Returns:
             _non_executed_cells_count(cell_list): number of non-executed cells in the bottom-size last section of the notebook
+            None: in case the precondition is not satisfied
 
         A way you might use me is
 
@@ -341,11 +346,16 @@ def count_bottom_empty_cells(nb_dict, bottom_size=4):
     """
         Number of empty cells between the last bottom-size-cells of the notebook
 
+        Precondition:In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+
         Args:
             nb_dict(dict): python dictionary object representing the jupyter notebook
             bottom_size(int): number of cells starting from the bottom of the dictionary
         Returns:
             _empty_cells_count(cell_list): number of empty cells in the bottom-size last section of the notebook
+            None: in case the precondition is not satisfied
 
         A way you might use me is
 
