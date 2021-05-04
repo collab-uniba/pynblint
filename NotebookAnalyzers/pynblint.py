@@ -311,9 +311,14 @@ def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
     """
         Percentage of markdown rows in the last cells of the notebook out of the total of md rows
 
+        Precondition: In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+
         Args: nb_dict(dict): python dictionary object representing the jupyter notebook.
 
         Returns: md_bottom_cells/md_first_cells: Percentage of markdown rows in the last cells of the notebook
+                 None: in case the precondition is not satisfied
 
         A way you might use me is
 
@@ -332,4 +337,4 @@ def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
             cell_counter = cell_counter + 1
     else:
         return None
-    return md_bottom_cells/md_first_cells
+    return md_bottom_cells/(md_first_cells+md_bottom_cells)
