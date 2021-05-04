@@ -252,7 +252,6 @@ def has_linear_execution_order(nb_dict):
 def count_class_defs(code):
     """
     The function takes a python code string and returns the number of class definitions
-
         Extract the number of class definitions from a python code
 
         Args:
