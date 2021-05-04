@@ -3,7 +3,7 @@ import ast
 from notebooktoall.transform import transform_notebook
 
 
-def notebook_to_json(filename):
+def notebook_to_dict(filename):
     """
        Turns a notebook into a dictionary object
 
@@ -14,7 +14,7 @@ def notebook_to_json(filename):
 
        A way you might use me is
 
-       data = notebook_to_json("file.ipynb")
+       nb_dict = notebook_to_dict("file.ipynb")
     """
     f = open("../TargetNotebooks/" + filename, )
     data = json.load(f)
@@ -22,27 +22,27 @@ def notebook_to_json(filename):
     return data
 
 
-def notebook_to_code(filename):
+def notebook_to_script(filename):
     """
        Extracts the code from a jupyter notebook in the TargetNotebooks folder
 
        Args:
            filename(str): name of the notebook file in the TargetNotebook folder
        Returns:
-           py_code: string containing the python code from the jupyter notebook
+           script: string containing the python code from the jupyter notebook
 
        A way you might use me is
 
-       py_code = notebook_to_code("file.ipynb")
+       script = notebook_to_script("file.ipynb")
     """
     transform_notebook(ipynb_file="../TargetNotebooks/" + filename, export_list=["py"])
     f = open(filename.replace(".ipynb", ".py"), 'r')
-    py_code = f.read()
+    script = f.read()
     f.close()
-    return py_code
+    return script
 
 
-def functions_number(code):
+def count_func_defs(code):
     """
        Extracts the number of function definitions from a string of code
 
@@ -53,7 +53,7 @@ def functions_number(code):
 
        A way you might use me is
 
-       f_num = functions_number(code)
+       function_defs_count = count_func_defs(code)
     """
     tree = ast.parse(code)
     f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
@@ -71,7 +71,7 @@ def count_non_executed_cells(nb_dict):
 
         A way you might use me is
 
-        non_exec_cells_count = count_non_executed_cells(nb_dict)
+        non-exec_cells_count = count_non_executed_cells(nb_dict)
     """
     return _non_executed_cells_count(nb_dict["cells"])
 
@@ -92,7 +92,7 @@ def count_empty_cells(nb_dict):
     return _empty_cells_count(nb_dict["cells"])
 
 
-def markdown_lines(notebook):
+def count_md_lines(notebook):
     """
         Number of markdown rows from a dictionary representing the notebook
 
@@ -103,7 +103,7 @@ def markdown_lines(notebook):
 
         A way you might use me is
 
-        markdowns = markdowns(notebook_dict)
+        md_lines_count = count_md_lines(nb_dict)
     """
     markdowns = 0
     for cell in notebook["cells"]:
@@ -113,7 +113,7 @@ def markdown_lines(notebook):
     return markdowns
 
 
-def markdown_titles(notebook):
+def count_md_titles(notebook):
     """
         Number of markdown title rows from a dictionary representing the notebook
 
@@ -124,7 +124,7 @@ def markdown_titles(notebook):
 
         A way you might use me is
 
-        titles = markdown_titles(notebook_dict)
+        titles_count = count_md_titles(nb_dict)
     """
     titles = 0
     for cell in notebook["cells"]:
@@ -139,16 +139,12 @@ def markdown_distribution(notebook):
     """
         Distribution of markdown rows in the 4 sections of the notebook
 
-        Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
-        Returns:
-            distributions: array of 4 elements, each number representing, for each quarter, the percentage of markdown rows out of the total rows
-                           distributions[0] = percentage of markdown rows in the first 25% of the notebook
-                           distributions[1] = percentage of markdown rows in the second quarter of the notebook
-                           ...
-        A way you might use me is
+        Args: notebook(dict): python dictionary object representing the jupyter notebook. Returns: distributions: array
+        of 4 elements, each number representing, for each quarter, the percentage of markdown rows out of the total
+        rows distributions[0] = percentage of markdown rows in the first 25% of the notebook distributions[1] =
+        percentage of markdown rows in the second quarter of the notebook ... A way you might use me is
 
-        distributions = markdown_distribution(notebook_dict)
+        distributions = markdown_distribution(nb_dict)
     """
     n_md_cells = 0
     markdown_fir = 0
@@ -185,18 +181,16 @@ def markdown_distribution(notebook):
                markdown_thi / total_md_rows, markdown_fou / total_md_rows
 
 
-def imports_correct_position(code):
+def are_imports_in_first_cell(code):
     """
         Verifies if there are no import statements in cells that are not the first one
 
-        Args:
-            code(str): string of python code
-        Returns:
-            correct_position: boolean value that is True if there are no imports other than those in the first cell of code and False otherwise
+        Args: code(str): string of python code Returns: correct_position: boolean value that is True if there are no
+        imports other than those in the first cell of code and False otherwise
 
         A way you might use me is
 
-        correct_position = imports_correct_position(code)
+        all_imports_in_first_cell = are_imports_in_first_cell(code)
     """
     found_first_cell = False  # when True it means we found the first cell of code that has to be ignored
     second_cell_not_reached = True
@@ -227,7 +221,7 @@ def imports_correct_position(code):
     return correct_position
 
 
-def cells_correct_order(notebook):
+def has_linear_execution_order(nb_dict):
     """
     The function takes a dict representing notebook dictionary, it returns True if the cells are executed in
     sequential order,starting from 1, and False otherwise
@@ -235,17 +229,17 @@ def cells_correct_order(notebook):
         Verifies if the notebook has been run in sequential order, starting from 1
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+            nb_dict(dic): python dictionary object representing the jupyter notebook
         Returns:
             correct_exec: boolean value that is True if notebook cells have been sequentially run top to bottom
 
         A way you might use me is
 
-        correct_exec = cells_correct_order(notebook_dict)
+        linear_exec_order = has_linear_execution_order(nb_dict)
     """
     correct_exec = True
     counter = 1
-    for cell in notebook["cells"]:
+    for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'code':
             if counter == cell['execution_count']:
                 counter = counter + 1
@@ -255,7 +249,7 @@ def cells_correct_order(notebook):
     return correct_exec
 
 
-def classes_number(code):
+def count_class_defs(code):
     """
     The function takes a python code string and returns the number of class definitions
 
@@ -268,7 +262,7 @@ def classes_number(code):
 
         A way you might use me is
 
-        class_def_num = classes_number(code)
+        class_def_count = count_class_defs(code)
     """
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
@@ -394,3 +388,79 @@ def _extract_bottom_cells_of_code(nb_dict, bottom_size):
         else:
             break
     return cell_list
+
+
+def count_cells(nb_dict):
+    """
+    The function takes a dictionary representing the notebook and returns the number of cells
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            len(nb_dict["cells"]): integer value representing the number of cells into the notebook
+
+        A way you might use me is
+
+        cells_count = count_cells(nb_dict)
+    """
+    return len(nb_dict["cells"])
+
+
+def count_md_cells(nb_dict):
+    """
+    The function takes a dictionary representing the notebook and returns the number of markdown cells
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of markdown cells into the notebook
+
+        A way you might use me is
+
+        md_cells_count = count_md_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'markdown':
+            counter = counter + 1
+    return counter
+
+
+def count_code_cells(nb_dict):
+    """
+    The function takes a dictionary representing the notebook and returns the number of code cells
+
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of code cells into the notebook
+
+        A way you might use me is
+
+        code_cell_count = count_code_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'code':
+            counter = counter + 1
+    return counter
+
+
+def count_raw_cells(nb_dict):
+    """
+    The function takes a dictionary representing the notebook and returns the number of raw cells
+    
+        Args:
+            nb_dict(dict): dictionary representing the notebook
+        Returns:
+            counter: integer value representing the number of raw cells into the notebook
+
+        A way you might use me is
+
+        raw_cells_count = count_raw_cells(nb_dict)
+    """
+    counter = 0
+    for cell in nb_dict["cells"]:
+        if cell["cell_type"] == 'raw':
+            counter = counter + 1
+    return counter
