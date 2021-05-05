@@ -60,46 +60,36 @@ def count_func_defs(code):
     return f_num
 
 
-def count_non_executed_cells(notebook):
+def count_non_executed_cells(nb_dict):
     """
         Number of non-executed cells from a dictionary representing the notebook
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+            nb_dict(dic): python dictionary object representing the jupyter notebook
         Returns:
-            not_exec_cells: integer representing the number of non-executed cells in the notebook
+            _non_executed_cells_count(notebook["cells"]): integer representing the number of non-executed cells in the notebook
 
         A way you might use me is
 
         non-exec_cells_count = count_non_executed_cells(nb_dict)
     """
-    not_exec_cells = 0
-    for cell in notebook["cells"]:
-        if cell["cell_type"] == 'code':
-            if cell['execution_count'] is None and cell['source'] != []:
-                not_exec_cells = not_exec_cells + 1  # This is a not executed Python Cell containing actual code
-    return not_exec_cells
+    return _non_executed_cells_count(nb_dict["cells"])
 
 
-def count_empty_cells(notebook):
+def count_empty_cells(nb_dict):
     """
         Number of empty cells from a dictionary representing the notebook
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+            nb_dict(dic): python dictionary object representing the jupyter notebook
         Returns:
-            empty_cells_count: integer representing the number of empty cells in the notebook
+            _empty_cells_count(nb_dict["cells"]): integer representing the number of empty cells in the notebook
 
         A way you might use me is
 
         empty_cells_count = count_empty_cells(nb_dict)
     """
-    empty_cell = 0
-    for cell in notebook["cells"]:
-        if cell["cell_type"] == 'code':
-            if cell['execution_count'] is None and cell['source'] == []:
-                empty_cell = empty_cell + 1  # This is an empty Python Cell
-    return empty_cell
+    return _empty_cells_count(nb_dict["cells"])
 
 
 def count_md_lines(notebook):
@@ -185,14 +175,15 @@ def are_imports_in_first_cell(code):
     return correct_position
 
 
-def has_linear_execution_order(notebook):
-    """The function takes a dict representing notebook dictionary, it returns True if the cells are executed in
-    sequential order,starting from 1, and False otherwise """
+def has_linear_execution_order(nb_dict):
     """
+    The function takes a dict representing notebook dictionary, it returns True if the cells are executed in
+    sequential order,starting from 1, and False otherwise
+
         Verifies if the notebook has been run in sequential order, starting from 1
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+            nb_dict(dic): python dictionary object representing the jupyter notebook
         Returns:
             correct_exec: boolean value that is True if notebook cells have been sequentially run top to bottom
 
@@ -202,7 +193,7 @@ def has_linear_execution_order(notebook):
     """
     correct_exec = True
     counter = 1
-    for cell in notebook["cells"]:
+    for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'code':
             if counter == cell['execution_count']:
                 counter = counter + 1
@@ -213,14 +204,14 @@ def has_linear_execution_order(notebook):
 
 
 def count_class_defs(code):
-    """The function takes a python code string and returns the number of class definitions"""
     """
+    The function takes a python code string and returns the number of class definitions
         Extract the number of class definitions from a python code
 
         Args:
             code(str): string of python code
         Returns:
-            class_def_num: interger value representing the number of class definitions in the python code
+            class_def_num: integer value representing the number of class definitions in the python code
 
         A way you might use me is
 
@@ -229,6 +220,127 @@ def count_class_defs(code):
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
     return class_def_num
+
+
+def _non_executed_cells_count(cell_list):
+    """The function takes a list of cells and returns the number of non-executed cells
+
+        Args:
+            cell_list(list): list of dictionary objects representing the notebook cells
+        Returns:
+            non_exec_cells: number of non-executed cells in the list
+        
+        The function is used in:
+        - count_non-executed_cells(nb_dict)
+        - count_bottom_non-executed_cells(nb_dict, bottom_size=4)          
+    """
+    non_exec_cells = 0
+    for cell in cell_list:
+        if cell["cell_type"] == 'code':
+            if cell['execution_count'] is None and cell['source'] != []:
+                non_exec_cells = non_exec_cells + 1  # This is a not executed Python Cell containing actual code
+    return non_exec_cells
+
+
+def _empty_cells_count(cell_list):
+    """The function takes a list of cells and returns the number of empty cells
+
+        Args:
+            cell_list(list): list of dictionary objects representing the notebook cells
+        Returns:
+            empty_cells: number of empty cells in the list
+
+        The function is used in:
+        - count_empty_cells(nb_dict)
+        - count_bottom_empty_cells(nb_dict, bottom_size=4)          
+    """
+    empty_cell = 0
+    for cell in cell_list:
+        if cell["cell_type"] == 'code':
+            if cell['execution_count'] is None and cell['source'] == []:
+                empty_cell = empty_cell + 1  # This is an empty Python Cell
+    return empty_cell
+
+
+def count_bottom_non_executed_cells(nb_dict, bottom_size=4):
+    """
+        Number of non-executed cells between the last bottom-size-cells of the notebook
+
+        Precondition:In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+
+        Args:
+            nb_dict(dict): python dictionary object representing the jupyter notebook
+            bottom_size(int): number of cells starting from the bottom of the dictionary
+        Returns:
+            _non_executed_cells_count(cell_list): number of non-executed cells in the bottom-size last section of the notebook
+            None: in case the precondition is not satisfied
+
+        A way you might use me is
+
+        bottom_non_executed_cells = count_bottom_non_executed_cells(nb_dict)
+    """
+    if bottom_size < (
+            len(nb_dict["cells"]) / 3):  # puo essere sostituito con la funzione count_cells() una volta creata
+        cell_list = _extract_bottom_cells_of_code(nb_dict, bottom_size)
+    else:
+        return None
+    return _non_executed_cells_count(cell_list)
+
+
+def count_bottom_empty_cells(nb_dict, bottom_size=4):
+    """
+        Number of empty cells between the last bottom-size-cells of the notebook
+
+        Precondition:In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+
+        Args:
+            nb_dict(dict): python dictionary object representing the jupyter notebook
+            bottom_size(int): number of cells starting from the bottom of the dictionary
+        Returns:
+            _empty_cells_count(cell_list): number of empty cells in the bottom-size last section of the notebook
+            None: in case the precondition is not satisfied
+
+        A way you might use me is
+
+        bottom_empty_cells = count_bottom_empty_cells(nb_dict)
+    """
+    if bottom_size < (
+            len(nb_dict["cells"]) / 3):  # puo essere sostituito con la funzione count_cells() una volta creata
+        cell_list = _extract_bottom_cells_of_code(nb_dict, bottom_size)
+    else:
+        return None
+    return _empty_cells_count(cell_list)
+
+
+def _extract_bottom_cells_of_code(nb_dict, bottom_size):
+    """
+        It returns a list of the code cells between the last bottom_size cells of the notebook
+
+        Args:
+            nb_dict(dict): python dictionary object representing the jupyter notebook
+            bottom_size(int): number of cells starting from the bottom of the dictionary
+        Returns:
+           cell_list: list of code cells between the last bottom_size cells of the notebook
+
+        The function is used in:
+        - count_bottom_empty_cells()
+        - count_bottom_non_executed_cells()
+    """
+    cell_list = []
+    counter = 1
+    full_list = nb_dict["cells"]
+    for cell in reversed(full_list):
+        if counter <= bottom_size:
+            if cell["cell_type"] == 'code':
+                cell_list.append(cell)
+                counter = counter + 1
+        else:
+            break
+    return cell_list
 
 
 def count_cells(nb_dict):
