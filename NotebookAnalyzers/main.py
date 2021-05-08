@@ -1,23 +1,22 @@
 from fastapi import FastAPI
 import pynblint
+import linters
 
 app = FastAPI()
-
-nb_linter_descr = {"id": "nb-linter", "description": "Lints Python Jupyter notebooks, one at a time."}
-repo_linter_descr = {"id": "repo-linter", "description": "Lints all Jupyter notebooks in a Python project."}
+nb_linter = linters.NbLinter()
+repo_linter = linters.RepoLinter()
 
 
 @app.get('/')
 def index():
-    return {'data': {'name': 'This is a notebook linter API'}}
+    return {'data': {'message': 'Welcome to the pynblint API'}}
 
 
 @app.get('/linters')
 def linters_descr():
-    return {"data": [nb_linter_descr, repo_linter_descr]}
+    return {"data": [{"id": nb_linter.id, "description": nb_linter.description}, {"id": repo_linter.id, "description": repo_linter.description}]}
 
-
-#@app.get('/notebook/{id}/empty_cells') #analyze_noteboo #analyze_repository
-#def empty_cells(id: str):
+# @app.get('/notebook/{id}/empty_cells') #analyze_noteboo #analyze_repository
+# def empty_cells(id: str):
 #    nb_dict = pynblint.notebook_to_dict(id)
 #    return {'data': pynblint.count_empty_cells(nb_dict)}
