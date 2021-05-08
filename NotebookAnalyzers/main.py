@@ -1,23 +1,23 @@
 from fastapi import FastAPI
 import pynblint
+import linters
 
 app = FastAPI()
-
-nb_linter_descr = {"id": "nb-linter", "description": "Lints Python Jupyter notebooks, one at a time."}
-repo_linter_descr = {"id": "repo-linter", "description": "Lints all Jupyter notebooks in a Python project."}
+nb_linter = linters.NbLinter()
+repo_linter = linters.RepoLinter()
 
 
 @app.get('/')
 def index():
-    return {'data': {'name': 'This is a notebook linter API'}}
+    return {'data': {'message': 'Welcome to the pynblint API'}}
 
 
 @app.get('/linters/{linter_type}')
 def linters_descr(linter_type: str):
-    if linter_type == "nb-linter":
-        return {'data': nb_linter_descr}
-    elif linter_type == "repo-linter":
-        return {'data': repo_linter_descr}
+    if linter_type == getattr(nb_linter, 'id'):
+        return {'data': getattr(nb_linter, 'description')}
+    elif linter_type == getattr(repo_linter, 'id'):
+        return {'data': getattr(repo_linter, 'description')}
     else:
         return {'data': 'No linter found!'}
 
