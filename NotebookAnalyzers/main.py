@@ -12,11 +12,11 @@ def index():
     return {'data': {'message': 'Welcome to the pynblint API'}}
 
 
-@app.get('/linters/{linter_type}')
-def linters_descr(linter_type: str):
-    if linter_type == getattr(nb_linter, 'id'):
+@app.get('/linters/{linter_id}')
+def linters_descr(linter_id: str):
+    if linter_id == getattr(nb_linter, 'id'):
         return {'data': getattr(nb_linter, 'description')}
-    elif linter_type == getattr(repo_linter, 'id'):
+    elif linter_id == getattr(repo_linter, 'id'):
         return {'data': getattr(repo_linter, 'description')}
     else:
         return {'data': 'No linter found!'}
