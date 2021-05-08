@@ -1,5 +1,6 @@
 import json
 import ast
+import config
 from notebooktoall.transform import transform_notebook
 
 
@@ -8,7 +9,7 @@ def notebook_to_dict(filename):
        Turns a notebook into a dictionary object
 
        Args:
-           filename(str): name of the notebook file in the TargetNotebooks folder
+           filename(str): name of the notebook file in the data folder
        Returns:
            data: dictionary object representing the notebook
 
@@ -16,7 +17,7 @@ def notebook_to_dict(filename):
 
        nb_dict = notebook_to_dict("file.ipynb")
     """
-    f = open("../TargetNotebooks/" + filename, )
+    f = open(config.data_path + filename, )
     data = json.load(f)
     f.close()
     return data
@@ -24,7 +25,7 @@ def notebook_to_dict(filename):
 
 def notebook_to_script(filename):
     """
-       Extracts the code from a jupyter notebook in the TargetNotebooks folder
+       Extracts the code from a jupyter notebook in the data folder
 
        Args:
            filename(str): name of the notebook file in the TargetNotebook folder
@@ -35,7 +36,7 @@ def notebook_to_script(filename):
 
        script = notebook_to_script("file.ipynb")
     """
-    transform_notebook(ipynb_file="../TargetNotebooks/" + filename, export_list=["py"])
+    transform_notebook(ipynb_file=config.data_path + filename, export_list=["py"])
     f = open(filename.replace(".ipynb", ".py"), 'r')
     script = f.read()
     f.close()
