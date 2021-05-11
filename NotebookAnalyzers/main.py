@@ -13,7 +13,7 @@ def index():
 
 
 @app.get('/linters')
-def linters_descr():
+def get_linters_list():
     return {"data": [{"id": nb_linter.id, "description": nb_linter.description}, {"id": repo_linter.id, "description": repo_linter.description}]}
 
 # @app.get('/notebook/{id}/empty_cells') #analyze_noteboo #analyze_repository
