@@ -13,7 +13,7 @@ def index():
 
 
 @app.get('/linters/{linter_id}')
-def linter_descr(linter_id: str):
+def get_linter(linter_id: str):
     if linter_id == nb_linter.id:
         return {'data': {"id": nb_linter.id, "description": nb_linter.description}}
     elif linter_id == repo_linter.id:
