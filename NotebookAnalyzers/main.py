@@ -6,6 +6,8 @@ app = FastAPI()
 nb_linter = linters.NbLinter()
 repo_linter = linters.RepoLinter()
 
+linters_dict = {nb_linter.id: nb_linter.description, repo_linter.id: repo_linter.description}
+
 
 @app.get('/')
 def index():
@@ -14,9 +16,5 @@ def index():
 
 @app.get('/linters')
 def get_linters_list():
-    return {"data": [{"id": nb_linter.id, "description": nb_linter.description}, {"id": repo_linter.id, "description": repo_linter.description}]}
-
-# @app.get('/notebook/{id}/empty_cells') #analyze_noteboo #analyze_repository
-# def empty_cells(id: str):
-#    nb_dict = pynblint.notebook_to_dict(id)
-#    return {'data': pynblint.count_empty_cells(nb_dict)}
+    # return {"data": [{"id": linter_id, "description": linters_dict[linter_id].description} for linter_id in linters_dict]}
+    return {"data": linters_dict}
