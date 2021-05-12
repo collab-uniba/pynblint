@@ -11,13 +11,19 @@ class Notebook:
 
     def __init__(self, notebook_path: str):
         # Importing the notebook as a Python dictionary
-        with open(notebook_path) as f:
+        with open(config.data_path + notebook_path) as f:
             self.nb_dict = json.load(f)
 
         # Importing the notebook as a Python script
-        transform_notebook(ipynb_file=notebook_path, export_list=["py"])
+        transform_notebook(ipynb_file=config.data_path + notebook_path, export_list=["py"])
         with open(notebook_path.replace(".ipynb", ".py")) as f:
             self.script = f.read()
+
+    def get_code(self):
+        return self.script
+
+    def get_dict(self):
+        return self.nb_dict
 
 
 class Repository:

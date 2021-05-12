@@ -4,43 +4,43 @@ import config
 from notebooktoall.transform import transform_notebook
 
 
-def notebook_to_dict(filename):
-    """
-       Turns a notebook into a dictionary object
+#def notebook_to_dict(filename):
+#    """
+#       Turns a notebook into a dictionary object
+#
+#       Args:
+#           filename(str): name of the notebook file in the data folder
+#       Returns:
+#           data: dictionary object representing the notebook
+#
+#       A way you might use me is
+#
+#       nb_dict = notebook_to_dict("file.ipynb")
+#    """
+#    f = open(config.data_path + filename, )
+#    data = json.load(f)
+#    f.close()
+#    return data
 
-       Args:
-           filename(str): name of the notebook file in the data folder
-       Returns:
-           data: dictionary object representing the notebook
 
-       A way you might use me is
+#def notebook_to_script(filename):
+#    """
+#       Extracts the code from a jupyter notebook in the data folder
 
-       nb_dict = notebook_to_dict("file.ipynb")
-    """
-    f = open(config.data_path + filename, )
-    data = json.load(f)
-    f.close()
-    return data
-
-
-def notebook_to_script(filename):
-    """
-       Extracts the code from a jupyter notebook in the data folder
-
-       Args:
-           filename(str): name of the notebook file in the TargetNotebook folder
-       Returns:
-           script: string containing the python code from the jupyter notebook
-
-       A way you might use me is
-
-       script = notebook_to_script("file.ipynb")
-    """
-    transform_notebook(ipynb_file=config.data_path + filename, export_list=["py"])
-    f = open(filename.replace(".ipynb", ".py"), 'r')
-    script = f.read()
-    f.close()
-    return script
+#       Args:
+#           filename(str): name of the notebook file in the TargetNotebook folder
+#       Returns:
+#           script: string containing the python code from the jupyter notebook
+#
+#       A way you might use me is
+#
+#       script = notebook_to_script("file.ipynb")
+#    """
+#    transform_notebook(ipynb_file=config.data_path + filename, export_list=["py"])
+#    f = open(filename.replace(".ipynb", ".py"), 'r')
+#    script = f.read()
+#    f.close()
+#    return script
 
 
 def count_func_defs(code):
