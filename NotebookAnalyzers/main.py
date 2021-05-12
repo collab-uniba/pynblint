@@ -6,7 +6,10 @@ app = FastAPI()
 nb_linter = linters.NbLinter()
 repo_linter = linters.RepoLinter()
 
-linters_dict = {nb_linter.id: nb_linter.description, repo_linter.id: repo_linter.description}
+linters_dict = {
+    'nb-linter': nb_linter,
+    'repo-linter': repo_linter
+}
 
 
 @app.get('/')
@@ -16,5 +19,4 @@ def index():
 
 @app.get('/linters')
 def get_linters_list():
-    # return {"data": [{"id": linter_id, "description": linters_dict[linter_id].description} for linter_id in linters_dict]}
-    return {"data": linters_dict}
+    return {"data": [{"id": linter_id, "description": linters_dict[linter_id].description} for linter_id in linters_dict]}
