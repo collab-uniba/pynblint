@@ -136,6 +136,34 @@ def count_md_titles(notebook):
     return titles
 
 
+def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
+    """
+        Percentage of markdown rows in the last cells of the notebook out of the total of md rows
+        Precondition: In order for the bottom of the notebook to actually represent the last section of it, it should
+        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
+        dimension of the notebook divided by 3.
+        Args: nb_dict(dict): python dictionary object representing the jupyter notebook.
+        Returns: md_bottom_cells/md_first_cells: Percentage of markdown rows in the last cells of the notebook
+                 None: in case the precondition is not satisfied
+        A way you might use me is
+        last_ten_cells_md_ratio = get_bottom_md_lines_ratio(nb_dict, 10)
+    """
+    total_cells = count_cells(nb_dict)
+    if bottom_size < total_cells / 3:
+        md_first_cells = 0
+        md_bottom_cells = 0
+        cell_counter = 1
+        for cell in nb_dict["cells"]:
+            if cell_counter <= total_cells - bottom_size and cell["cell_type"] == "markdown":
+                md_first_cells = md_first_cells + len(cell["source"])
+            elif cell_counter > total_cells - bottom_size and cell["cell_type"] == "markdown":
+                md_bottom_cells = md_bottom_cells + len(cell["source"])
+            cell_counter = cell_counter + 1
+    else:
+        return None
+    return md_bottom_cells/(md_first_cells+md_bottom_cells)
+
+
 def are_imports_in_first_cell(code):
     """
         Verifies if there are no import statements in cells that are not the first one
@@ -418,36 +446,3 @@ def count_raw_cells(nb_dict):
         if cell["cell_type"] == 'raw':
             counter = counter + 1
     return counter
-
-
-def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
-    """
-        Percentage of markdown rows in the last cells of the notebook out of the total of md rows
-
-        Precondition: In order for the bottom of the notebook to actually represent the last section of it, it should
-        not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
-        dimension of the notebook divided by 3.
-
-        Args: nb_dict(dict): python dictionary object representing the jupyter notebook.
-
-        Returns: md_bottom_cells/md_first_cells: Percentage of markdown rows in the last cells of the notebook
-                 None: in case the precondition is not satisfied
-
-        A way you might use me is
-
-        last_ten_cells_md_ratio = get_bottom_md_lines_ratio(nb_dict, 10)
-    """
-    total_cells = count_cells(nb_dict)
-    if bottom_size < total_cells / 3:
-        md_first_cells = 0
-        md_bottom_cells = 0
-        cell_counter = 1
-        for cell in nb_dict["cells"]:
-            if cell_counter <= total_cells - bottom_size and cell["cell_type"] == "markdown":
-                md_first_cells = md_first_cells + len(cell["source"])
-            elif cell_counter > total_cells - bottom_size and cell["cell_type"] == "markdown":
-                md_bottom_cells = md_bottom_cells + len(cell["source"])
-            cell_counter = cell_counter + 1
-    else:
-        return None
-    return md_bottom_cells/(md_first_cells+md_bottom_cells)
