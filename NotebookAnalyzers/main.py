@@ -13,7 +13,7 @@ def index():
     return {'data': {'message': 'Welcome to the pynblint API'}}
 
 @app.post("/linters/nb-linter/")
-async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(...)):
+async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
     with open(config.data_path+notebook.filename, "wb") as buffer:
         shutil.copyfileobj(notebook.file, buffer)
     script = pynblint.notebook_to_script(notebook.filename)
