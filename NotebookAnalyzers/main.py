@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from typing import Optional
 import os
 import pynblint
@@ -13,14 +13,22 @@ def index():
     return {'data': {'message': 'Welcome to the pynblint API'}}
 
 @app.post("/linters/nb-linter/")
-async def nb_lint(notebook: UploadFile = File(...), bottom_size: Optional[int] = 4):
+async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(...)):
     with open(config.data_path+notebook.filename, "wb") as buffer:
         shutil.copyfileobj(notebook.file, buffer)
     script = pynblint.notebook_to_script(notebook.filename)
     nb_dict = pynblint.notebook_to_dict(notebook.filename)
     response = {
         "data": {
-            "fileName": notebook.filename,
+            "notebookName": notebook.filename,
+            "notebookStats": {
+                "numberOfCells": pynblint.count_cells(nb_dict),
+                "numberOfMDCells": pynblint.count_md_cells(nb_dict),
+                "numberOfCodeCells": pynblint.count_code_cells(nb_dict),
+                "numberOfRawCells": pynblint.count_raw_cells(nb_dict)
+            }
+        },
+        "lintingResults": {
             "linearExecutionOrder": pynblint.has_linear_execution_order(nb_dict),
             "numberOfClassDefinitions": pynblint.count_class_defs(script),
             "numberOfFunctionDefinitions": pynblint.count_func_defs(script),
@@ -32,6 +40,7 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: Optional[int] =
             "emptyCells: ": pynblint.count_empty_cells(nb_dict),
             "bottomNonExecutedCells": pynblint.count_bottom_non_executed_cells(nb_dict, bottom_size),
             "bottomEmptyCells": pynblint.count_bottom_empty_cells(nb_dict, bottom_size)
+
         }
     }
     os.remove(config.data_path+notebook.filename)
