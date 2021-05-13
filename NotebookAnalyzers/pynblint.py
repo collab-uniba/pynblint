@@ -4,46 +4,7 @@ import config
 from notebooktoall.transform import transform_notebook
 
 
-#def notebook_to_dict(filename):
-#    """
-#       Turns a notebook into a dictionary object
-#
-#       Args:
-#           filename(str): name of the notebook file in the data folder
-#       Returns:
-#           data: dictionary object representing the notebook
-#
-#       A way you might use me is
-#
-#       nb_dict = notebook_to_dict("file.ipynb")
-#    """
-#    f = open(config.data_path + filename, )
-#    data = json.load(f)
-#    f.close()
-#    return data
-
-
-#def notebook_to_script(filename):
-#    """
-#       Extracts the code from a jupyter notebook in the data folder
-
-#       Args:
-#           filename(str): name of the notebook file in the TargetNotebook folder
-#       Returns:
-#           script: string containing the python code from the jupyter notebook
-#
-#       A way you might use me is
-#
-#       script = notebook_to_script("file.ipynb")
-#    """
-#    transform_notebook(ipynb_file=config.data_path + filename, export_list=["py"])
-#    f = open(filename.replace(".ipynb", ".py"), 'r')
-#    script = f.read()
-#    f.close()
-#    return script
-
-
-def count_func_defs(code):
+def count_func_defs(notebook):
     """
        Extracts the number of function definitions from a string of code
 
@@ -56,12 +17,13 @@ def count_func_defs(code):
 
        function_defs_count = count_func_defs(code)
     """
+    code = notebook.script
     tree = ast.parse(code)
     f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
     return f_num
 
 
-def count_non_executed_cells(nb_dict):
+def count_non_executed_cells(notebook):
     """
         Number of non-executed cells from a dictionary representing the notebook
 
@@ -74,10 +36,11 @@ def count_non_executed_cells(nb_dict):
 
         non-exec_cells_count = count_non_executed_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     return _non_executed_cells_count(nb_dict["cells"])
 
 
-def count_empty_cells(nb_dict):
+def count_empty_cells(notebook):
     """
         Number of empty cells from a dictionary representing the notebook
 
@@ -90,6 +53,7 @@ def count_empty_cells(nb_dict):
 
         empty_cells_count = count_empty_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     return _empty_cells_count(nb_dict["cells"])
 
 
@@ -106,8 +70,9 @@ def count_md_lines(notebook):
 
         md_lines_count = count_md_lines(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     markdowns = 0
-    for cell in notebook["cells"]:
+    for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'markdown':
             rows = len(cell['source'])
             markdowns = markdowns + rows
@@ -127,8 +92,9 @@ def count_md_titles(notebook):
 
         titles_count = count_md_titles(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     titles = 0
-    for cell in notebook["cells"]:
+    for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'markdown':
             for row in cell['source']:
                 if row.lstrip().startswith('#'):
@@ -136,7 +102,7 @@ def count_md_titles(notebook):
     return titles
 
 
-def are_imports_in_first_cell(code):
+def are_imports_in_first_cell(notebook):
     """
         Verifies if there are no import statements in cells that are not the first one
 
@@ -147,6 +113,7 @@ def are_imports_in_first_cell(code):
 
         all_imports_in_first_cell = are_imports_in_first_cell(code)
     """
+    code = notebook.script
     found_first_cell = False  # when True it means we found the first cell of code that has to be ignored
     second_cell_not_reached = True
     # when set to False we are actually reading instructions from the second cell of
@@ -176,7 +143,7 @@ def are_imports_in_first_cell(code):
     return correct_position
 
 
-def has_linear_execution_order(nb_dict):
+def has_linear_execution_order(notebook):
     """
     The function takes a dict representing notebook dictionary, it returns True if the cells are executed in
     sequential order,starting from 1, and False otherwise
@@ -194,6 +161,7 @@ def has_linear_execution_order(nb_dict):
     """
     correct_exec = True
     counter = 1
+    nb_dict = notebook.nb_dict
     for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'code':
             if counter == cell['execution_count']:
@@ -204,7 +172,7 @@ def has_linear_execution_order(nb_dict):
     return correct_exec
 
 
-def count_class_defs(code):
+def count_class_defs(notebook):
     """
     The function takes a python code string and returns the number of class definitions
         Extract the number of class definitions from a python code
@@ -218,6 +186,7 @@ def count_class_defs(code):
 
         class_def_count = count_class_defs(code)
     """
+    code = notebook.script
     tree = ast.parse(code)
     class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
     return class_def_num
@@ -263,7 +232,7 @@ def _empty_cells_count(cell_list):
     return empty_cell
 
 
-def count_bottom_non_executed_cells(nb_dict, bottom_size=4):
+def count_bottom_non_executed_cells(notebook, bottom_size=4):
     """
         Number of non-executed cells between the last bottom-size-cells of the notebook
 
@@ -282,6 +251,7 @@ def count_bottom_non_executed_cells(nb_dict, bottom_size=4):
 
         bottom_non_executed_cells = count_bottom_non_executed_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     if bottom_size < (
             len(nb_dict["cells"]) / 3):  # puo essere sostituito con la funzione count_cells() una volta creata
         cell_list = _extract_bottom_cells_of_code(nb_dict, bottom_size)
@@ -290,7 +260,7 @@ def count_bottom_non_executed_cells(nb_dict, bottom_size=4):
     return _non_executed_cells_count(cell_list)
 
 
-def count_bottom_empty_cells(nb_dict, bottom_size=4):
+def count_bottom_empty_cells(notebook, bottom_size=4):
     """
         Number of empty cells between the last bottom-size-cells of the notebook
 
@@ -309,6 +279,7 @@ def count_bottom_empty_cells(nb_dict, bottom_size=4):
 
         bottom_empty_cells = count_bottom_empty_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     if bottom_size < (
             len(nb_dict["cells"]) / 3):  # puo essere sostituito con la funzione count_cells() una volta creata
         cell_list = _extract_bottom_cells_of_code(nb_dict, bottom_size)
@@ -344,7 +315,7 @@ def _extract_bottom_cells_of_code(nb_dict, bottom_size):
     return cell_list
 
 
-def count_cells(nb_dict):
+def count_cells(notebook):
     """
     The function takes a dictionary representing the notebook and returns the number of cells
 
@@ -357,10 +328,11 @@ def count_cells(nb_dict):
 
         cells_count = count_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     return len(nb_dict["cells"])
 
 
-def count_md_cells(nb_dict):
+def count_md_cells(notebook):
     """
     The function takes a dictionary representing the notebook and returns the number of markdown cells
 
@@ -373,6 +345,7 @@ def count_md_cells(nb_dict):
 
         md_cells_count = count_md_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     counter = 0
     for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'markdown':
@@ -380,7 +353,7 @@ def count_md_cells(nb_dict):
     return counter
 
 
-def count_code_cells(nb_dict):
+def count_code_cells(notebook):
     """
     The function takes a dictionary representing the notebook and returns the number of code cells
 
@@ -393,6 +366,7 @@ def count_code_cells(nb_dict):
 
         code_cell_count = count_code_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     counter = 0
     for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'code':
@@ -400,7 +374,7 @@ def count_code_cells(nb_dict):
     return counter
 
 
-def count_raw_cells(nb_dict):
+def count_raw_cells(notebook):
     """
     The function takes a dictionary representing the notebook and returns the number of raw cells
     
@@ -413,6 +387,7 @@ def count_raw_cells(nb_dict):
 
         raw_cells_count = count_raw_cells(nb_dict)
     """
+    nb_dict = notebook.nb_dict
     counter = 0
     for cell in nb_dict["cells"]:
         if cell["cell_type"] == 'raw':
@@ -420,7 +395,7 @@ def count_raw_cells(nb_dict):
     return counter
 
 
-def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
+def get_bottom_md_lines_ratio(notebook, bottom_size=4):
     """
         Percentage of markdown rows in the last cells of the notebook out of the total of md rows
 
@@ -437,7 +412,8 @@ def get_bottom_md_lines_ratio(nb_dict, bottom_size=4):
 
         last_ten_cells_md_ratio = get_bottom_md_lines_ratio(nb_dict, 10)
     """
-    total_cells = count_cells(nb_dict)
+    nb_dict = notebook.nb_dict
+    total_cells = count_cells(notebook)
     if bottom_size < total_cells / 3:
         md_first_cells = 0
         md_bottom_cells = 0
