@@ -61,9 +61,7 @@ class LocalRepository(Repository):
         if path.endswith('.zip'):
             with zipfile.ZipFile(path, 'r') as zip_ref:
                 zip_ref.extractall(config.data_path)
-                #os.remove(path)
                 project_path = config.data_path+(path.split("/")[-1])[:-4]
-            os.remove(path)
         self.retrieve_notebooks(project_path)
 
 
