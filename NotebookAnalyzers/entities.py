@@ -1,5 +1,11 @@
 import config
+import git
 import json
+import os
+from os import path
+import stat
+import zipfile
+import shutil
 from notebooktoall.transform import transform_notebook
 
 
@@ -28,6 +34,22 @@ class Repository:
 
     notebooks = []  # List of Notebook objects
 
+    def retrieve_notebooks(self, repo_path):
+        for root, dirs, files in os.walk(repo_path):
+            for file in files:
+                if file.endswith(".ipynb"):
+                    file_path = os.path.join(root, file).replace('\\', '/')
+                    nb = Notebook(file_path)
+                    nb.path = file_path[8:]
+                    self.notebooks.append(nb)
+                    os.remove(file[:-5] + "py")
+        for root, dirs, files in os.walk(repo_path):
+            for dir in dirs:
+                os.chmod(path.join(root, dir), stat.S_IRWXU)
+            for file in files:
+                os.chmod(path.join(root, file), stat.S_IRWXU)
+        shutil.rmtree(repo_path)
+
 
 class LocalRepository(Repository):
     """
@@ -35,11 +57,14 @@ class LocalRepository(Repository):
     """
 
     def __init__(self, path: str):
-        # Decompresses the repo (if needed)
-        # Then, crawls the repo's content searching for notebooks
-        # When it finds a notebook, it appends it to the list of notebooks
-        # e.g., notebooks.append(Notebook(path_where_the_nb_was_found))
-        ...
+        project_path = path
+        if path.endswith('.zip'):
+            with zipfile.ZipFile(path, 'r') as zip_ref:
+                zip_ref.extractall(config.data_path)
+                #os.remove(path)
+                project_path = config.data_path+(path.split("/")[-1])[:-4]
+            os.remove(path)
+        self.retrieve_notebooks(project_path)
 
 
 class GitHubRepository(Repository):
@@ -48,8 +73,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-        # Clones the repo
-        # Crawls the repo's content searching for notebooks
-        # When it finds a notebook, it appends it to the list of notebooks
-        # e.g., notebooks.append(Notebook(path_where_the_nb_was_found))
-        ...
+        git.Git(config.data_path).clone(github_url)
+        repo_path = config.data_path+(github_url.split("/")[-1])
+        self.retrieve_notebooks(repo_path)

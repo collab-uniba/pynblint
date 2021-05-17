@@ -426,4 +426,7 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
             cell_counter = cell_counter + 1
     else:
         return None
-    return md_bottom_cells/(md_first_cells+md_bottom_cells)
+    if md_first_cells+md_bottom_cells == 0:
+        return 0
+    else:
+        return md_bottom_cells / (md_first_cells + md_bottom_cells)
