@@ -12,29 +12,13 @@ class Notebook:
     def __init__(self, notebook_path: str):
         # Importing the notebook as a Python dictionary
         with open(notebook_path) as f:
-            self._nb_dict = json.load(f)
+            self.nb_dict = json.load(f)
 
         # Importing the notebook as a Python script
         transform_notebook(ipynb_file=notebook_path, export_list=["py"])
         notebook_path = notebook_path.split("/")[-1]
         with open(notebook_path.replace(".ipynb", ".py")) as f:
-            self._script = f.read()
-
-    @property
-    def nb_dict(self):
-        return self._nb_dict
-
-    @property
-    def script(self):
-        return self._script
-
-    @nb_dict.setter
-    def nb_dict(self, value):
-        self._nb_dict = value
-
-    @script.setter
-    def script(self, value):
-        self._script = value
+            self.script = f.read()
 
 
 class Repository:
