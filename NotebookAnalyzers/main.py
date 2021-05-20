@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import os
 import pynblint
@@ -9,6 +10,18 @@ import linters
 app = FastAPI()
 nb_linter = linters.NbLinter()
 repo_linter = linters.RepoLinter()
+
+origins = [
+    "http://localhost:4200"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 linters_dict = {
     'nb-linter': nb_linter,
