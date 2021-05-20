@@ -32,8 +32,9 @@ Use the terminal or an Anaconda Prompt for the following steps:
 1. Move to the folder containing the main.py fastAPI module
 2. Run it with the following command:
 ```c
-uvicorn main:app
+uvicorn main:app --reload
 ```
-3. You will get a response with address and port on which the server is running, otherwise you will get an error
+The reload command makes the server restart after code changes. Only do this for development.
+3. You will get a response with address and port on which the server is running, otherwise you will get some kind of error
 ## Reference paper
 [1] [Pimentel et al., "A large-scale study about quality and reproducibility of jupyter notebooks."](http://www2.ic.uff.br/~leomurta/papers/pimentel2019a.pdf)
