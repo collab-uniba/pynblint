@@ -6,6 +6,7 @@ from os import path
 import stat
 import zipfile
 import shutil
+import pynblint
 from notebooktoall.transform import transform_notebook
 
 
@@ -23,6 +24,7 @@ class Notebook:
         # Importing the notebook as a Python script
         transform_notebook(ipynb_file=notebook_path, export_list=["py"])
         notebook_path = notebook_path.split("/")[-1]
+        self.path = notebook_path
         with open(notebook_path.replace(".ipynb", ".py")) as f:
             self.script = f.read()
 
