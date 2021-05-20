@@ -28,6 +28,25 @@ class Notebook:
         with open(notebook_path.replace(".ipynb", ".py")) as f:
             self.script = f.read()
 
+    def get_info(self, bottom_size=4):
+        notebook_tuple = (self.path,
+                          pynblint.has_linear_execution_order(self),
+                          pynblint.count_class_defs(self),
+                          pynblint.count_func_defs(self),
+                          pynblint.are_imports_in_first_cell(self),
+                          pynblint.count_md_lines(self),
+                          pynblint.count_md_titles(self),
+                          pynblint.get_bottom_md_lines_ratio(self),
+                          pynblint.count_non_executed_cells(self),
+                          pynblint.count_empty_cells(self),
+                          pynblint.count_bottom_non_executed_cells(self, bottom_size),
+                          pynblint.count_bottom_empty_cells(self, bottom_size),
+                          pynblint.count_cells(self),
+                          pynblint.count_md_cells(self),
+                          pynblint.count_code_cells(self),
+                          pynblint.count_raw_cells(self)
+                          )
+        return notebook_tuple
 
 class Repository:
     """
@@ -75,6 +94,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-        git.Git(config.data_path).clone(github_url,depth=1)
+        git.Git(config.data_path).clone(github_url, depth=1)
         self.path = config.data_path + (github_url.split("/")[-1])
         self.retrieve_notebooks()
