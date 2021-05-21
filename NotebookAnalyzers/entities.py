@@ -28,25 +28,33 @@ class Notebook:
         with open(notebook_path.replace(".ipynb", ".py")) as f:
             self.script = f.read()
 
-    def get_info(self, bottom_size=4):
-        notebook_tuple = (self.path,
-                          pynblint.has_linear_execution_order(self),
-                          pynblint.count_class_defs(self),
-                          pynblint.count_func_defs(self),
-                          pynblint.are_imports_in_first_cell(self),
-                          pynblint.count_md_lines(self),
-                          pynblint.count_md_titles(self),
-                          pynblint.get_bottom_md_lines_ratio(self),
-                          pynblint.count_non_executed_cells(self),
-                          pynblint.count_empty_cells(self),
-                          pynblint.count_bottom_non_executed_cells(self, bottom_size),
-                          pynblint.count_bottom_empty_cells(self, bottom_size),
-                          pynblint.count_cells(self),
-                          pynblint.count_md_cells(self),
-                          pynblint.count_code_cells(self),
-                          pynblint.count_raw_cells(self)
-                          )
-        return notebook_tuple
+    def get_pynblint_results(self, bottom_size=4):
+        results = {
+            "notebookName": self.path,
+            #"notebookStats":
+            #    {
+                    "numberOfCells": pynblint.count_cells(self),
+                    "numberOfMDCells": pynblint.count_md_cells(self),
+                    "numberOfCodeCells": pynblint.count_code_cells(self),
+                    "numberOfRawCells": pynblint.count_raw_cells(self),
+            #    },
+            #"lintingResults":
+            #    {
+                    "linearExecutionOrder": pynblint.has_linear_execution_order(self),
+                    "numberOfClassDefinitions": pynblint.count_class_defs(self),
+                    "numberOfFunctionDefinitions": pynblint.count_func_defs(self),
+                    "allImportsInFirstCell": pynblint.are_imports_in_first_cell(self),
+                    "numberOfMarkdownLines": pynblint.count_md_lines(self),
+                    "numberOfMarkdownTitles": pynblint.count_md_titles(self),
+                    "bottomMarkdownLinesRatio": pynblint.get_bottom_md_lines_ratio(self),
+                    "nonExecutedCells": pynblint.count_non_executed_cells(self),
+                    "emptyCells": pynblint.count_empty_cells(self),
+                    "bottomNonExecutedCells": pynblint.count_bottom_non_executed_cells(self, bottom_size),
+                    "bottomEmptyCells": pynblint.count_bottom_empty_cells(self, bottom_size)
+            #    }
+        }
+        return results
+
 
 class Repository:
     """
