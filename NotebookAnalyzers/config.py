@@ -1,1 +1,3 @@
-data_path = "../data/"
+from pathlib import Path
+
+data_path = Path("../data/").expanduser()
