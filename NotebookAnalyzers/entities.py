@@ -42,27 +42,44 @@ class Notebook:
         python_exporter = PythonExporter()
         self.script, _ = python_exporter.from_notebook_node(_nb_node)
 
-        # TODO: handle exceptions
+    @classmethod
+    def from_string(cls, path_string: str):
+        """
+        Create a Notebook object from a string representing a valid path
+        """
+        p = Path(path_string)
+        return cls(p)
 
     def get_pynblint_results(self, bottom_size: int = 4):
-        notebook_tuple = (str(self.path.relative_to(config.data_path)),
-                          pynblint.has_linear_execution_order(self),
-                          pynblint.count_class_defs(self),
-                          pynblint.count_func_defs(self),
-                          pynblint.are_imports_in_first_cell(self),
-                          pynblint.count_md_lines(self),
-                          pynblint.count_md_titles(self),
-                          pynblint.get_bottom_md_lines_ratio(self),
-                          pynblint.count_non_executed_cells(self),
-                          pynblint.count_empty_cells(self),
-                          pynblint.count_bottom_non_executed_cells(self, bottom_size),
-                          pynblint.count_bottom_empty_cells(self, bottom_size),
-                          pynblint.count_cells(self),
-                          pynblint.count_md_cells(self),
-                          pynblint.count_code_cells(self),
-                          pynblint.count_raw_cells(self)
-                          )
-        return notebook_tuple
+
+        try:
+            nb_path = str(self.path.relative_to(config.data_path))
+        except ValueError:
+            nb_path = str(self.path)
+
+        results = {
+            "notebookName": nb_path,
+            "notebookStats": {
+                "numberOfCells": pynblint.count_cells(self),
+                "numberOfMDCells": pynblint.count_md_cells(self),
+                "numberOfCodeCells": pynblint.count_code_cells(self),
+                "numberOfRawCells": pynblint.count_raw_cells(self),
+            },
+            "lintingResults": {
+                "linearExecutionOrder": pynblint.has_linear_execution_order(self),
+                "numberOfClassDefinitions": pynblint.count_class_defs(self),
+                "numberOfFunctionDefinitions": pynblint.count_func_defs(self),
+                "allImportsInFirstCell": pynblint.are_imports_in_first_cell(self),
+                "numberOfMarkdownLines": pynblint.count_md_lines(self),
+                "numberOfMarkdownTitles": pynblint.count_md_titles(self),
+                "bottomMarkdownLinesRatio": pynblint.get_bottom_md_lines_ratio(self),
+                "nonExecutedCells": pynblint.count_non_executed_cells(self),
+                "emptyCells": pynblint.count_empty_cells(self),
+                "bottomNonExecutedCells": pynblint.count_bottom_non_executed_cells(self, bottom_size),
+                "bottomEmptyCells": pynblint.count_bottom_empty_cells(self, bottom_size)
+            }
+        }
+        return results
 
 
 class Repository:
@@ -77,7 +94,15 @@ class Repository:
     notebooks: list[Notebook] = []  # List of Notebook objects
 
     def retrieve_notebooks(self):
+
+        # Directories to ignore while traversing the tree
+        dirs_ignore = [
+            '.ipynb_checkpoints'
+        ]
+
         for root, dirs, files in os.walk(self.path):
+            # `dirs[:] = value` modifies dirs in-place
+            dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for f in files:
                 if f.endswith(".ipynb"):
                     nb = Notebook(Path(root) / Path(f))
@@ -97,6 +122,7 @@ class LocalRepository(Repository):
     This class stores data about a local code repository
     """
 
+    # Repository info
     source_path: Path
 
     def __init__(self, source_path: Path):
@@ -112,10 +138,19 @@ class LocalRepository(Repository):
 
         # Handle local folders
         elif self.source_path.is_dir():
+            self.path = self.source_path
             self.retrieve_notebooks()
 
         else:
             raise Exception  # TODO: raise a more specific exception
+
+    @classmethod
+    def from_string(cls, path_string: str):
+        """
+        Create a LocalRepository object from a string representing a valid path
+        """
+        p = Path(path_string)
+        return cls(p)
 
 
 class GitHubRepository(Repository):
