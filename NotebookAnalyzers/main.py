@@ -32,6 +32,12 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
     return nb.get_pynblint_results()
 
 
+@app.get("/linters/repo-linter/")
+def repo_lint(repo_url: str):
+    repo = GitHubRepository(repo_url)
+    return repo.get_pynblint_results()
+
+
 @app.get('/linters/{linter_id}')
 def get_linter(linter_id: str):
     if linter_id in linters_dict:
