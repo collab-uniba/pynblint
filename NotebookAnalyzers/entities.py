@@ -100,6 +100,7 @@ class Repository:
             data.append(notebook.get_pynblint_results())
         return {"data": data}
 
+
     def retrieve_notebooks(self):
 
         # Directories to ignore while traversing the tree
