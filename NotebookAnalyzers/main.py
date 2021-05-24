@@ -43,6 +43,12 @@ async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form
         os.remove(Path(config.data_path) / local_project.filename)
         raise HTTPException(status_code=400, detail="Bad request")
 
+@app.get("/linters/repo-linter/")
+def repo_lint(repo_url: str):
+    repo = GitHubRepository(repo_url)
+    return repo.get_pynblint_results()
+
+
 @app.get('/linters/{linter_id}')
 def get_linter(linter_id: str):
     if linter_id in linters_dict:
