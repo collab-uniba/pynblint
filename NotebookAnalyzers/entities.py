@@ -93,6 +93,13 @@ class Repository:
     # Extracted content
     notebooks: list[Notebook] = []  # List of Notebook objects
 
+    def get_pynblint_results(self):
+        """Function takes a list of notebook objects and returns a list of dictionaries containg the linting results"""
+        data = []
+        for notebook in self.notebooks:
+            data.append(notebook.get_pynblint_results())
+        return {"data": data}
+
     def retrieve_notebooks(self):
 
         # Directories to ignore while traversing the tree

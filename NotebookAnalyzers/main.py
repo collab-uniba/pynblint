@@ -17,12 +17,6 @@ linters_dict = {
     'repo-linter': repo_linter
 }
 
-def _lint_notebooks_list(nb_objects):
-    """Function take a list of notebook objects and returns a list of dictionaries containg the linting results"""
-    data=[]
-    for notebook in nb_objects:
-        data.append(notebook.get_pynblint_results())
-    return {"data": data}
 
 @app.get('/')
 def index():
@@ -41,7 +35,7 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
 @app.get("/linters/repo-linter/")
 def repo_lint(repo_url: str):
     repo = GitHubRepository(repo_url)
-    return _lint_notebooks_list(repo.notebooks)
+    return repo.get_pynblint_results()
 
 
 @app.get('/linters/{linter_id}')
