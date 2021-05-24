@@ -31,7 +31,7 @@ Now just select this kernel you created when running the NotebookAnalysisResults
 Use the terminal or an Anaconda Prompt to perform the following steps:
 1. Move to the folder containing the `main.py` module
 2. Run it with the following command:
-```c
+```bash
 uvicorn main:app --reload
 ```
 The reload command makes the server restart after code changes. Only do this for development.<br>
