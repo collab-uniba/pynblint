@@ -18,14 +18,6 @@ linters_dict = {
 }
 
 
-def _lint_notebooks_list(nb_objects):
-    """Function take a list of notebook objects and returns a list of dictionaries containg the linting results"""
-    data=[]
-    for notebook in nb_objects:
-        data.append(notebook.get_pynblint_results())
-    return {"data": data}
-
-
 @app.get('/')
 def index():
     return {'data': {'message': 'Welcome to the pynblint API'}}
@@ -46,7 +38,7 @@ async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form
     try:
         project = LocalRepository(Path(config.data_path) / local_project.filename)
         os.remove(Path(config.data_path) / local_project.filename)
-        return _lint_notebooks_list(project.notebooks)
+        return project.get_pynblint_results()
     except Exception:
         os.remove(Path(config.data_path) / local_project.filename)
         raise HTTPException(status_code=400, detail="Bad request")
