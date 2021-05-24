@@ -98,7 +98,7 @@ class Repository:
         data = []
         for notebook in self.notebooks:
             data.append(notebook.get_pynblint_results())
-        return {"data": data}
+        return data
 
 
     def retrieve_notebooks(self):
