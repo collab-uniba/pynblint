@@ -18,6 +18,14 @@ linters_dict = {
 }
 
 
+def _lint_notebooks_list(nb_objects):
+    """Function take a list of notebook objects and returns a list of dictionaries containg the linting results"""
+    data=[]
+    for notebook in nb_objects:
+        data.append(notebook.get_pynblint_results())
+    return {"data": data}
+
+
 @app.get('/')
 def index():
     return {'data': {'message': 'Welcome to the pynblint API'}}
@@ -31,6 +39,13 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
     os.remove(Path(config.data_path) / notebook.filename)
     return nb.get_pynblint_results()
 
+@app.post("/linters/repo-linter/")
+async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form(4)):
+    with open( Path(config.data_path) / local_project.filename, "wb") as buffer:
+        shutil.copyfileobj(local_project.file, buffer)
+    project = LocalRepository(Path(config.data_path) / local_project.filename)
+    os.remove(Path(config.data_path) / local_project.filename)
+    return _lint_notebooks_list(project.notebooks)
 
 @app.get('/linters/{linter_id}')
 def get_linter(linter_id: str):
