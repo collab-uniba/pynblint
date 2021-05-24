@@ -29,7 +29,7 @@ python -m ipykernel install --user --name myenv
 Now just select this kernel you created when running the NotebookAnalysisResults notebook.
 ## Run the web API
 Use the terminal or an Anaconda Prompt to perform the following steps:
-1. Move to the folder containing the main.py fastAPI module
+1. Move to the folder containing the `main.py` module
 2. Run it with the following command:
 ```c
 uvicorn main:app --reload
