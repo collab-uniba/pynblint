@@ -27,9 +27,8 @@ def index():
 async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
     with open( Path(config.data_path) / notebook.filename, "wb") as buffer:
         shutil.copyfileobj(notebook.file, buffer)
-    nb = Notebook.from_string(notebook.filename)
+    nb = Notebook(Path(config.data_path) / notebook.filename)
     os.remove(Path(config.data_path) / notebook.filename)
-    #os.remove(notebook.filename[:-5] + "py") useless if we use notebook.from_string method
     return nb.get_pynblint_results()
 
 
