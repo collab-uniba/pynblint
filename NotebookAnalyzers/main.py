@@ -32,7 +32,7 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
     return nb.get_pynblint_results()
 
 
-@app.post("/linters/repo-linter/")
+@app.get("/linters/repo-linter/")
 def repo_lint(repo_url: str):
     data=[]
     repo = GitHubRepository(repo_url)
