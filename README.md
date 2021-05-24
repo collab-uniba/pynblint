@@ -35,6 +35,6 @@ Use the terminal or an Anaconda Prompt to perform the following steps:
 uvicorn main:app --reload
 ```
 The reload command makes the server restart after code changes. Only do this for development.<br>
-3. You will get a response with address and port on which the server is running, otherwise you will get some kind of error
+3. If the server starts correctly, the address and port on which it is running will be printed on your terminal.
 ## Reference paper
 [1] [Pimentel et al., "A large-scale study about quality and reproducibility of jupyter notebooks."](http://www2.ic.uff.br/~leomurta/papers/pimentel2019a.pdf)
