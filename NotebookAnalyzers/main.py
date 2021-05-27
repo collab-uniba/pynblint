@@ -29,7 +29,7 @@ async def nb_lint(notebook: UploadFile = File(...), bottom_size: int = Form(4)):
         shutil.copyfileobj(notebook.file, buffer)
     nb = Notebook(Path(config.data_path) / notebook.filename)
     os.remove(Path(config.data_path) / notebook.filename)
-    return nb.get_pynblint_results()
+    return {"data": nb.get_pynblint_results()}
 
 @app.post("/linters/repo-linter/")
 async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form(4)):
@@ -38,15 +38,18 @@ async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form
     try:
         project = LocalRepository(Path(config.data_path) / local_project.filename)
         os.remove(Path(config.data_path) / local_project.filename)
-        return project.get_pynblint_results()
+        return {"data": project.get_pynblint_results()}
     except Exception:
         os.remove(Path(config.data_path) / local_project.filename)
         raise HTTPException(status_code=400, detail="Bad request")
 
 @app.get("/linters/repo-linter/")
 def repo_lint(repo_url: str):
-    repo = GitHubRepository(repo_url)
-    return repo.get_pynblint_results()
+    try:
+        repo = GitHubRepository(repo_url)
+        return {"data": repo.get_pynblint_results()}
+    except Exception:
+        raise HTTPException(status_code=400, detail="Bad request")
 
 
 @app.get('/linters/{linter_id}')
