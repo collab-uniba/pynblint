@@ -50,7 +50,7 @@ class Notebook:
         p = Path(path_string)
         return cls(p)
 
-    def get_pynblint_results(self, bottom_size: int = 4):
+    def get_pynblint_results(self, bottom_size: int = 4, filename_max_length = 25):
 
         try:
             nb_path = str(self.path.relative_to(config.data_path))
@@ -76,7 +76,10 @@ class Notebook:
                 "nonExecutedCells": pynblint.count_non_executed_cells(self),
                 "emptyCells": pynblint.count_empty_cells(self),
                 "bottomNonExecutedCells": pynblint.count_bottom_non_executed_cells(self, bottom_size),
-                "bottomEmptyCells": pynblint.count_bottom_empty_cells(self, bottom_size)
+                "bottomEmptyCells": pynblint.count_bottom_empty_cells(self, bottom_size),
+                "isUntitled": pynblint.is_untitled(self),
+                "isFilenameCharsetRestricted": pynblint.is_filename_charset_restricted(self),
+                "isFilenameShort": pynblint.is_filename_short(self, filename_max_length)
             }
         }
         return results

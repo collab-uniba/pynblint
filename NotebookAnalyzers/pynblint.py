@@ -1,6 +1,8 @@
 import json
 import ast
 import config
+import os
+import re
 from notebooktoall.transform import transform_notebook
 
 
@@ -431,3 +433,23 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
     else:
         return md_bottom_cells / (md_first_cells + md_bottom_cells)
 
+
+def is_untitled(notebook):
+    if os.path.basename(notebook.path)=="Untitled.ipynb":
+        return True
+    else:
+        return False
+
+
+def is_filename_charset_restricted(notebook):
+    #not completely convinced obout the name of the function
+    if re.search("^[A-Za-z0-9_.-]+$", os.path.basename(notebook.path)):
+        return True
+    else:
+        return False
+
+def is_filename_short(notebook, filename_max_length = 25):
+    if len(os.path.basename(notebook.path))>filename_max_length:
+        return False
+    else:
+        return True
