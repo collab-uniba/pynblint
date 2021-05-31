@@ -38,7 +38,12 @@ async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form
     try:
         project = LocalRepository(Path(config.data_path) / local_project.filename)
         os.remove(Path(config.data_path) / local_project.filename)
-        return {"data": project.get_notebooks_results()}
+        return {"data":
+                    {
+                        "Repository": project.get_repo_results(),
+                        "Notebooks": project.get_notebooks_results()
+                    }
+               }
     except Exception:
         os.remove(Path(config.data_path) / local_project.filename)
         raise HTTPException(status_code=400, detail="Bad request")
@@ -47,7 +52,12 @@ async def nb_lint(local_project: UploadFile = File(...), bottom_size: int = Form
 def repo_lint(repo_url: str):
     try:
         repo = GitHubRepository(repo_url)
-        return {"data": repo.get_notebooks_results()}
+        return {"data":
+            {
+                "Repository": repo.get_repo_results(),
+                "Notebooks": repo.get_notebooks_results()
+            }
+        }
     except Exception:
         raise HTTPException(status_code=400, detail="Bad request")
 

@@ -459,7 +459,6 @@ def get_duplicate_filenames(repository):
     duplicate_filanames = []
     for notebook in repository.notebooks:
         filename = os.path.basename(notebook.path)
-        # data.append(notebook.get_pynblint_results())
         if filename in nb_filenames:
             duplicate_filanames.append(filename)
         else:

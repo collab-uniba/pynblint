@@ -104,14 +104,19 @@ class Repository:
         return data
 
     def get_repo_results(self):
-        duplicate_names = pynblint.get_duplicate_filenames(self)
+        duplicate_names=[]
         untitled_notebooks = []
+        duplicate_names = pynblint.get_duplicate_filenames(self)
         for notebook in self.notebooks:
             if pynblint.is_untitled(notebook):
                 untitled_notebooks.append(notebook.path)
         return {
-                    "DuplicateFilenames": duplicate_names,
-                    "UntitledNotebooks": untitled_notebooks
+                    "repositoryName": os.path.basename(self.path),
+                    "lintingResults":
+                        {
+                            "duplicateFilenames": duplicate_names,
+                            "untitledNotebooks": untitled_notebooks
+                        }
         }
 
 
