@@ -97,13 +97,14 @@ class Repository:
     notebooks: list[Notebook] = []  # List of Notebook objects
 
     def get_notebooks_results(self):
-        """Function takes a list of notebook objects and returns a list of dictionaries containg the linting results"""
+        """Function takes a list of notebook objects and returns a list of dictionaries containing the linting results"""
         data = []
         for notebook in self.notebooks:
             data.append(notebook.get_pynblint_results())
         return data
 
     def get_repo_results(self):
+        """It returns some linting results of the repo itself"""
         duplicate_names=[]
         untitled_notebooks = []
         duplicate_names = pynblint.get_duplicate_filenames(self)
