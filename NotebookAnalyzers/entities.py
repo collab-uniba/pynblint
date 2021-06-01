@@ -51,6 +51,9 @@ class Notebook:
         return cls(p)
 
     def get_pynblint_results(self, bottom_size: int = 4):
+        """
+        Organize the linting results from all the repo notebooks
+        """
 
         try:
             nb_path = str(self.path.relative_to(config.data_path))
