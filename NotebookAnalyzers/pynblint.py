@@ -9,7 +9,7 @@ def count_func_defs(notebook):
        Extracts the number of function definitions from a string of code
 
        Args:
-           code(str): string of python code
+           notebook(Notebook): python object representing the notebook
        Returns:
            f_num: integer representing the number of function definitions in the code
 
@@ -28,7 +28,7 @@ def count_non_executed_cells(notebook):
         Number of non-executed cells from a dictionary representing the notebook
 
         Args:
-            nb_dict(dic): python dictionary object representing the jupyter notebook
+           notebook(Notebook): python object representing the notebook
         Returns:
             _non_executed_cells_count(notebook["cells"]): integer representing the number of non-executed cells in the notebook
 
@@ -45,7 +45,7 @@ def count_empty_cells(notebook):
         Number of empty cells from a dictionary representing the notebook
 
         Args:
-            nb_dict(dic): python dictionary object representing the jupyter notebook
+           notebook(Notebook): python object representing the notebook
         Returns:
             _empty_cells_count(nb_dict["cells"]): integer representing the number of empty cells in the notebook
 
@@ -62,7 +62,7 @@ def count_md_lines(notebook):
         Number of markdown rows from a dictionary representing the notebook
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+           notebook(Notebook): python object representing the notebook
         Returns:
             markdowns: integer representing the number of markdown rows in the notebook
 
@@ -84,7 +84,7 @@ def count_md_titles(notebook):
         Number of markdown title rows from a dictionary representing the notebook
 
         Args:
-            notebook(dic): python dictionary object representing the jupyter notebook
+           notebook(Notebook): python object representing the notebook
         Returns:
             titles: integer representing the number of markdown title rows in the notebook
 
@@ -106,8 +106,10 @@ def are_imports_in_first_cell(notebook):
     """
         Verifies if there are no import statements in cells that are not the first one
 
-        Args: code(str): string of python code Returns: correct_position: boolean value that is True if there are no
-        imports other than those in the first cell of code and False otherwise
+        Args:
+            notebook(Notebook): python object representing the notebook
+        Returns:
+            True if all the import are in the first cell of code, False otherwise
 
         A way you might use me is
 
@@ -151,7 +153,7 @@ def has_linear_execution_order(notebook):
         Verifies if the notebook has been run in sequential order, starting from 1
 
         Args:
-            nb_dict(dic): python dictionary object representing the jupyter notebook
+            notebook(Notebook): python object representing the notebook
         Returns:
             correct_exec: boolean value that is True if notebook cells have been sequentially run top to bottom
 
@@ -178,7 +180,7 @@ def count_class_defs(notebook):
         Extract the number of class definitions from a python code
 
         Args:
-            code(str): string of python code
+            notebook(Notebook): python object representing the notebook
         Returns:
             class_def_num: integer value representing the number of class definitions in the python code
 
@@ -241,7 +243,7 @@ def count_bottom_non_executed_cells(notebook, bottom_size=4):
         dimension of the notebook divided by 3.
 
         Args:
-            nb_dict(dict): python dictionary object representing the jupyter notebook
+            notebook(Notebook): python object representing the notebook
             bottom_size(int): number of cells starting from the bottom of the dictionary
         Returns:
             _non_executed_cells_count(cell_list): number of non-executed cells in the bottom-size last section of the notebook
@@ -269,7 +271,7 @@ def count_bottom_empty_cells(notebook, bottom_size=4):
         dimension of the notebook divided by 3.
 
         Args:
-            nb_dict(dict): python dictionary object representing the jupyter notebook
+            notebook(Notebook): python object representing the notebook
             bottom_size(int): number of cells starting from the bottom of the dictionary
         Returns:
             _empty_cells_count(cell_list): number of empty cells in the bottom-size last section of the notebook
@@ -320,7 +322,7 @@ def count_cells(notebook):
     The function takes a dictionary representing the notebook and returns the number of cells
 
         Args:
-            nb_dict(dict): dictionary representing the notebook
+            notebook(Notebook): python object representing the notebook
         Returns:
             len(nb_dict["cells"]): integer value representing the number of cells into the notebook
 
@@ -337,7 +339,7 @@ def count_md_cells(notebook):
     The function takes a dictionary representing the notebook and returns the number of markdown cells
 
         Args:
-            nb_dict(dict): dictionary representing the notebook
+            notebook(Notebook): python object representing the notebook
         Returns:
             counter: integer value representing the number of markdown cells into the notebook
 
@@ -358,7 +360,7 @@ def count_code_cells(notebook):
     The function takes a dictionary representing the notebook and returns the number of code cells
 
         Args:
-            nb_dict(dict): dictionary representing the notebook
+            notebook(Notebook): python object representing the notebook
         Returns:
             counter: integer value representing the number of code cells into the notebook
 
@@ -379,7 +381,7 @@ def count_raw_cells(notebook):
     The function takes a dictionary representing the notebook and returns the number of raw cells
     
         Args:
-            nb_dict(dict): dictionary representing the notebook
+            notebook(Notebook): python object representing the notebook
         Returns:
             counter: integer value representing the number of raw cells into the notebook
 
@@ -403,7 +405,7 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
         not be more then the 33.3% of the whole notebook. In other words, the bottom_size should be minor then the
         dimension of the notebook divided by 3.
 
-        Args: nb_dict(dict): python dictionary object representing the jupyter notebook.
+        Args: notebook(Notebook): python object representing the notebook
 
         Returns: md_bottom_cells/md_first_cells: Percentage of markdown rows in the last cells of the notebook
                  None: in case the precondition is not satisfied
