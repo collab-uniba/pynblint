@@ -4,17 +4,23 @@ import config
 from entities import Notebook
 from pathlib import Path
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def notebooks():
     nb1 = Notebook(Path(config.target_path) / "stroke-prediction-beginner-s-guide.ipynb")
     nb2 = Notebook(Path(config.target_path) / "my-attempt-at-analytics-vidhya-job-a-thon.ipynb")
+    nb3 = Notebook(Path(config.target_path) / "Untitled.ipynb")
     return {
         "stroke-prediction-beginner-s-guide.ipynb":nb1,
-        "my-attempt-at-analytics-vidhya-job-a-thon.ipynb":nb2
+        "my-attempt-at-analytics-vidhya-job-a-thon.ipynb":nb2,
+        "Untitled.ipynb": nb3
     }
 
-def test_count_cells(notebooks):
-    assert notebooks["stroke-prediction-beginner-s-guide.ipynb"].get_pynblint_results()["notebookStats"]["numberOfCells"] == 32
+@pytest.mark.parametrize("test_input,expected", [
+    ("stroke-prediction-beginner-s-guide.ipynb", 32),
+    ("Untitled.ipynb",2)
+])
+def test_count_cells(test_input, expected, notebooks):
+    assert notebooks[test_input].get_pynblint_results()["notebookStats"]["numberOfCells"] == expected
 
 def test_count_md_cells(notebooks):
     assert notebooks["stroke-prediction-beginner-s-guide.ipynb"].get_pynblint_results()["notebookStats"]["numberOfMDCells"] == 13
