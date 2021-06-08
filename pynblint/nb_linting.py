@@ -1,7 +1,4 @@
-import json
 import ast
-import config
-from notebooktoall.transform import transform_notebook
 
 
 def count_func_defs(notebook):
@@ -428,8 +425,7 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
             cell_counter = cell_counter + 1
     else:
         return None
-    if md_first_cells+md_bottom_cells == 0:
+    if md_first_cells + md_bottom_cells == 0:
         return 0
     else:
         return md_bottom_cells / (md_first_cells + md_bottom_cells)
-
