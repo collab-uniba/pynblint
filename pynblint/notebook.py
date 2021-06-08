@@ -1,7 +1,8 @@
 import json
+from pathlib import Path
+
 import nbformat
 from nbconvert import PythonExporter
-from pathlib import Path
 
 from pynblint import nb_linting
 
@@ -12,9 +13,10 @@ class Notebook:
     on which pynblint functions are called
     """
 
-    def __init__(self, notebook_path: Path, repository_path: Path = None):
+    def __init__(self, notebook_path: Path, repository_path: Path = None, notebook_name: str = None):
         self.path = notebook_path
         self.repository_path = repository_path
+        self.notebook_name = notebook_name
 
         # Read the raw notebook file
         with open(self.path) as f:
@@ -30,10 +32,12 @@ class Notebook:
 
     def get_pynblint_results(self, bottom_size: int = 4):
 
-        if self.repository_path is None:
-            nb_name = str(self.path)
-        else:
+        if self.notebook_name is not None:
+            nb_name = self.notebook_name
+        elif self.repository_path is not None:
             nb_name = str(self.path.relative_to(self.repository_path))
+        else:
+            nb_name = str(self.path)
 
         results = {
             "notebookName": nb_name,
