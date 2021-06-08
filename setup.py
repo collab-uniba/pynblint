@@ -10,6 +10,12 @@ setuptools.setup(
 
     include_package_data=True,
     python_requires=">=3.7.10",
+    install_requires=[
+        "ipython",
+        "nbformat",
+        "nbconvert",
+        "GitPython"
+    ],
     entry_points={
         "console_scripts": [
             "pynblint=pynblint.__main__:main",
