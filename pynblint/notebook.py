@@ -1,10 +1,9 @@
 import json
-from pathlib import Path
-
 import nbformat
 from nbconvert import PythonExporter
+from pathlib import Path
 
-from pynblint import nb_linting, config
+from pynblint import nb_linting
 
 
 class Notebook:
@@ -13,8 +12,9 @@ class Notebook:
     on which pynblint functions are called
     """
 
-    def __init__(self, notebook_path: Path):
+    def __init__(self, notebook_path: Path, repository_path: Path = None):
         self.path = notebook_path
+        self.repository_path = repository_path
 
         # Read the raw notebook file
         with open(self.path) as f:
@@ -30,13 +30,13 @@ class Notebook:
 
     def get_pynblint_results(self, bottom_size: int = 4):
 
-        try:
-            nb_path = str(self.path.relative_to(config.temp_data_dir_path))
-        except ValueError:
-            nb_path = str(self.path)
+        if self.repository_path is None:
+            nb_name = str(self.path)
+        else:
+            nb_name = str(self.path.relative_to(self.repository_path))
 
         results = {
-            "notebookName": nb_path,
+            "notebookName": nb_name,
             "notebookStats": {
                 "numberOfCells": nb_linting.count_cells(self),
                 "numberOfMDCells": nb_linting.count_md_cells(self),

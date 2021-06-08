@@ -1,15 +1,11 @@
+import git
 import os
-import shutil
-import stat
+import tempfile
 import zipfile
-from os import path
 from pathlib import Path
 from typing import List
 
-import git
-
 from pynblint.notebook import Notebook
-from pynblint import config
 
 
 class Repository:
@@ -20,7 +16,7 @@ class Repository:
     def __init__(self):
 
         # Repository info
-        self.path: Path = None
+        self.path = None
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
@@ -37,16 +33,8 @@ class Repository:
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for f in files:
                 if f.endswith(".ipynb"):
-                    nb = Notebook(Path(root) / Path(f))
+                    nb = Notebook(Path(root) / Path(f), repository_path=self.path)
                     self.notebooks.append(nb)
-
-    def delete_repository(self):
-        for root, dirs, files in os.walk(self.path):
-            for d in dirs:
-                os.chmod(path.join(root, d), stat.S_IRWXU)
-            for f in files:
-                os.chmod(path.join(root, f), stat.S_IRWXU)
-        shutil.rmtree(self.path)
 
     def get_pynblint_results(self):
         """
@@ -69,11 +57,18 @@ class LocalRepository(Repository):
 
         # Handle .zip archives
         if self.source_path.suffix == '.zip':
+
+            # Create temp directory
+            tmp_dir = tempfile.TemporaryDirectory()
+
+            # Extract the zip file into the temp folder
             with zipfile.ZipFile(self.source_path, 'r') as zip_file:
-                zip_file.extractall(config.temp_data_dir_path)
-            self.path = config.temp_data_dir_path / self.source_path.stem
+                zip_file.extractall(tmp_dir.name)
+            self.path = Path(tmp_dir.name) / self.source_path.stem
             self.retrieve_notebooks()
-            self.delete_repository()
+
+            # Clean up the temp directory
+            tmp_dir.cleanup()
 
         # Handle local folders
         elif self.source_path.is_dir():
@@ -81,7 +76,7 @@ class LocalRepository(Repository):
             self.retrieve_notebooks()
 
         else:
-            raise Exception  # TODO: raise a more specific exception
+            raise Exception  # TODO: raise a more meaningful exception
 
 
 class GitHubRepository(Repository):
@@ -93,10 +88,15 @@ class GitHubRepository(Repository):
         super().__init__()
         self.url = github_url
 
-        # Clone the repo
-        git.Git(config.temp_data_dir_path).clone(github_url, depth=1)
-        self.path = config.temp_data_dir_path / github_url.split("/")[-1]
+        # Create temp directory
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        # Clone the repo into the temp directory
+        git.Git(tmp_dir.name).clone(github_url, depth=1)
+        self.path = Path(tmp_dir.name) / github_url.split("/")[-1]
 
         # Analyze the repo
         self.retrieve_notebooks()
-        self.delete_repository()
+
+        # Clean up the temp directory
+        tmp_dir.cleanup()
