@@ -1,9 +1,10 @@
-import git
 import os
 import tempfile
 import zipfile
 from pathlib import Path
 from typing import List
+
+import git
 
 from pynblint.notebook import Notebook
 
@@ -64,7 +65,7 @@ class LocalRepository(Repository):
             # Extract the zip file into the temp folder
             with zipfile.ZipFile(self.source_path, 'r') as zip_file:
                 zip_file.extractall(tmp_dir.name)
-            self.path = Path(tmp_dir.name) / self.source_path.stem
+            self.path = Path(tmp_dir.name)
             self.retrieve_notebooks()
 
             # Clean up the temp directory
