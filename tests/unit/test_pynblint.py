@@ -8,20 +8,20 @@ if __name__ == '__main__':
 
 @pytest.fixture(scope="module")
 def notebooks():
-    nb1 = Notebook(Path("../fixtures") / Path("EmptyNotebook.ipynb"))
-    nb2 = Notebook(Path("../fixtures") / Path("FullNotebook.ipynb"))
-    nb3 = Notebook(Path("../fixtures") / Path("JustMarkdown.ipynb"))
-    nb4 = Notebook(Path("../fixtures") / Path("DefectedNotebook.ipynb"))
+    nb1 = Notebook(Path("../fixtures", Path("FullNotebook2.ipynb")))
+    nb2 = Notebook(Path("../fixtures", Path("FullNotebook.ipynb")))
+    nb3 = Notebook(Path("../fixtures", Path("JustMarkdown.ipynb")))
+    nb4 = Notebook(Path("../fixtures", Path("DefectiveNotebook.ipynb")))
     return {
-        "EmptyNotebook.ipynb": nb1,
+        "FullNotebook2.ipynb": nb1,
         "FullNotebook.ipynb": nb2,
         "JustMarkdown.ipynb": nb3,
-        "DefectedNotebook.ipynb": nb4
+        "DefectiveNotebook.ipynb": nb4
     }
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 3),
+    ("FullNotebook2.ipynb", 3),
     ("FullNotebook.ipynb", 15)
 ])
 def test_count_cells(test_input, expected, notebooks):
@@ -29,7 +29,7 @@ def test_count_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
+    ("FullNotebook2.ipynb", 0),
     ("FullNotebook.ipynb", 5)
 ])
 def test_count_md_cells(test_input, expected, notebooks):
@@ -47,7 +47,7 @@ def test_count_code_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
+    ("FullNotebook2.ipynb", 0),
     ("FullNotebook.ipynb", 1)
 ])
 def test_count_raw_cells(test_input, expected, notebooks):
@@ -56,7 +56,7 @@ def test_count_raw_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", False),
+    ("FullNotebook2.ipynb", False),
     ("FullNotebook.ipynb", True)
 ])
 def test_has_linear_execution_order(test_input, expected, notebooks):
@@ -65,7 +65,7 @@ def test_has_linear_execution_order(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 1),
+    ("FullNotebook2.ipynb", 1),
     ("FullNotebook.ipynb", 0)
 ])
 def test_count_class_defs(test_input, expected, notebooks):
@@ -74,7 +74,7 @@ def test_count_class_defs(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
+    ("FullNotebook2.ipynb", 0),
     ("FullNotebook.ipynb", 1)
 ])
 def test_count_func_defs(test_input, expected, notebooks):
@@ -83,7 +83,7 @@ def test_count_func_defs(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", False),
+    ("FullNotebook2.ipynb", False),
     ("FullNotebook.ipynb", True)
 ])
 def test_are_imports_in_first_cell(test_input, expected, notebooks):
@@ -92,7 +92,7 @@ def test_are_imports_in_first_cell(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
+    ("FullNotebook2.ipynb", 0),
     ("FullNotebook.ipynb", 8)
 ])
 def test_count_md_lines(test_input, expected, notebooks):
@@ -101,7 +101,7 @@ def test_count_md_lines(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
+    ("FullNotebook2.ipynb", 0),
     ("FullNotebook.ipynb", 1)
 ])
 def test_count_md_titles(test_input, expected, notebooks):
@@ -110,7 +110,7 @@ def test_count_md_titles(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", None),
+    ("FullNotebook2.ipynb", None),
     ("FullNotebook.ipynb", 0.375)
 ])
 def test_get_bottom_md_lines_ratio(test_input, expected, notebooks):
@@ -119,8 +119,8 @@ def test_get_bottom_md_lines_ratio(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
-    ("DefectedNotebook.ipynb", 2)
+    ("FullNotebook2.ipynb", 0),
+    ("DefectiveNotebook.ipynb", 2)
 ])
 def test_count_non_executed_cells(test_input, expected, notebooks):
     assert notebooks[test_input].get_pynblint_results()["lintingResults"][
@@ -128,8 +128,8 @@ def test_count_non_executed_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", 0),
-    ("DefectedNotebook.ipynb", 1)
+    ("FullNotebook2.ipynb", 0),
+    ("DefectiveNotebook.ipynb", 1)
 ])
 def test_count_empty_cells(test_input, expected, notebooks):
     assert notebooks[test_input].get_pynblint_results()["lintingResults"][
@@ -137,8 +137,8 @@ def test_count_empty_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", None),
-    ("DefectedNotebook.ipynb", 1)
+    ("FullNotebook2.ipynb", None),
+    ("DefectiveNotebook.ipynb", 1)
 ])
 def test_count_bottom_non_executed_cells(test_input, expected, notebooks):
     assert notebooks[test_input].get_pynblint_results()["lintingResults"][
@@ -146,8 +146,8 @@ def test_count_bottom_non_executed_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("EmptyNotebook.ipynb", None),
-    ("DefectedNotebook.ipynb", 1)
+    ("FullNotebook2.ipynb", None),
+    ("DefectiveNotebook.ipynb", 1)
 ])
 def test_count_bottom_empty_cells(test_input, expected, notebooks):
     assert notebooks[test_input].get_pynblint_results()["lintingResults"][
