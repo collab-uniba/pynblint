@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 import git
-from pynblint import nb_linting
+from pynblint import repo_linting
 from pynblint.notebook import Notebook
 
 
@@ -47,18 +47,14 @@ class Repository:
 
     def get_repo_results(self):
         """It returns some linting results of the repo itself"""
-        duplicate_names=[]
-        untitled_notebooks = []
-        duplicate_names = nb_linting.get_duplicate_filenames(self)
-        for notebook in self.notebooks:
-            if nb_linting.is_untitled(notebook):
-                untitled_notebooks.append(notebook.path)
+        duplicate_paths = repo_linting.get_duplicate_notebooks(self)
+        untitled_paths = repo_linting.get_untitled_paths(self)
         return {
                     "repositoryName": os.path.basename(self.path),
                     "lintingResults":
                         {
-                            "duplicateFilenames": duplicate_names,
-                            "untitledNotebooks": untitled_notebooks
+                            "duplicateFilenames": duplicate_paths,
+                            "untitledNotebooks": untitled_paths
                         }
         }
 

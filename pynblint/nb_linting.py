@@ -453,15 +453,3 @@ def is_filename_short(notebook, filename_max_length = 25):
         return False
     else:
         return True
-
-def get_duplicate_filenames(repository):
-    #TODO: ADD PATH move to repo_linting
-    nb_filenames = []
-    duplicate_filanames = []
-    for notebook in repository.notebooks:
-        filename = os.path.basename(notebook.path)
-        if filename in nb_filenames:
-            duplicate_filanames.append(filename)
-        else:
-            nb_filenames.append(filename)
-    return duplicate_filanames
