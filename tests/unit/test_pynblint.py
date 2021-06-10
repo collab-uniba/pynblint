@@ -8,10 +8,10 @@ if __name__ == '__main__':
 
 @pytest.fixture(scope="module")
 def notebooks():
-    nb1 = Notebook(Path("../fixtures/") / "EmptyNotebook.ipynb")
-    nb2 = Notebook(Path("../fixtures/") / "FullNotebook.ipynb")
-    nb3 = Notebook(Path("../fixtures/") / "JustMarkdown.ipynb")
-    nb4 = Notebook(Path("../fixtures/") / "DefectedNotebook.ipynb")
+    nb1 = Notebook(Path("../fixtures") / Path("EmptyNotebook.ipynb"))
+    nb2 = Notebook(Path("../fixtures") / Path("FullNotebook.ipynb"))
+    nb3 = Notebook(Path("../fixtures") / Path("JustMarkdown.ipynb"))
+    nb4 = Notebook(Path("../fixtures") / Path("DefectedNotebook.ipynb"))
     return {
         "EmptyNotebook.ipynb": nb1,
         "FullNotebook.ipynb": nb2,
