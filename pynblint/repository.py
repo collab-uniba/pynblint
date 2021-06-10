@@ -48,7 +48,7 @@ class Repository:
     def get_repo_results(self):
         """It returns some linting results of the repo itself"""
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
-        untitled_paths = repo_linting.get_untitled_paths(self)
+        untitled_paths = repo_linting.get_untitled_notebooks(self)
         return {
                     "repositoryName": os.path.basename(self.path),
                     "lintingResults":
