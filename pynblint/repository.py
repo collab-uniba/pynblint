@@ -38,7 +38,7 @@ class Repository:
                     self.notebooks.append(nb)
 
     def get_notebooks_results(self):
-        """Function takes a list of notebook objects and returns a list of dictionaries containing the linting results"""
+        """This function takes a list of notebook objects and returns a list of dictionaries containing the related linting results."""
         data = []
         for notebook in self.notebooks:
             data.append(notebook.get_pynblint_results())
