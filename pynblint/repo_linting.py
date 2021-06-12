@@ -4,7 +4,7 @@ from pynblint import nb_linting
 
 def get_duplicate_notebooks(repo):
     """
-    The function takes a repository and checks whether two or more notebooks with the same filename
+    The function takes a repository and checks whether two or more notebooks with the same filename are present.
 
         Args:
             repo(Repository): python object representing the repository
@@ -33,7 +33,7 @@ def get_duplicate_notebooks(repo):
 
 def get_untitled_notebooks(repo):
     """
-    The function takes a repository and checks whether there are any untitled notebooks
+    The function takes a repository and checks whether there is any untitled notebook
 
         Args:
             repo(Repository): python object representing the repository

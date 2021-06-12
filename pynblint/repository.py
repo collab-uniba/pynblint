@@ -37,15 +37,16 @@ class Repository:
                     nb = Notebook(Path(root) / Path(f), repository_path=self.path)
                     self.notebooks.append(nb)
 
-    def get_notebooks_results(self,  bottom_size: int = 4,  filename_max_length=None):
-        """Function takes a list of notebook objects and returns a list of dictionaries containing the linting results"""
+    def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
+        """This function takes a list of notebook objects and returns a list of dictionaries containing the related
+        linting results. """
         data = []
         for notebook in self.notebooks:
             data.append(notebook.get_pynblint_results(bottom_size, filename_max_length))
         return data
 
     def get_repo_results(self):
-        """It returns some linting results of the repo itself"""
+        """This function returns linting results at the repository level."""
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
         untitled_paths = repo_linting.get_untitled_notebooks(self)
         return {

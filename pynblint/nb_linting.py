@@ -435,7 +435,7 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
 
 def is_titled(notebook):
     """
-    The function takes a notebook and checks whether it has a title or not
+    The function takes a notebook and checks whether it has been titled or it still has the default title: "Untitled.ipynb"
 
         Args:
             notebook(Notebook): python object representing the notebook
