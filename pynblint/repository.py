@@ -45,7 +45,7 @@ class Repository:
         return data
 
     def get_repo_results(self):
-        """It returns some linting results of the repo itself"""
+        """This function returns linting results at the repository level."""
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
         untitled_paths = repo_linting.get_untitled_notebooks(self)
         return {
