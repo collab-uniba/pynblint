@@ -30,7 +30,7 @@ class Notebook:
         python_exporter = PythonExporter()
         self.script, _ = python_exporter.from_notebook_node(_nb_node)
 
-    def get_pynblint_results(self, bottom_size: int = 4,  filename_max_length = 25):
+    def get_pynblint_results(self, bottom_size: int = 4,  filename_max_length=None):
 
         if self.notebook_name is not None:
             nb_name = self.notebook_name
@@ -59,9 +59,11 @@ class Notebook:
                 "emptyCells": nb_linting.count_empty_cells(self),
                 "bottomNonExecutedCells": nb_linting.count_bottom_non_executed_cells(self, bottom_size),
                 "bottomEmptyCells": nb_linting.count_bottom_empty_cells(self, bottom_size),
-                "isUntitled": nb_linting.is_untitled(self),
+                "isTitled": nb_linting.is_titled(self),
                 "isFilenameCharsetRestricted": nb_linting.is_filename_charset_restricted(self),
-                "isFilenameShort": nb_linting.is_filename_short(self, filename_max_length)
             }
         }
+        if filename_max_length is not None:
+            results["lintingResults"]["isFilenameShort"] = nb_linting.is_filename_short(self, filename_max_length)
         return results
+

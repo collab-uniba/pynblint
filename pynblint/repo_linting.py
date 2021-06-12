@@ -46,6 +46,6 @@ def get_untitled_notebooks(repo):
     """
     untitled_notebooks = []
     for notebook in repo.notebooks:
-        if nb_linting.is_untitled(notebook):
+        if not nb_linting.is_titled(notebook):
             untitled_notebooks.append(notebook.path)
     return untitled_notebooks

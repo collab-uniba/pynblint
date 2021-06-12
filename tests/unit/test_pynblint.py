@@ -1,5 +1,6 @@
 from pynblint.notebook import Notebook
 from pynblint.repository import LocalRepository
+from pynblint import nb_linting, repo_linting
 from pathlib import Path
 import pytest
 
@@ -23,8 +24,8 @@ def notebooks():
 
 @pytest.fixture(scope="module")
 def repos():
-    folder1 = LocalRepository(Path("../fixtures", "UntitledNoDuplicates"))
-    folder2 = LocalRepository(Path("../fixtures", "DuplicatesNoUntitled"))
+    folder1 = LocalRepository(Path("../fixtures", "test_repo", "UntitledNoDuplicates"))
+    folder2 = LocalRepository(Path("../fixtures", "test_repo", "DuplicatesNoUntitled"))
     return {
         "UntitledNoDuplicates": folder1,
         "DuplicatesNoUntitled": folder2
@@ -36,7 +37,7 @@ def repos():
     ("FullNotebookFullNotebookFullNotebook.ipynb", 15)
 ])
 def test_count_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["notebookStats"]["numberOfCells"] == expected
+    assert nb_linting.count_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -44,8 +45,7 @@ def test_count_cells(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 5)
 ])
 def test_count_md_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["notebookStats"][
-               "numberOfMDCells"] == expected
+    assert nb_linting.count_md_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -53,8 +53,7 @@ def test_count_md_cells(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 9)
 ])
 def test_count_code_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["notebookStats"][
-               "numberOfCodeCells"] == expected
+    assert nb_linting.count_code_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -62,8 +61,7 @@ def test_count_code_cells(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 1)
 ])
 def test_count_raw_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["notebookStats"][
-               "numberOfRawCells"] == expected
+    assert nb_linting.count_raw_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -71,8 +69,7 @@ def test_count_raw_cells(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", True)
 ])
 def test_has_linear_execution_order(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "linearExecutionOrder"] == expected
+    assert nb_linting.has_linear_execution_order(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -80,8 +77,7 @@ def test_has_linear_execution_order(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 0)
 ])
 def test_count_class_defs(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "numberOfClassDefinitions"] == expected
+    assert nb_linting.count_class_defs(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -89,8 +85,7 @@ def test_count_class_defs(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 1)
 ])
 def test_count_func_defs(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "numberOfFunctionDefinitions"] == expected
+    assert nb_linting.count_func_defs(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -98,8 +93,7 @@ def test_count_func_defs(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", True)
 ])
 def test_are_imports_in_first_cell(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "allImportsInFirstCell"] == expected
+    assert nb_linting.are_imports_in_first_cell(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -107,8 +101,7 @@ def test_are_imports_in_first_cell(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 8)
 ])
 def test_count_md_lines(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "numberOfMarkdownLines"] == expected
+    assert nb_linting.count_md_lines(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -116,8 +109,7 @@ def test_count_md_lines(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 1)
 ])
 def test_count_md_titles(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "numberOfMarkdownTitles"] == expected
+    assert nb_linting.count_md_titles(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -125,8 +117,7 @@ def test_count_md_titles(test_input, expected, notebooks):
     ("FullNotebookFullNotebookFullNotebook.ipynb", 0.375)
 ])
 def test_get_bottom_md_lines_ratio(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "bottomMarkdownLinesRatio"] == expected
+    assert nb_linting.get_bottom_md_lines_ratio(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -134,8 +125,7 @@ def test_get_bottom_md_lines_ratio(test_input, expected, notebooks):
     ("Untitled.ipynb", 2)
 ])
 def test_count_non_executed_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "nonExecutedCells"] == expected
+    assert nb_linting.count_non_executed_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -143,8 +133,7 @@ def test_count_non_executed_cells(test_input, expected, notebooks):
     ("Untitled.ipynb", 1)
 ])
 def test_count_empty_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "emptyCells"] == expected
+    assert nb_linting.count_empty_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -152,8 +141,7 @@ def test_count_empty_cells(test_input, expected, notebooks):
     ("Untitled.ipynb", 1)
 ])
 def test_count_bottom_non_executed_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "bottomNonExecutedCells"] == expected
+    assert nb_linting.count_bottom_non_executed_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -161,26 +149,23 @@ def test_count_bottom_non_executed_cells(test_input, expected, notebooks):
     ("Untitled.ipynb", 1)
 ])
 def test_count_bottom_empty_cells(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "bottomEmptyCells"] == expected
+    assert nb_linting.count_bottom_empty_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("FullNotebook2.ipynb", False),
-    ("Untitled.ipynb", True)
+    ("FullNotebook2.ipynb", True),
+    ("Untitled.ipynb", False)
 ])
-def test_is_untitled(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "isUntitled"] == expected
+def test_is_titled(test_input, expected, notebooks):
+    assert nb_linting.is_titled(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("FullNotebook2.ipynb", False),
+    ("acs,.-e+.ipynb", False),
     ("Untitled.ipynb", True)
 ])
 def test_is_filename_charset_restricted(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-        "isFilenameCharsetRestricted"]
+    assert nb_linting.is_filename_charset_restricted(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
@@ -188,24 +173,22 @@ def test_is_filename_charset_restricted(test_input, expected, notebooks):
     ("Untitled.ipynb", True)
 ])
 def test_is_filename_short(test_input, expected, notebooks):
-    assert notebooks[test_input].get_pynblint_results()["lintingResults"][
-               "isFilenameShort"] == expected
+    max_title_length = 20
+    assert nb_linting.is_filename_short(notebooks[test_input], max_title_length) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
     ("UntitledNoDuplicates", []),
-    ("DuplicatesNoUntitled", [Path("../fixtures", "DuplicatesNoUntitled", "Test.ipynb"),
-                              Path("../fixtures", "DuplicatesNoUntitled", "prova", "Test.ipynb")])
+    ("DuplicatesNoUntitled", [Path("../fixtures", "test_repo", "DuplicatesNoUntitled", "Test.ipynb"),
+                              Path("../fixtures", "test_repo", "DuplicatesNoUntitled", "prova", "Test.ipynb")])
 ])
 def test_get_duplicate_notebooks(test_input, expected, repos):
-    assert repos[test_input].get_repo_results()["lintingResults"][
-               "duplicateFilenames"] == expected
+    assert repo_linting.get_duplicate_notebooks(repos[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
     ("DuplicatesNoUntitled", []),
-    ("UntitledNoDuplicates", [Path("../fixtures", "UntitledNoDuplicates", "Untitled.ipynb")])
+    ("UntitledNoDuplicates", [Path("../fixtures", "test_repo", "UntitledNoDuplicates", "Untitled.ipynb")])
 ])
 def test_get_untitled_notebooks(test_input, expected, repos):
-    assert repos[test_input].get_repo_results()["lintingResults"][
-               "untitledNotebooks"] == expected
+    assert repo_linting.get_untitled_notebooks(repos[test_input]) == expected

@@ -1,7 +1,6 @@
 import ast
 import os
 import re
-from notebooktoall.transform import transform_notebook
 
 
 def count_func_defs(notebook):
@@ -434,23 +433,23 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
         return md_bottom_cells / (md_first_cells + md_bottom_cells)
 
 
-def is_untitled(notebook):
+def is_titled(notebook):
     """
     The function takes a notebook and checks whether it has a title or not
 
         Args:
             notebook(Notebook): python object representing the notebook
         Returns:
-            boolean: True if the name of the notebook is Untitled, False otherwise
+            boolean: False if the name of the notebook is Untitled, True otherwise
 
         A way you might use me is
 
-        untitled = is_untitled(notebook)
+        untitled = is_titled(notebook)
     """
     if os.path.basename(notebook.path) == "Untitled.ipynb":
-        return True
-    else:
         return False
+    else:
+        return True
 
 
 def is_filename_charset_restricted(notebook):
@@ -471,11 +470,13 @@ def is_filename_charset_restricted(notebook):
     else:
         return False
 
-def is_filename_short(notebook, filename_max_length = 25):
+
+def is_filename_short(notebook, filename_max_length):
     """
     The function takes a notebook and checks whether it has a short title
 
         Args:
+            filename_max_length: max length of the notebook filename
             notebook(Notebook): python object representing the notebook
         Returns:
             boolean: True if the name of the notebook is > than filename_max_length, False otherwise
@@ -484,7 +485,7 @@ def is_filename_short(notebook, filename_max_length = 25):
 
         short_filename = is_filename_short(notebook)
     """
-    if len(os.path.basename(notebook.path))>filename_max_length:
+    if len(os.path.basename(notebook.path)) > filename_max_length:
         return False
     else:
         return True
