@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 import git
-
+from pynblint import repo_linting
 from pynblint.notebook import Notebook
 
 
@@ -37,14 +37,26 @@ class Repository:
                     nb = Notebook(Path(root) / Path(f), repository_path=self.path)
                     self.notebooks.append(nb)
 
-    def get_pynblint_results(self):
-        """
-        Returns a list of dictionaries containing the linting results for all the notebooks found in the repository
-        """
+    def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
+        """This function takes the list of notebook objects from the current repository and returns a list of dictionaries containing the related
+        linting results. """
         data = []
         for notebook in self.notebooks:
-            data.append(notebook.get_pynblint_results())
+            data.append(notebook.get_pynblint_results(bottom_size, filename_max_length))
         return data
+
+    def get_repo_results(self):
+        """This function returns linting results at the repository level."""
+        duplicate_paths = repo_linting.get_duplicate_notebooks(self)
+        untitled_paths = repo_linting.get_untitled_notebooks(self)
+        return {
+            "repositoryName": os.path.basename(self.path),
+            "lintingResults":
+                {
+                    "duplicateFilenames": duplicate_paths,
+                    "untitledNotebooks": untitled_paths
+                }
+        }
 
 
 class LocalRepository(Repository):
