@@ -38,7 +38,7 @@ class Repository:
                     self.notebooks.append(nb)
 
     def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
-        """This function takes a list of notebook objects and returns a list of dictionaries containing the related
+        """This function takes the list of notebook objects from the current repository and returns a list of dictionaries containing the related
         linting results. """
         data = []
         for notebook in self.notebooks:
