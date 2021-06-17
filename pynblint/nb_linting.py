@@ -476,7 +476,7 @@ def is_filename_short(notebook, filename_max_length):
     The function takes a notebook and checks whether it has a short title
 
         Args:
-            filename_max_length: max length of the notebook filename
+            filename_max_length: threshold length under which the notebook filename is considered "short"
             notebook(Notebook): python object representing the notebook
         Returns:
             boolean: True if the name of the notebook is > than filename_max_length, False otherwise
