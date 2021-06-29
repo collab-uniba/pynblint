@@ -18,6 +18,7 @@ class Repository:
 
         # Repository info
         self.path = None
+        self.repository_name = None
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
@@ -47,10 +48,14 @@ class Repository:
 
     def get_repo_results(self):
         """This function returns linting results at the repository level."""
+        if self.repository_name is not None:
+            name = self.repository_name
+        else:
+            name = os.path.basename(self.path)
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
         untitled_paths = repo_linting.get_untitled_notebooks(self)
         return {
-            "repositoryName": os.path.basename(self.path),
+            "repositoryName": name,
             "lintingResults":
                 {
                     "duplicateFilenames": duplicate_paths,
@@ -64,10 +69,10 @@ class LocalRepository(Repository):
     This class stores data about a local code repository
     """
 
-    def __init__(self, source_path: Path):
+    def __init__(self, source_path: Path, repository_name: str = None):
         super().__init__()
         self.source_path = source_path
-
+        self.repository_name = repository_name
         # Handle .zip archives
         if self.source_path.suffix == '.zip':
 
