@@ -54,7 +54,7 @@ class Notebook:
                 "allImportsInFirstCell": nb_linting.are_imports_in_first_cell(self),
                 "numberOfMarkdownLines": nb_linting.count_md_lines(self),
                 "numberOfMarkdownTitles": nb_linting.count_md_titles(self),
-                "bottomMarkdownLinesRatio": nb_linting.get_bottom_md_lines_ratio(self),
+                "bottomMarkdownLinesRatio": nb_linting.get_bottom_md_lines_ratio(self, bottom_size),
                 "nonExecutedCells": nb_linting.count_non_executed_cells(self),
                 "emptyCells": nb_linting.count_empty_cells(self),
                 "bottomNonExecutedCells": nb_linting.count_bottom_non_executed_cells(self, bottom_size),
