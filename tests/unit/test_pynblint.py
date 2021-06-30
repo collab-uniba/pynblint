@@ -192,3 +192,11 @@ def test_get_duplicate_notebooks(test_input, expected, repos):
 ])
 def test_get_untitled_notebooks(test_input, expected, repos):
     assert repo_linting.get_untitled_notebooks(repos[test_input]) == expected
+
+
+@pytest.mark.parametrize("test_input,expected", [
+    ("DuplicatesNoUntitled", ["environment.yml","requirements.txt", "setup.py"]),
+    ("UntitledNoDuplicates", [])
+])
+def test_retrieve_dependencies_files(test_input, expected, repos):
+    assert repos[test_input].dependencies_files == expected

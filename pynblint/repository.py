@@ -19,6 +19,7 @@ class Repository:
         # Repository info
         self.path = None
         self.repository_name = None
+        self.dependencies_files = []
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
@@ -37,6 +38,17 @@ class Repository:
                 if f.endswith(".ipynb"):
                     nb = Notebook(Path(root) / Path(f), repository_path=self.path)
                     self.notebooks.append(nb)
+
+    def retrieve_dependencies_files(self):
+        dirs_ignore = [
+            '.ipynb_checkpoints'
+        ]
+        for root, dirs, files in os.walk(self.path):
+            # `dirs[:] = value` modifies dirs in-place
+            dirs[:] = [d for d in dirs if d not in dirs_ignore]
+            for f in files:
+                if f == "requirements.txt" or f == "setup.py" or f == "environment.yml":
+                    self.dependencies_files.append(f)
 
     def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
         """This function takes the list of notebook objects from the current repository and returns a list of dictionaries containing the related
@@ -58,6 +70,7 @@ class Repository:
             "repositoryName": name,
             "lintingResults":
                 {
+                    "dependenciesFiles": self.dependencies_files,
                     "duplicateFilenames": duplicate_paths,
                     "untitledNotebooks": untitled_paths
                 }
@@ -84,6 +97,7 @@ class LocalRepository(Repository):
                 zip_file.extractall(tmp_dir.name)
             self.path = Path(tmp_dir.name)
             self.retrieve_notebooks()
+            self.retrieve_dependencies_files()
 
             # Clean up the temp directory
             tmp_dir.cleanup()
@@ -92,6 +106,7 @@ class LocalRepository(Repository):
         elif self.source_path.is_dir():
             self.path = self.source_path
             self.retrieve_notebooks()
+            self.retrieve_dependencies_files()
 
         else:
             raise Exception  # TODO: raise a more meaningful exception
@@ -115,6 +130,7 @@ class GitHubRepository(Repository):
 
         # Analyze the repo
         self.retrieve_notebooks()
+        self.retrieve_dependencies_files()
 
         # Clean up the temp directory
         tmp_dir.cleanup()
