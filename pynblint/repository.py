@@ -43,11 +43,12 @@ class Repository:
         dirs_ignore = [
             '.ipynb_checkpoints'
         ]
+        env_file_list = ["requirements.txt", "setup.py", "environment.yml", "Pipfile.lock"]
         for root, dirs, files in os.walk(self.path):
             # `dirs[:] = value` modifies dirs in-place
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for f in files:
-                if (f == "requirements.txt" or f == "setup.py" or f == "environment.yml") and f not in self.dependencies_files:
+                if f in env_file_list and f not in self.dependencies_files:
                     self.dependencies_files.append(f)
 
     def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
