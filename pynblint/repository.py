@@ -66,13 +66,14 @@ class Repository:
             name = os.path.basename(self.path)
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
         untitled_paths = repo_linting.get_untitled_notebooks(self)
+        dependencies_files = repo_linting.are_dependencies_declared(self)
         return {
             "repositoryName": name,
             "lintingResults":
                 {
-                    "dependenciesFiles": self.dependencies_files,
                     "duplicateFilenames": duplicate_paths,
-                    "untitledNotebooks": untitled_paths
+                    "untitledNotebooks": untitled_paths,
+                    "dependenciesFiles": dependencies_files
                 }
         }
 
