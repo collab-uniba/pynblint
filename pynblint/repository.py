@@ -19,7 +19,7 @@ class Repository:
         # Repository info
         self.path = None
         self.repository_name = None
-
+        self.versioned = False
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
 
@@ -54,12 +54,14 @@ class Repository:
             name = os.path.basename(self.path)
         duplicate_paths = repo_linting.get_duplicate_notebooks(self)
         untitled_paths = repo_linting.get_untitled_notebooks(self)
+
         return {
             "repositoryName": name,
             "lintingResults":
                 {
                     "duplicateFilenames": duplicate_paths,
-                    "untitledNotebooks": untitled_paths
+                    "untitledNotebooks": untitled_paths,
+                    "isVersioned": self.versioned
                 }
         }
 
@@ -68,6 +70,20 @@ class LocalRepository(Repository):
     """
     This class stores data about a local code repository
     """
+
+    def is_versioned(self):
+        # Directories to ignore while traversing the tree
+        dirs_ignore = [
+            '.ipynb_checkpoints'
+        ]
+        versioned = False
+        for root, dirs, files in os.walk(self.path):
+            # `dirs[:] = value` modifies dirs in-place
+            dirs[:] = [d for d in dirs if d not in dirs_ignore]
+            for d in dirs:
+                if d == ".git":
+                    versioned = True
+        return versioned
 
     def __init__(self, source_path: Path, repository_name: str = None):
         super().__init__()
@@ -84,6 +100,7 @@ class LocalRepository(Repository):
                 zip_file.extractall(tmp_dir.name)
             self.path = Path(tmp_dir.name)
             self.retrieve_notebooks()
+            self.versioned = self.is_versioned()
 
             # Clean up the temp directory
             tmp_dir.cleanup()
@@ -92,6 +109,7 @@ class LocalRepository(Repository):
         elif self.source_path.is_dir():
             self.path = self.source_path
             self.retrieve_notebooks()
+            self.versioned = self.is_versioned()
 
         else:
             raise Exception  # TODO: raise a more meaningful exception
@@ -105,7 +123,7 @@ class GitHubRepository(Repository):
     def __init__(self, github_url: str):
         super().__init__()
         self.url = github_url
-
+        self.versioned = True
         # Create temp directory
         tmp_dir = tempfile.TemporaryDirectory()
 

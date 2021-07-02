@@ -192,3 +192,11 @@ def test_get_duplicate_notebooks(test_input, expected, repos):
 ])
 def test_get_untitled_notebooks(test_input, expected, repos):
     assert repo_linting.get_untitled_notebooks(repos[test_input]) == expected
+
+
+@pytest.mark.parametrize("test_input,expected", [
+    ("DuplicatesNoUntitled", True),
+    ("UntitledNoDuplicates", False)
+])
+def test_is_versioned(test_input, expected, repos):
+    assert repos[test_input].versioned == expected
