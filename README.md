@@ -32,7 +32,7 @@ Now just select this kernel you created when running the `Using pynblint.ipynb` 
 python setup.py install
 ```
 ## Generate the documentation
-In order to make a firt build of the docs, let's say that you want to build a HTML documentation, type:
+In order to build the docs for the first time - e.g., to generate a documentation in the HTML format - type:
 ```bash 
 sphinx-build -b html <source_directory> <builddir>
 ```
