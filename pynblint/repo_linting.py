@@ -53,7 +53,7 @@ def get_untitled_notebooks(repo):
 
 def get_copied_notebooks(repo):
     """
-    The function takes a repository and checks whether there are any copied notebook
+    The function takes a repository and checks whether there is any copied notebook
     Args:
         repo(Repository): python object representing the repository
 
