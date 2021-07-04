@@ -40,7 +40,7 @@ and then:
 ```bash 
 make html
 ```
-This will build HTML docs in the build directory you chose. Execute make without an argument to see which targets are available.<br>
+This will build HTML docs in the build directory you chose. Execute `make` without an argument to see which targets are available.<br>
 Check Sphinx documentation for more info about documentation generation: https://www.sphinx-doc.org/en/master/usage/quickstart.html 
 
 ## Reference paper
