@@ -52,7 +52,7 @@ def get_untitled_notebooks(repo):
 
 
 def are_dependencies_declared(repo):
-    if repo.dependencies_files is not None:
+    if repo.dependencies_files:
         return True
     else:
         return False

@@ -196,7 +196,7 @@ def test_get_untitled_notebooks(test_input, expected, repos):
 
 @pytest.mark.parametrize("test_input,expected", [
     ("DuplicatesNoUntitled", True),
-    ("UntitledNoDuplicates", True)
+    ("UntitledNoDuplicates", False)
 ])
 def test_are_dependencies_declared(test_input, expected, repos):
     assert repo_linting.are_dependencies_declared(repos[test_input]) == expected
