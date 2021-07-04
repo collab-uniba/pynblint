@@ -9,7 +9,7 @@ As shown in `Using pynblint.ipynb`, the functions from our library can be easily
 It is recommanded to have an installation of a virtual environment tool on your device, such as Conda, Pipenv, VirtualEnv.
 ## Installation
 Use the terminal or a virtual environment prompt to perform the following steps:
-1. Install the dependencies using the `requirements.txt" file:
+1. Install the dependencies using the `requirements.txt` file:
 - Windows: 
 ```bash
 py -m pip install -r requirements.txt
