@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pynblint"
+version = "0.1.0"
+description = "Linter for Python Jupyter notebooks"
+authors = ["Luigi Quaranta"]
+license = "MIT License"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+nbformat = "^5.1.3"
+nbconvert = "^6.4.0"
+GitPython = "^3.1.26"
+
+[tool.poetry.dev-dependencies]
+jupyterlab = "^3.2.8"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
