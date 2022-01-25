@@ -13,7 +13,26 @@ GitPython = "^3.1.26"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.2.8"
+black = "^21.12b0"
+pytest = "^6.2.5"
+bandit = "^1.7.1"
+mypy = "^0.931"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
+pylint = "^2.12.2"
+pre-commit = "^2.17.0"
+pydocstyle = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+
+[tool.flake8]
+max-line-length = 88
+
+[tool.bandit]
+exclude_dirs = ["tests"]

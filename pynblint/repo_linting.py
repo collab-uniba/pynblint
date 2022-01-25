@@ -1,10 +1,14 @@
+"""Linting functions for repositories containing notebooks"""
+
 import os
+
 from pynblint import nb_linting
 
 
 def get_duplicate_notebooks(repo):
     """
-    The function takes a repository and checks whether two or more notebooks with the same filename are present.
+    The function takes a repository and checks whether two or more notebooks
+    with the same filename are present.
 
         Args:
             repo(Repository): python object representing the repository

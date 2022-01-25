@@ -5,13 +5,14 @@ from pathlib import Path
 from typing import List
 
 import git
+
 from pynblint import repo_linting
 from pynblint.notebook import Notebook
 
 
 class Repository:
     """
-    This class stores data about a code repository
+    This class stores data about a code repository.
     """
 
     def __init__(self):
@@ -26,9 +27,7 @@ class Repository:
     def retrieve_notebooks(self):
 
         # Directories to ignore while traversing the tree
-        dirs_ignore = [
-            '.ipynb_checkpoints'
-        ]
+        dirs_ignore = [".ipynb_checkpoints"]
 
         for root, dirs, files in os.walk(self.path):
             # `dirs[:] = value` modifies dirs in-place
@@ -39,8 +38,8 @@ class Repository:
                     self.notebooks.append(nb)
 
     def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
-        """This function takes the list of notebook objects from the current repository and returns a list of dictionaries containing the related
-        linting results. """
+        """This function takes the list of notebook objects from the current repository
+        and returns a list of dictionaries containing the related linting results."""
         data = []
         for notebook in self.notebooks:
             data.append(notebook.get_pynblint_results(bottom_size, filename_max_length))
@@ -57,12 +56,11 @@ class Repository:
 
         return {
             "repositoryName": name,
-            "lintingResults":
-                {
-                    "duplicateFilenames": duplicate_paths,
-                    "untitledNotebooks": untitled_paths,
-                    "isVersioned": self.versioned
-                }
+            "lintingResults": {
+                "duplicateFilenames": duplicate_paths,
+                "untitledNotebooks": untitled_paths,
+                "isVersioned": self.versioned,
+            },
         }
 
 
@@ -73,11 +71,9 @@ class LocalRepository(Repository):
 
     def is_versioned(self):
         # Directories to ignore while traversing the tree
-        dirs_ignore = [
-            '.ipynb_checkpoints'
-        ]
+        dirs_ignore = [".ipynb_checkpoints"]
         versioned = False
-        for root, dirs, files in os.walk(self.path):
+        for _, dirs, _ in os.walk(self.path):
             # `dirs[:] = value` modifies dirs in-place
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for d in dirs:
@@ -90,13 +86,13 @@ class LocalRepository(Repository):
         self.source_path = source_path
         self.repository_name = repository_name
         # Handle .zip archives
-        if self.source_path.suffix == '.zip':
+        if self.source_path.suffix == ".zip":
 
             # Create temp directory
             tmp_dir = tempfile.TemporaryDirectory()
 
             # Extract the zip file into the temp folder
-            with zipfile.ZipFile(self.source_path, 'r') as zip_file:
+            with zipfile.ZipFile(self.source_path, "r") as zip_file:
                 zip_file.extractall(tmp_dir.name)
             self.path = Path(tmp_dir.name)
             self.retrieve_notebooks()
