@@ -1,3 +1,5 @@
+"""Linting functions for repositories containing notebooks"""
+
 import os
 
 from pynblint import nb_linting

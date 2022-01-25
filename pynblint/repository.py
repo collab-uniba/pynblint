@@ -73,7 +73,7 @@ class LocalRepository(Repository):
         # Directories to ignore while traversing the tree
         dirs_ignore = [".ipynb_checkpoints"]
         versioned = False
-        for root, dirs, files in os.walk(self.path):
+        for _, dirs, _ in os.walk(self.path):
             # `dirs[:] = value` modifies dirs in-place
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for d in dirs:

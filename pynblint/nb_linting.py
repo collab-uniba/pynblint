@@ -1,3 +1,5 @@
+"""Linting functions for notebooks"""
+
 import ast
 import os
 import re
