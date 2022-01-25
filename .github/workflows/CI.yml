@@ -19,23 +19,24 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
+
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install Poetry
       run: curl -sSL https://install.python-poetry.org | python3 -
-    - name: Load cached $HOME/.local
-      uses: actions/cache@v2.1.6
-      with:
-        path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/CI.yml') }}
-    - name: Install dependencies
+
+    - name: Install Pynblint dependencies
       run: poetry install
-    - name: Run pre-commit utilities
+
+    - name: Run pre-commit checks
       run: |
         poetry run pre-commit run --all-files
+
     - name: Test with pytest
       run: |
         poetry run python -m pytest
