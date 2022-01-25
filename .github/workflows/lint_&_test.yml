@@ -26,6 +26,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Poetry
       run: curl -sSL https://install.python-poetry.org | python3 -
+    - name: Load cached $HOME/.local
+      uses: actions/cache@v2.1.6
+      with:
+        path: ~/.local
+        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/lint_&_test.yml') }}
     - name: Install dependencies
       run: poetry install
     - name: Test with pytest
