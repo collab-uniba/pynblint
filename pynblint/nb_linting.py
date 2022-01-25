@@ -1,4 +1,4 @@
-"""Linting functions for notebooks"""
+"""Linting functions for notebooks."""
 
 import ast
 import os
@@ -7,7 +7,7 @@ import re
 
 def count_func_defs(notebook):
     """
-    Extracts the number of function definitions from a notebook
+    Count the number of function definitions in a notebook.
 
     Args:
         notebook(Notebook): python object representing the notebook
@@ -26,7 +26,7 @@ def count_func_defs(notebook):
 
 def count_non_executed_cells(notebook):
     """
-    Number of non-executed cells from a notebook
+    Count the number of non-executed cells in a notebook.
 
     Args:
        notebook(Notebook): python object representing the notebook
@@ -44,7 +44,7 @@ def count_non_executed_cells(notebook):
 
 def count_empty_cells(notebook):
     """
-    Number of empty cells from a notebook
+    Count the number of empty cells in a notebook.
 
     Args:
        notebook(Notebook): python object representing the notebook
@@ -62,7 +62,7 @@ def count_empty_cells(notebook):
 
 def count_md_lines(notebook):
     """
-    Number of markdown rows from a notebook
+    Count the number of markdown rows in a notebook.
 
     Args:
        notebook(Notebook): python object representing the notebook
@@ -84,7 +84,7 @@ def count_md_lines(notebook):
 
 def count_md_titles(notebook):
     """
-    Number of markdown title rows from a notebook
+    Count the number of markdown title rows in a notebook.
 
     Args:
        notebook(Notebook): python object representing the notebook
@@ -107,7 +107,7 @@ def count_md_titles(notebook):
 
 def are_imports_in_first_cell(notebook):
     """
-    Verifies if there are no import statements in cells that are not the first one
+    Verifies if there are no import statements in cells that are not the first one.
 
     Args:
         notebook(Notebook): python object representing the notebook
@@ -159,8 +159,10 @@ def are_imports_in_first_cell(notebook):
 
 def has_linear_execution_order(notebook):
     """
+    Checks that notebook cells were executed in sequential order.
+
     The function takes a notebook and returns True if the cells are executed in
-    sequential order,starting from 1, and False otherwise
+    sequential order,starting from 1, and False otherwise.
 
         Verifies if the notebook has been run in sequential order, starting from 1
 
@@ -189,8 +191,7 @@ def has_linear_execution_order(notebook):
 
 def count_class_defs(notebook):
     """
-    The function takes a notebook returns the number of class definitions
-        Extract the number of class definitions from a python code
+    Returns the number of class definitions found in the notebook cells.
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -209,7 +210,7 @@ def count_class_defs(notebook):
 
 
 def _non_executed_cells_count(cell_list):
-    """The function takes a list of cells and returns the number of non-executed cells
+    """The function takes a list of cells and returns the number of non-executed cells.
 
     Args:
         cell_list(list): list of dictionary objects representing the notebook cells
@@ -231,7 +232,7 @@ def _non_executed_cells_count(cell_list):
 
 
 def _empty_cells_count(cell_list):
-    """The function takes a list of cells and returns the number of empty cells
+    """The function takes a list of cells and returns the number of empty cells.
 
     Args:
         cell_list(list): list of dictionary objects representing the notebook cells
@@ -252,7 +253,7 @@ def _empty_cells_count(cell_list):
 
 def count_bottom_non_executed_cells(notebook, bottom_size=4):
     """
-    Number of non-executed cells between the last bottom-size-cells of the notebook
+    Number of non-executed cells between the last bottom-size-cells of the notebook.
 
     Precondition: In order for the bottom of the notebook to actually represent
     the last section of it, it should not be more then the 33.3% of the whole notebook.
@@ -283,7 +284,7 @@ def count_bottom_non_executed_cells(notebook, bottom_size=4):
 
 def count_bottom_empty_cells(notebook, bottom_size=4):
     """
-    Number of empty cells between the last bottom-size-cells of the notebook
+    Number of empty cells between the last bottom-size-cells of the notebook.
 
     Precondition: In order for the bottom of the notebook to actually represent
     the last section of it, it should not be more then the 33.3% of the whole notebook.
@@ -314,7 +315,7 @@ def count_bottom_empty_cells(notebook, bottom_size=4):
 
 def _extract_bottom_cells_of_code(nb_dict, bottom_size):
     """
-    It returns a list of code cells between the last bottom_size cells of the notebook
+    It returns a list of code cells between the last bottom_size cells of the notebook.
 
     Args:
         nb_dict(dict): python dictionary object representing the jupyter notebook
@@ -341,7 +342,7 @@ def _extract_bottom_cells_of_code(nb_dict, bottom_size):
 
 def count_cells(notebook):
     """
-    The function takes a notebook and returns the number of cells
+    The function takes a notebook and returns the number of cells.
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -359,7 +360,7 @@ def count_cells(notebook):
 
 def count_md_cells(notebook):
     """
-    The function takes a notebook and returns the number of markdown cells
+    The function takes a notebook and returns the number of markdown cells.
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -381,7 +382,7 @@ def count_md_cells(notebook):
 
 def count_code_cells(notebook):
     """
-    The function takes a notebook and returns the number of code cells
+    The function takes a notebook and returns the number of code cells.
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -402,7 +403,7 @@ def count_code_cells(notebook):
 
 def count_raw_cells(notebook):
     """
-    The function takes a notebook and returns the number of raw cells
+    The function takes a notebook and returns the number of raw cells.
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -423,8 +424,7 @@ def count_raw_cells(notebook):
 
 def get_bottom_md_lines_ratio(notebook, bottom_size=4):
     """
-    Percentage of markdown rows in the last cells of the notebook out of the total
-    number of md rows
+    Percentage of MD rows in the last cells of a notebook over the total MD rows.
 
     Precondition: In order for the bottom of the notebook to actually represent the last
     section of it, it should not be more then the 33.3% of the whole notebook.
@@ -469,8 +469,9 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
 
 def is_titled(notebook):
     """
-    The function takes a notebook and checks whether it has been titled
-    or it still has the default title: "Untitled.ipynb"
+    Checks whether a notebook was titled or not.
+
+    Returns `False` if a notebook has still the default title: "Untitled.ipynb"
 
         Args:
             notebook(Notebook): python object representing the notebook
@@ -510,7 +511,7 @@ def is_filename_charset_restricted(notebook):
 
 def is_filename_short(notebook, filename_max_length):
     """
-    The function takes a notebook and checks whether it has a short title
+    The function takes a notebook and checks whether it has a short title.
 
         Args:
             filename_max_length: threshold length under which the notebook filename

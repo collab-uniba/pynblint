@@ -12,7 +12,7 @@ from pynblint.notebook import Notebook
 
 class Repository:
     """
-    This class stores data about a code repository
+    This class stores data about a code repository.
     """
 
     def __init__(self):
