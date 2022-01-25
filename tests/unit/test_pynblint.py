@@ -10,10 +10,10 @@ if __name__ == '__main__':
 
 @pytest.fixture(scope="module")
 def notebooks():
-    nb1 = Notebook(Path("../fixtures", "FullNotebook2.ipynb"))
-    nb2 = Notebook(Path("../fixtures", "FullNotebookFullNotebookFullNotebook.ipynb"))
-    nb3 = Notebook(Path("../fixtures", "acs,.-e+.ipynb"))
-    nb4 = Notebook(Path("../fixtures", "Untitled.ipynb"))
+    nb1 = Notebook(Path("tests/fixtures", "FullNotebook2.ipynb"))
+    nb2 = Notebook(Path("tests/fixtures", "FullNotebookFullNotebookFullNotebook.ipynb"))
+    nb3 = Notebook(Path("tests/fixtures", "acs,.-e+.ipynb"))
+    nb4 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
@@ -24,8 +24,8 @@ def notebooks():
 
 @pytest.fixture(scope="module")
 def repos():
-    folder1 = LocalRepository(Path("../fixtures", "test_repo", "UntitledNoDuplicates"))
-    folder2 = LocalRepository(Path("../fixtures", "test_repo", "DuplicatesNoUntitled"))
+    folder1 = LocalRepository(Path("tests/fixtures", "test_repo", "UntitledNoDuplicates"))
+    folder2 = LocalRepository(Path("tests/fixtures", "test_repo", "DuplicatesNoUntitled"))
     return {
         "UntitledNoDuplicates": folder1,
         "DuplicatesNoUntitled": folder2
@@ -179,8 +179,8 @@ def test_is_filename_short(test_input, expected, notebooks):
 
 @pytest.mark.parametrize("test_input,expected", [
     ("UntitledNoDuplicates", []),
-    ("DuplicatesNoUntitled", [Path("../fixtures", "test_repo", "DuplicatesNoUntitled", "Test.ipynb"),
-                              Path("../fixtures", "test_repo", "DuplicatesNoUntitled", "prova", "Test.ipynb")])
+    ("DuplicatesNoUntitled", [Path("tests/fixtures", "test_repo", "DuplicatesNoUntitled", "Test.ipynb"),
+                              Path("tests/fixtures", "test_repo", "DuplicatesNoUntitled", "prova", "Test.ipynb")])
 ])
 def test_get_duplicate_notebooks(test_input, expected, repos):
     assert repo_linting.get_duplicate_notebooks(repos[test_input]) == expected
@@ -188,14 +188,13 @@ def test_get_duplicate_notebooks(test_input, expected, repos):
 
 @pytest.mark.parametrize("test_input,expected", [
     ("DuplicatesNoUntitled", []),
-    ("UntitledNoDuplicates", [Path("../fixtures", "test_repo", "UntitledNoDuplicates", "Untitled.ipynb")])
+    ("UntitledNoDuplicates", [Path("tests/fixtures", "test_repo", "UntitledNoDuplicates", "Untitled.ipynb")])
 ])
 def test_get_untitled_notebooks(test_input, expected, repos):
     assert repo_linting.get_untitled_notebooks(repos[test_input]) == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("DuplicatesNoUntitled", True),
     ("UntitledNoDuplicates", False)
 ])
 def test_is_versioned(test_input, expected, repos):
