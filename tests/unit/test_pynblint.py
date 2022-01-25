@@ -1,8 +1,10 @@
+from pathlib import Path
+
+import pytest
+
+from pynblint import nb_linting, repo_linting
 from pynblint.notebook import Notebook
 from pynblint.repository import LocalRepository
-from pynblint import nb_linting, repo_linting
-from pathlib import Path
-import pytest
 
 if __name__ == "__main__":
     pytest.main()

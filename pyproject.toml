@@ -32,3 +32,6 @@ skip_gitignore = true
 
 [tool.flake8]
 max-line-length = 88
+
+[tool.bandit]
+exclude_dirs = ["tests"]

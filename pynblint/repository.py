@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 
 import git
+
 from pynblint import repo_linting
 from pynblint.notebook import Notebook
 
@@ -37,7 +38,7 @@ class Repository:
                     self.notebooks.append(nb)
 
     def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
-        """This function takes the list of notebook objects from the current repository 
+        """This function takes the list of notebook objects from the current repository
         and returns a list of dictionaries containing the related linting results."""
         data = []
         for notebook in self.notebooks:
@@ -131,6 +132,3 @@ class GitHubRepository(Repository):
 
         # Clean up the temp directory
         tmp_dir.cleanup()
-
-
-

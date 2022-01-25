@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Dict
 
 import nbformat
 from nbconvert import PythonExporter
@@ -44,7 +45,7 @@ class Notebook:
         else:
             nb_name = str(self.path)
 
-        results = {
+        results: Dict = {
             "notebookName": nb_name,
             "notebookStats": {
                 "numberOfCells": nb_linting.count_cells(self),
@@ -71,7 +72,7 @@ class Notebook:
                     self, bottom_size
                 ),
                 "isTitled": nb_linting.is_titled(self),
-                "isFilenameCharsetRestricted": nb_linting.is_filename_charset_restricted(
+                "isFilenameCharsetRestr": nb_linting.is_filename_charset_restricted(
                     self
                 ),
             },
