@@ -33,6 +33,9 @@ jobs:
         key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/CI.yml') }}
     - name: Install dependencies
       run: poetry install
+    - name: Run pre-commit utilities
+      run: |
+        poetry run pre-commit run --all-files
     - name: Test with pytest
       run: |
         poetry run python -m pytest
