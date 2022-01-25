@@ -20,8 +20,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -32,4 +30,4 @@ jobs:
       run: poetry install
     - name: Test with pytest
       run: |
-        poetry run black . --check
+        poetry run python -m pytest
