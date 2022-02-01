@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Linter for Python Jupyter notebooks"
 authors = ["Luigi Quaranta"]
 license = "MIT License"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.7"
