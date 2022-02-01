@@ -14,9 +14,10 @@ def count_func_defs(notebook):
     Returns:
         f_num: integer representing the number of function definitions in the code
 
-    A way you might use me is
+    A way you might use me is::
 
-    function_defs_count = count_func_defs(nb)
+       function_defs_count = count_func_defs(nb)
+
     """
     code = notebook.script
     tree = ast.parse(code)
@@ -114,9 +115,9 @@ def are_imports_in_first_cell(notebook):
     Returns:
         True if all the import are in the first cell of code, False otherwise
 
-    A way you might use me is
+    A way you might use me is::
 
-    all_imports_in_first_cell = are_imports_in_first_cell(nb)
+        all_imports_in_first_cell = are_imports_in_first_cell(nb)
     """
 
     code = notebook.script
@@ -491,7 +492,7 @@ def is_titled(notebook):
 def is_filename_charset_restricted(notebook):
     """
     The function takes a notebook and checks whether it has a title
-    with characters comprised in the [A-Za-z0-9_.-] charset
+    with characters comprised in the ``[A-Za-z0-9_.-]`` charset
 
         Args:
             notebook(Notebook): python object representing the notebook
