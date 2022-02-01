@@ -21,12 +21,3 @@ Pynblint is a linter for Python Jupyter notebooks.
 
    API_reference/repository
    API_reference/notebook
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
