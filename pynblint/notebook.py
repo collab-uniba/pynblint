@@ -1,14 +1,24 @@
 import json
+from enum import Enum, auto
 from pathlib import Path
 from typing import Dict
 
 import nbformat
+import rich
 from nbconvert import PythonExporter
+from rich.abc import RichRenderable
+from rich.columns import Columns
+from rich.console import Console, ConsoleOptions, RenderResult
+from rich.padding import Padding
+from rich.panel import Panel
+from rich.syntax import Syntax
 
 from pynblint import nb_linting
 
+from .rich_extensions import NotebookMarkdown
 
-class Notebook:
+
+class Notebook(RichRenderable):
     """
     This class stores the representations of a notebook
     on which pynblint functions are called
@@ -77,8 +87,67 @@ class Notebook:
                 ),
             },
         }
-        if filename_max_length is not None:
-            results["lintingResults"]["isFilenameShort"] = nb_linting.is_filename_short(
-                self, filename_max_length
-            )
+        # if filename_max_length is not None:
+        #     results["lintingResults"]["isFilenameShort"] =
+        #                                                  nb_linting.is_filename_short(
+        #         self, filename_max_length
+        #     )
         return results
+
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+        return [Cell(cell) for cell in self.nb_dict["cells"]]
+
+
+class CellType(Enum):
+    MARKDOWN = auto()
+    CODE = auto()
+    RAW = auto()
+    OTHER = auto()
+
+
+class Cell(RichRenderable):
+    def __init__(self, cell_dict: Dict) -> None:
+        """Pynblint's representation of a notebook cell."""
+
+        self._cell_dict = cell_dict
+
+        # Cell type
+        if self._cell_dict["cell_type"] == "markdown":
+            self.cell_type = CellType.MARKDOWN
+        elif self._cell_dict["cell_type"] == "code":
+            self.cell_type = CellType.CODE
+        elif self._cell_dict["cell_type"] == "raw":
+            self.cell_type = CellType.RAW
+        else:
+            self.cell_type = CellType.OTHER
+
+        # Cell source
+        self.cell_source: str = "".join(self._cell_dict["source"])
+
+        # Execution count
+        if self.cell_type == CellType.CODE:
+            self.cell_exec_count: int = self._cell_dict["execution_count"]
+
+    def __rich__(self) -> Columns:
+
+        if self.cell_type == CellType.CODE:
+            rendered_cell = Columns(
+                [
+                    f"\nIn [{self.cell_exec_count}]:",
+                    Panel(
+                        Syntax(self.cell_source, "python"),
+                        width=int(rich.get_console().size[0] * 0.90),
+                    ),
+                ]
+            )
+        else:
+            rendered_cell = Columns(
+                [
+                    "        ",
+                    Padding(NotebookMarkdown(self.cell_source), (1, 0, 1, 8)),
+                ]
+            )
+
+        return rendered_cell
