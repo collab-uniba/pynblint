@@ -8,6 +8,7 @@ from rich.console import Console
 
 from .config import CellRenderingMode, settings
 from .notebook import Notebook
+from .repository import LocalRepository
 
 app = typer.Typer()
 console = Console()
@@ -35,11 +36,24 @@ def main(
     if display_cell_index:
         settings.display_cell_index = True
 
-    # Notebook linting
-    with open(path) as notebook_file:
-        nb = Notebook(Path(notebook_file.name), notebook_name=path.name)
-        console.print(nb.get_pynblint_results())
-        console.print(nb)
+    # Main procedure
+    console.rule("PYNBLINT", characters="*")
+
+    if path.is_dir():
+
+        # Directory linting
+        console.print("\n\nREPOSITORY LINTING\n")
+        repo = LocalRepository(path)
+        console.print(repo.get_repo_results())
+
+    else:
+
+        # Notebook linting
+        console.print("\nNOTEBOOK LINTING\n")
+        with open(path) as notebook_file:
+            nb = Notebook(Path(notebook_file.name), notebook_name=path.name)
+            console.print(nb.get_pynblint_results())
+            console.print(nb)
 
 
 if __name__ == "__main__":

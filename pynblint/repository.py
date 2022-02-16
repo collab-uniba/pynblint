@@ -6,8 +6,8 @@ from typing import List
 
 import git
 
-from pynblint import repo_linting
-from pynblint.notebook import Notebook
+from . import repo_linting
+from .notebook import Notebook
 
 
 class Repository:
