@@ -1,5 +1,5 @@
 import json
-from enum import Enum, auto
+from enum import Enum
 from pathlib import Path
 from typing import Dict
 
@@ -15,6 +15,7 @@ from rich.syntax import Syntax
 
 from pynblint import nb_linting
 
+from .config import CellRenderingMode, settings
 from .rich_extensions import NotebookMarkdown
 
 
@@ -97,20 +98,21 @@ class Notebook(RichRenderable):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        return [Cell(cell) for cell in self.nb_dict["cells"]]
+        return [Cell(index, cell) for index, cell in enumerate(self.nb_dict["cells"])]
 
 
-class CellType(Enum):
-    MARKDOWN = auto()
-    CODE = auto()
-    RAW = auto()
-    OTHER = auto()
+class CellType(str, Enum):
+    MARKDOWN = "markdown"
+    CODE = "code"
+    RAW = "raw"
+    OTHER = "other"
 
 
 class Cell(RichRenderable):
-    def __init__(self, cell_dict: Dict) -> None:
+    def __init__(self, cell_index: int, cell_dict: Dict) -> None:
         """Pynblint's representation of a notebook cell."""
 
+        self._cell_index = cell_index
         self._cell_dict = cell_dict
 
         # Cell type
@@ -124,7 +126,18 @@ class Cell(RichRenderable):
             self.cell_type = CellType.OTHER
 
         # Cell source
-        self.cell_source: str = "".join(self._cell_dict["source"])
+        self._cell_source = self._cell_dict["source"]
+        self._source_to_print: str = ""
+
+        if settings.cell_rendering_mode == CellRenderingMode.COMPACT:
+            if len(self._cell_source) > 2:
+                self._source_to_print = "\n".join(
+                    [self._cell_source[0], "[...]\n", self._cell_source[-1]]
+                )
+            else:
+                self._source_to_print = "".join(self._cell_source)
+        else:
+            self._source_to_print = "".join(self._cell_source)
 
         # Execution count
         if self.cell_type == CellType.CODE:
@@ -133,12 +146,17 @@ class Cell(RichRenderable):
     def __rich__(self) -> Columns:
 
         if self.cell_type == CellType.CODE:
+            if settings.display_cell_index:
+                panel_title = f"Index: {self._cell_index}"
+            else:
+                panel_title = None
             rendered_cell = Columns(
                 [
                     f"\nIn [{self.cell_exec_count}]:",
                     Panel(
-                        Syntax(self.cell_source, "python"),
+                        Syntax(self._source_to_print, "python"),
                         width=int(rich.get_console().size[0] * 0.90),
+                        title=panel_title,
                     ),
                 ]
             )
@@ -146,7 +164,7 @@ class Cell(RichRenderable):
             rendered_cell = Columns(
                 [
                     "        ",
-                    Padding(NotebookMarkdown(self.cell_source), (1, 0, 1, 8)),
+                    Padding(NotebookMarkdown(self._source_to_print), (1, 0, 1, 8)),
                 ]
             )
 

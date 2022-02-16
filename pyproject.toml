@@ -16,6 +16,7 @@ nbconvert = "^6.4.0"
 GitPython = "^3.1.26"
 rich = "^11.1.0"
 typer = "^0.4.0"
+pydantic = {extras = ["dotenv"], version = "^1.9.0"}
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.2.8"

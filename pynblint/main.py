@@ -1,20 +1,45 @@
 """ Entry point of pynblint. Used when running pynblint from the command line. """
 
 from pathlib import Path
+from typing import Optional
 
 import typer
-from rich import print
+from rich.console import Console
 
+from .config import CellRenderingMode, settings
 from .notebook import Notebook
 
 app = typer.Typer()
+console = Console()
 
 
 @app.command()
-def main(path: Path = typer.Argument(..., exists=True)):
+def main(
+    path: Path = typer.Argument(..., exists=True),
+    render_full_cells: Optional[bool] = typer.Option(
+        None,
+        help="Whether to render full cells or just the first & last line of each cell.",
+    ),
+    display_cell_index: bool = typer.Option(
+        None,
+        help="Whether to display cell index \
+            (i.e., the zero-based position of the cell within the notebook) \
+            above rendered cells",
+    ),
+):
+
+    # Update settings
+    if render_full_cells:
+        settings.cell_rendering_mode = CellRenderingMode.FULL
+
+    if display_cell_index:
+        settings.display_cell_index = True
+
+    # Notebook linting
     with open(path) as notebook_file:
         nb = Notebook(Path(notebook_file.name), notebook_name=path.name)
-        print(nb.get_pynblint_results())
+        console.print(nb.get_pynblint_results())
+        console.print(nb)
 
 
 if __name__ == "__main__":
