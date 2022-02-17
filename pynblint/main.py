@@ -1,14 +1,15 @@
 """ Entry point of pynblint. Used when running pynblint from the command line. """
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
 
 from .config import CellRenderingMode, settings
+from .nb_linting import NotebookLinter
 from .notebook import Notebook
-from .repository import LocalRepository
+from .repo_linting import RepoLinter
+from .repository import GitHubRepository, LocalRepository, Repository
 
 app = typer.Typer()
 console = Console()
@@ -16,8 +17,11 @@ console = Console()
 
 @app.command()
 def main(
-    path: Path = typer.Argument(..., exists=True),
-    render_full_cells: Optional[bool] = typer.Option(
+    source: str = typer.Argument(..., exists=True),
+    from_github: bool = typer.Option(
+        None, help="Whether to interpret the source as the URL of a GitHub repository."
+    ),
+    render_full_cells: bool = typer.Option(
         None,
         help="Whether to render full cells or just the first & last line of each cell.",
     ),
@@ -25,7 +29,7 @@ def main(
         None,
         help="Whether to display cell index \
             (i.e., the zero-based position of the cell within the notebook) \
-            above rendered cells",
+            above rendered cells.",
     ),
 ):
 
@@ -38,22 +42,36 @@ def main(
 
     # Main procedure
     console.rule("PYNBLINT", characters="*")
+    repo: Repository
 
-    if path.is_dir():
-
-        # Directory linting
-        console.print("\n\nREPOSITORY LINTING\n")
-        repo = LocalRepository(path)
-        console.print(repo.get_repo_results())
+    if from_github:
+        # Analyze GitHub repository
+        repo = GitHubRepository(source)
+        repo_linter = RepoLinter(repo)
+        console.print(repo_linter.get_linting_results())
 
     else:
+        path: Path = Path(source)
 
-        # Notebook linting
-        console.print("\nNOTEBOOK LINTING\n")
-        with open(path) as notebook_file:
-            nb = Notebook(Path(notebook_file.name), notebook_name=path.name)
-            console.print(nb.get_pynblint_results())
-            console.print(nb)
+        if path.is_dir():
+            # Analyze local uncompressed directory
+            repo = LocalRepository(path)
+            repo_linter = RepoLinter(repo)
+            console.print(repo_linter.get_linting_results())
+
+        elif path.suffix == ".ipynb":
+            # Analyze standalone notebook
+            with open(path) as notebook_file:
+                nb = Notebook(Path(notebook_file.name))
+                nb_linter = NotebookLinter(nb)
+                console.print(nb_linter.get_linting_results())
+                console.print(nb)
+
+        else:
+            # Analyze local compressed directory
+            repo = LocalRepository(path)
+            repo_linter = RepoLinter(repo)
+            console.print(repo_linter.get_linting_results())
 
 
 if __name__ == "__main__":

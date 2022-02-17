@@ -1,11 +1,65 @@
 """Linting functions for notebooks."""
 
 import ast
-import os
 import re
+from typing import Dict, List, Optional
+
+from nbformat.notebooknode import NotebookNode
+from pydantic import BaseModel
+
+from .notebook import Notebook
 
 
-def count_func_defs(notebook):
+class NotebookLinterOptions(BaseModel):
+    bottom_size: int = 4
+    filename_max_length: Optional[int] = None
+
+
+class NotebookLinter:
+    def __init__(self, notebook: Notebook) -> None:
+        self.options: NotebookLinterOptions = NotebookLinterOptions()
+
+        self.results: Dict = {
+            "notebookName": notebook.path.name,
+            "notebookStats": {
+                "numberOfCells": count_cells(notebook),
+                "numberOfMDCells": count_md_cells(notebook),
+                "numberOfCodeCells": count_code_cells(notebook),
+                "numberOfRawCells": count_raw_cells(notebook),
+            },
+            "lintingResults": {
+                "linearExecutionOrder": has_linear_execution_order(notebook),
+                "numberOfClassDefinitions": count_class_defs(notebook),
+                "numberOfFunctionDefinitions": count_func_defs(notebook),
+                "allImportsInFirstCell": are_imports_in_first_cell(notebook),
+                "numberOfMarkdownLines": count_md_lines(notebook),
+                "numberOfMarkdownTitles": count_md_titles(notebook),
+                "bottomMarkdownLinesRatio": get_bottom_md_lines_ratio(
+                    notebook, self.options.bottom_size
+                ),
+                "nonExecutedCells": count_non_executed_cells(notebook),
+                "emptyCells": count_empty_cells(notebook),
+                "bottomNonExecutedCells": count_bottom_non_executed_cells(
+                    notebook, self.options.bottom_size
+                ),
+                "bottomEmptyCells": count_bottom_empty_cells(
+                    notebook, self.options.bottom_size
+                ),
+                "isTitled": is_titled(notebook),
+                "isFilenameCharsetRestr": is_filename_charset_restricted(notebook),
+            },
+        }
+        # if filename_max_length is not None:
+        #     results["lintingResults"]["isFilenameShort"] =
+        #                                                  is_filename_short(
+        #         self, filename_max_length
+        #     )
+
+    def get_linting_results(self):
+        return self.results
+
+
+def count_func_defs(notebook: Notebook):
     """
     Count the number of function definitions in a notebook.
 
@@ -25,7 +79,7 @@ def count_func_defs(notebook):
     return f_num
 
 
-def count_non_executed_cells(notebook):
+def count_non_executed_cells(notebook: Notebook):
     """
     Count the number of non-executed cells in a notebook.
 
@@ -43,7 +97,7 @@ def count_non_executed_cells(notebook):
     return _non_executed_cells_count(nb_dict["cells"])
 
 
-def count_empty_cells(notebook):
+def count_empty_cells(notebook: Notebook):
     """
     Count the number of empty cells in a notebook.
 
@@ -61,7 +115,7 @@ def count_empty_cells(notebook):
     return _empty_cells_count(nb_dict["cells"])
 
 
-def count_md_lines(notebook):
+def count_md_lines(notebook: Notebook):
     """
     Count the number of markdown rows in a notebook.
 
@@ -75,15 +129,15 @@ def count_md_lines(notebook):
     md_lines_count = count_md_lines(nb)
     """
     nb_dict = notebook.nb_dict
-    markdowns = 0
+    markdown_lines = 0
     for cell in nb_dict["cells"]:
         if cell["cell_type"] == "markdown":
-            rows = len(cell["source"])
-            markdowns = markdowns + rows
-    return markdowns
+            rows = len(cell["source"].split("\n"))
+            markdown_lines += rows
+    return markdown_lines
 
 
-def count_md_titles(notebook):
+def count_md_titles(notebook: Notebook):
     """
     Count the number of markdown title rows in a notebook.
 
@@ -106,7 +160,7 @@ def count_md_titles(notebook):
     return titles
 
 
-def are_imports_in_first_cell(notebook):
+def are_imports_in_first_cell(notebook: Notebook):
     """
     Verifies if there are no import statements in cells that are not the first one.
 
@@ -158,7 +212,7 @@ def are_imports_in_first_cell(notebook):
     return correct_position
 
 
-def has_linear_execution_order(notebook):
+def has_linear_execution_order(notebook: Notebook):
     """
     Checks that notebook cells were executed in sequential order.
 
@@ -190,7 +244,7 @@ def has_linear_execution_order(notebook):
     return correct_exec
 
 
-def count_class_defs(notebook):
+def count_class_defs(notebook: Notebook):
     """
     Returns the number of class definitions found in the notebook cells.
 
@@ -210,7 +264,7 @@ def count_class_defs(notebook):
     return class_def_num
 
 
-def _non_executed_cells_count(cell_list):
+def _non_executed_cells_count(cell_list: List[NotebookNode]):
     """The function takes a list of cells and returns the number of non-executed cells.
 
     Args:
@@ -225,14 +279,14 @@ def _non_executed_cells_count(cell_list):
     non_exec_cells = 0
     for cell in cell_list:
         if cell["cell_type"] == "code":
-            if cell["execution_count"] is None and cell["source"] != []:
+            if cell["execution_count"] is None and len(cell["source"]) > 0:
                 non_exec_cells = (
                     non_exec_cells + 1
                 )  # This is a not executed Python Cell containing actual code
     return non_exec_cells
 
 
-def _empty_cells_count(cell_list):
+def _empty_cells_count(cell_list: List[NotebookNode]):
     """The function takes a list of cells and returns the number of empty cells.
 
     Args:
@@ -244,15 +298,15 @@ def _empty_cells_count(cell_list):
     - count_empty_cells(nb)
     - count_bottom_empty_cells(nb, bottom_size=4)
     """
-    empty_cell = 0
+    empty_cells = 0
     for cell in cell_list:
         if cell["cell_type"] == "code":
-            if cell["execution_count"] is None and cell["source"] == []:
-                empty_cell = empty_cell + 1  # This is an empty Python Cell
-    return empty_cell
+            if cell["execution_count"] is None and len(cell["source"]) == 0:
+                empty_cells += 1  # This is an empty Python Cell
+    return empty_cells
 
 
-def count_bottom_non_executed_cells(notebook, bottom_size=4):
+def count_bottom_non_executed_cells(notebook: Notebook, bottom_size: int = 4):
     """
     Number of non-executed cells between the last bottom-size-cells of the notebook.
 
@@ -283,7 +337,7 @@ def count_bottom_non_executed_cells(notebook, bottom_size=4):
     return _non_executed_cells_count(cell_list)
 
 
-def count_bottom_empty_cells(notebook, bottom_size=4):
+def count_bottom_empty_cells(notebook: Notebook, bottom_size: int = 4):
     """
     Number of empty cells between the last bottom-size-cells of the notebook.
 
@@ -314,7 +368,7 @@ def count_bottom_empty_cells(notebook, bottom_size=4):
     return _empty_cells_count(cell_list)
 
 
-def _extract_bottom_cells_of_code(nb_dict, bottom_size):
+def _extract_bottom_cells_of_code(nb_dict: NotebookNode, bottom_size: int):
     """
     It returns a list of code cells between the last bottom_size cells of the notebook.
 
@@ -341,7 +395,7 @@ def _extract_bottom_cells_of_code(nb_dict, bottom_size):
     return cell_list
 
 
-def count_cells(notebook):
+def count_cells(notebook: Notebook):
     """
     The function takes a notebook and returns the number of cells.
 
@@ -359,7 +413,7 @@ def count_cells(notebook):
     return len(nb_dict["cells"])
 
 
-def count_md_cells(notebook):
+def count_md_cells(notebook: Notebook):
     """
     The function takes a notebook and returns the number of markdown cells.
 
@@ -381,7 +435,7 @@ def count_md_cells(notebook):
     return counter
 
 
-def count_code_cells(notebook):
+def count_code_cells(notebook: Notebook):
     """
     The function takes a notebook and returns the number of code cells.
 
@@ -402,7 +456,7 @@ def count_code_cells(notebook):
     return counter
 
 
-def count_raw_cells(notebook):
+def count_raw_cells(notebook: Notebook):
     """
     The function takes a notebook and returns the number of raw cells.
 
@@ -423,7 +477,7 @@ def count_raw_cells(notebook):
     return counter
 
 
-def get_bottom_md_lines_ratio(notebook, bottom_size=4):
+def get_bottom_md_lines_ratio(notebook: Notebook, bottom_size: int = 4):
     """
     Percentage of MD rows in the last cells of a notebook over the total MD rows.
 
@@ -453,12 +507,12 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
                 cell_counter <= total_cells - bottom_size
                 and cell["cell_type"] == "markdown"
             ):
-                md_first_cells = md_first_cells + len(cell["source"])
+                md_first_cells = md_first_cells + len(cell["source"].split("\n"))
             elif (
                 cell_counter > total_cells - bottom_size
                 and cell["cell_type"] == "markdown"
             ):
-                md_bottom_cells = md_bottom_cells + len(cell["source"])
+                md_bottom_cells = md_bottom_cells + len(cell["source"].split("\n"))
             cell_counter = cell_counter + 1
     else:
         return None
@@ -468,7 +522,7 @@ def get_bottom_md_lines_ratio(notebook, bottom_size=4):
         return md_bottom_cells / (md_first_cells + md_bottom_cells)
 
 
-def is_titled(notebook):
+def is_titled(notebook: Notebook):
     """
     Checks whether a notebook was titled or not.
 
@@ -483,13 +537,13 @@ def is_titled(notebook):
 
         untitled = is_titled(notebook)
     """
-    if os.path.basename(notebook.path) == "Untitled.ipynb":
+    if notebook.path.name == "Untitled.ipynb":
         return False
     else:
         return True
 
 
-def is_filename_charset_restricted(notebook):
+def is_filename_charset_restricted(notebook: Notebook):
     """
     The function takes a notebook and checks whether it has a title
     with characters comprised in the ``[A-Za-z0-9_.-]`` charset
@@ -504,13 +558,13 @@ def is_filename_charset_restricted(notebook):
 
         restricted_filename = is_filename_charset_restricted(notebook)
     """
-    if re.search("^[A-Za-z0-9_.-]+$", os.path.basename(notebook.path)):
+    if re.search("^[A-Za-z0-9_.-]+$", notebook.path.name):
         return True
     else:
         return False
 
 
-def is_filename_short(notebook, filename_max_length):
+def is_filename_short(notebook: Notebook, filename_max_length: int):
     """
     The function takes a notebook and checks whether it has a short title.
 
@@ -526,7 +580,7 @@ def is_filename_short(notebook, filename_max_length):
 
         short_filename = is_filename_short(notebook)
     """
-    if len(os.path.basename(notebook.path)) > filename_max_length:
+    if len(notebook.path.name) > filename_max_length:
         return False
     else:
         return True

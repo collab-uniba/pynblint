@@ -1,25 +1,24 @@
 import os
 import tempfile
 import zipfile
+from abc import ABC
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import git
 
-from . import repo_linting
 from .notebook import Notebook
 
 
-class Repository:
+class Repository(ABC):
     """
     This class stores data about a code repository.
     """
 
-    def __init__(self):
+    def __init__(self, path: Path):
 
         # Repository info
-        self.path = None
-        self.repository_name = None
+        self.path = path
         self.versioned = False
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
@@ -34,39 +33,14 @@ class Repository:
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for f in files:
                 if f.endswith(".ipynb"):
-                    nb = Notebook(Path(root) / Path(f), repository_path=self.path)
+                    nb = Notebook(Path(root) / Path(f))
                     self.notebooks.append(nb)
-
-    def get_notebooks_results(self, bottom_size: int = 4, filename_max_length=None):
-        """This function takes the list of notebook objects from the current repository
-        and returns a list of dictionaries containing the related linting results."""
-        data = []
-        for notebook in self.notebooks:
-            data.append(notebook.get_pynblint_results(bottom_size, filename_max_length))
-        return data
-
-    def get_repo_results(self):
-        """This function returns linting results at the repository level."""
-        if self.repository_name is not None:
-            name = self.repository_name
-        else:
-            name = os.path.basename(self.path)
-        duplicate_paths = repo_linting.get_duplicate_notebooks(self)
-        untitled_paths = repo_linting.get_untitled_notebooks(self)
-
-        return {
-            "repositoryName": name,
-            "lintingResults": {
-                "duplicateFilenames": duplicate_paths,
-                "untitledNotebooks": untitled_paths,
-                "isVersioned": self.versioned,
-            },
-        }
 
 
 class LocalRepository(Repository):
     """
-    This class stores data about a local code repository
+    This class stores data about a local code repository.
+    The `source_path` can point either to a local directory or a zip archive
     """
 
     def is_versioned(self):
@@ -81,34 +55,39 @@ class LocalRepository(Repository):
                     versioned = True
         return versioned
 
-    def __init__(self, source_path: Path, repository_name: str = None):
-        super().__init__()
+    def __init__(self, source_path: Path):
+
         self.source_path = source_path
-        self.repository_name = repository_name
+        tmp_dir: Optional[tempfile.TemporaryDirectory] = None
+
         # Handle .zip archives
         if self.source_path.suffix == ".zip":
 
             # Create temp directory
             tmp_dir = tempfile.TemporaryDirectory()
+            repo_path: Path = Path(tmp_dir.name)
 
             # Extract the zip file into the temp folder
             with zipfile.ZipFile(self.source_path, "r") as zip_file:
-                zip_file.extractall(tmp_dir.name)
-            self.path = Path(tmp_dir.name)
-            self.retrieve_notebooks()
-            self.versioned = self.is_versioned()
-
-            # Clean up the temp directory
-            tmp_dir.cleanup()
+                zip_file.extractall(repo_path)
 
         # Handle local folders
         elif self.source_path.is_dir():
-            self.path = self.source_path
-            self.retrieve_notebooks()
-            self.versioned = self.is_versioned()
+            repo_path = self.source_path
 
         else:
-            raise Exception  # TODO: raise a more meaningful exception
+            raise ValueError(
+                "The file at the specified path is neither a notebook (.ipynb) "
+                "nor a compressed archive."
+            )
+
+        super().__init__(repo_path)
+        self.retrieve_notebooks()
+        self.versioned = self.is_versioned()
+
+        # Clean up the temp directory if one was created
+        if tmp_dir is not None:
+            tmp_dir.cleanup()
 
 
 class GitHubRepository(Repository):
@@ -117,15 +96,16 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-        super().__init__()
+
         self.url = github_url
         self.versioned = True
-        # Create temp directory
-        tmp_dir = tempfile.TemporaryDirectory()
 
-        # Clone the repo into the temp directory
-        git.Git(tmp_dir.name).clone(github_url, depth=1)
-        self.path = Path(tmp_dir.name) / github_url.split("/")[-1]
+        # Clone the repo in a temp directory
+        tmp_dir = tempfile.TemporaryDirectory()
+        git.Repo.clone_from(  # type: ignore
+            url=github_url, to_path=tmp_dir.name, depth=1
+        )
+        super().__init__(Path(tmp_dir.name) / github_url.split("/")[-1])
 
         # Analyze the repo
         self.retrieve_notebooks()

@@ -1,8 +1,44 @@
 """Linting functions for repositories containing notebooks"""
 
-import os
+from typing import Dict, List
+
+from pydantic import BaseModel
 
 from pynblint import nb_linting
+from pynblint.nb_linting import NotebookLinter
+from pynblint.repository import Repository
+
+
+class RepoLinterOptions(BaseModel):
+    pass
+
+
+class RepoLinter:
+    def __init__(self, repo: Repository) -> None:
+        self.repo = repo
+        self.options: RepoLinterOptions = RepoLinterOptions()
+
+        self.results: Dict = {
+            "repositoryName": repo.path.name,
+            "lintingResults": {
+                "duplicateFilenames": get_duplicate_notebooks(repo),
+                "untitledNotebooks": get_untitled_notebooks(repo),
+                "isVersioned": repo.versioned,
+            },
+            "notebookLintingResults": self._get_notebooks_results(),
+        }
+
+    def _get_notebooks_results(self) -> List[Dict]:
+        """This function takes the list of notebook objects from the current repository
+        and returns a list of dictionaries containing the related linting results."""
+        data = []
+        for notebook in self.repo.notebooks:
+            nb_linter: NotebookLinter = NotebookLinter(notebook)
+            data.append(nb_linter.get_linting_results())
+        return data
+
+    def get_linting_results(self):
+        return self.results
 
 
 def get_duplicate_notebooks(repo):
@@ -23,14 +59,14 @@ def get_duplicate_notebooks(repo):
     duplicate_filanames = []
     paths = []
     for notebook in repo.notebooks:
-        filename = os.path.basename(notebook.path)
+        filename = notebook.path.name
         if filename in nb_filenames:
             duplicate_filanames.append(filename)
         else:
             nb_filenames.append(filename)
     for filename in duplicate_filanames:
         for notebook in repo.notebooks:
-            if os.path.basename(notebook.path) == filename:
+            if notebook.path.name == filename:
                 paths.append(notebook.path)
     return paths
 
