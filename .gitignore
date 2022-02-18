@@ -1,6 +1,7 @@
 # Custom ignores
 .idea/
 .pynblint
+playground.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
