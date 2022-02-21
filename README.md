@@ -62,7 +62,7 @@ Once installed, Pynblint can be used to analyze:
     pynblint path/to/the/compressed/archive.zip
     ```
 
-- the set of notebooks found in a public GitHub repository (support for private repositories is on our roadmap :)):
+- the set of notebooks found in a _public_ GitHub repository (support for private repositories is on our roadmap 🙂):
 
     ```bash
     pynblint --from-github https://github.com/collab-uniba/pynblint
