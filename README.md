@@ -6,49 +6,74 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+Many professional data scientists use Jupyter Notebook to accomplish their daily tasks, from preliminary data exploration to model prototyping. Notebooks' interactivity is particularly convenient for data-centric programming; moreover, their self-documenting nature greatly simplifies and enhances the communication of analytical results.
 
-## Description
-In [1], Pimentel et al. report the results a large-scale study on the quality and reproducibility of Jupyter notebooks. At the end of the paper, in the light of their findings, the authors recommend a set of 8 best practices for Jupyter notebooks writing.
+However, Jupyter Notebook has often been criticized for offering scarce native support for Software Engineering best practices and inducing bad programming habits. To really benefit from computational notebooks, practitioners need to be aware of their common pitfalls and learn how to avoid them.
 
-We operationalized some of these best practices and built a little library of functions (contained in the `pynblint` package) that enable the quantitative assessment of their adoption in a dataset of Jupyter notebooks.
-As shown in `Using pynblint.ipynb`, the functions from our library can be easily adopted to collect data about specific aspects of notebooks quality (e.g., the length of markdown descriptions or the evidence of linear execution order of cells) and repository quality(e.g., duplicate notebooks' filenames, untitled notebooks).
-## Prerequisites
-It is recommanded to have an installation of a virtual environment tool on your device, such as Conda, Pipenv, VirtualEnv.
+In our paper ["Eliciting Best Practices for Collaboration with Computational Notebooks" [1]](https://arxiv.org/abs/2202.07233), we introduced a catalog of validated best practices for the collaborative use of notebooks in professional contexts.
+
+To raise awareness of these best practices and promote their adoption, we have created Pynblint, a static analysis tool for Jupyter notebooks written in Python. Pynblint can be operated as a standalone CLI application or as part of a CI/CD pipeline. It reveals potential defects of Jupyter notebooks found in software repositories and recommends corrective actions.
+
+The core linting rules that power Pynblint have been derived as operationalizations of the validated best practices from our catalog. Nonetheless, the tool is designed to be easily customized and extended with new rules.
+
+
 ## Installation
-Use the terminal or a virtual environment prompt to perform the following steps:
-1. Install the dependencies using the `requirements.txt` file:
-- Windows:
-```bash
-py -m pip install -r requirements.txt
-```
-- Unix/MacOS:
-```bash
-python -m pip install -r requirements.txt
-```
-2. At this point you should have succesfully created the virtual environment with the right dependencies<br>
-Now it is time to create the kernel on which your notebook will run, for example, in a Conda environment, open the terminal and type:
-```bash
-python -m ipykernel install --user --name myenv
-```
-for more help on this matter, check this link: https://ipython.readthedocs.io/en/stable/install/kernel_install.html<br>
-Now just select this kernel you created when running the `Using pynblint.ipynb` notebook.<br><br>
-`pynblint` is a distributable package, it is installable thanks to its `setup.py` file:<br>
-1. cd into the root directory where setup.py is located
-2. Enter:
-```bash
-python setup.py install
-```
-## Generate the documentation
-In order to build the docs for the first time - e.g., to generate a documentation in the HTML format - type:
-```bash
-sphinx-build -b html <source_directory> <builddir>
-```
-and then:
-```bash
-make html
-```
-This will build HTML docs in the build directory you chose. Execute `make` without an argument to see which targets are available.<br>
-Check Sphinx documentation for more info about documentation generation: https://www.sphinx-doc.org/en/master/usage/quickstart.html
 
-## Reference paper
-[1] [Pimentel et al., "A large-scale study about quality and reproducibility of jupyter notebooks."](http://www2.ic.uff.br/~leomurta/papers/pimentel2019a.pdf)
+To use Pynblint, clone this repository and install it with [Poetry](https://python-poetry.org):
+
+```bash
+poetry install --no-dev
+```
+
+To install Pynblint for development purposes, simply omit the `--no-dev` option:
+
+```bash
+poetry install
+```
+
+At present, we are finalizing the first version of Pynblint (v0.1.0).
+When released, it will become available as a Python package on PyPI and installable via `pip`.
+
+
+## Usage
+
+Once installed, Pynblint can be used to analyze:
+
+- a single notebook:
+
+    ```bash
+    pynblint path/to/the/notebook.ipynb
+    ```
+- the set of notebooks found in the current working directory:
+
+    ```bash
+    pynblint .
+    ```
+
+- the set of notebooks found in the directory located at the specified path:
+
+    ```bash
+    pynblint path/to/the/project/dir/
+    ```
+
+- the set of notebooks found in a compressed `.zip` archive:
+
+    ```bash
+    pynblint path/to/the/compressed/archive.zip
+    ```
+
+- the set of notebooks found in a public GitHub repository (support for private repositories is on our roadmap :)):
+
+    ```bash
+    pynblint --from-github https://github.com/collab-uniba/pynblint
+    ```
+
+For further information on the available options, please read Pynblint's CLI manual:
+
+```bash
+pynblint --help
+```
+
+## References
+
+Luigi Quaranta, Fabio Calefato, and Filippo Lanubile. 2022. [Eliciting Best Practices for Collaboration with Computational Notebooks.](https://arxiv.org/abs/2202.07233) *Proc. ACM Hum.-Comput. Interact.* 6, CSCW1, Article 87 (April 2022), 41 pages. <https://doi.org/10.1145/3512934>
