@@ -16,6 +16,9 @@ To raise awareness of these best practices and promote their adoption, we have c
 
 The core linting rules that power Pynblint have been derived as operationalizations of the validated best practices from our catalog. Nonetheless, the tool is designed to be easily customized and extended with new rules.
 
+## Catalog of best practices
+
+- 
 
 ## Installation
 
