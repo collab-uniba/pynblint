@@ -18,7 +18,23 @@ The core linting rules that power Pynblint have been derived as operationalizati
 
 ## Catalog of best practices
 
-- 
+- Use version control
+- Manage project dependencies
+- Use self-contained environments
+- Put imports at the beginning
+- Ensure re-executability (re-run notebooks top to bottom)
+- Modularize your code
+- Test your code
+- Name your notebooks consistently
+- Stick to coding standards
+- Use relative paths
+- Document your analysis
+- Leverage Markdown headings to structure your notebook
+- Keep your notebook clean
+- Keep your notebook concise
+- Distinguish production and development artifacts
+- Make your notebooks available
+- Make your data available
 
 ## Installation
 
