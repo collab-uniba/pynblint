@@ -5,14 +5,19 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from . import loader
 from .config import CellRenderingMode, settings
-from .nb_linting import NotebookLinter
+from .nb_linter import NotebookLinter
 from .notebook import Notebook
-from .repo_linting import RepoLinter
+from .repo_linter import RepoLinter
 from .repository import GitHubRepository, LocalRepository, Repository
 
 app = typer.Typer()
 console = Console()
+
+
+loader.load_core_modules()
+loader.load_plugins(settings.plugins)
 
 
 @app.command()
@@ -64,8 +69,11 @@ def main(
             with open(path) as notebook_file:
                 nb = Notebook(Path(notebook_file.name))
                 nb_linter = NotebookLinter(nb)
-                console.print(nb_linter.get_linting_results())
-                console.print(nb)
+                console.print(nb_linter.notebook_metadata)
+                console.print(nb_linter.notebook_stats)
+                for lint in nb_linter.lints:
+                    if lint.result:
+                        console.print(lint)
 
         else:
             # Analyze local compressed directory

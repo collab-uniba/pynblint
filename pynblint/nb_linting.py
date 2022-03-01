@@ -1,82 +1,20 @@
 """Linting functions for notebooks."""
-
 import ast
 import re
-from typing import Dict, List, Optional
+from typing import List
 
 from nbformat.notebooknode import NotebookNode
-from pydantic import BaseModel
 
+from . import lint_register as register
+from .lint import LintDefinition, LintLevel
 from .notebook import Notebook
 
 
-class NotebookLinterOptions(BaseModel):
-    bottom_size: int = 4
-    filename_max_length: Optional[int] = None
-
-
-class NotebookLinter:
-    def __init__(self, notebook: Notebook) -> None:
-        self.options: NotebookLinterOptions = NotebookLinterOptions()
-
-        self.results: Dict = {
-            "notebookName": notebook.path.name,
-            "notebookStats": {
-                "numberOfCells": count_cells(notebook),
-                "numberOfMDCells": count_md_cells(notebook),
-                "numberOfCodeCells": count_code_cells(notebook),
-                "numberOfRawCells": count_raw_cells(notebook),
-            },
-            "lintingResults": {
-                "linearExecutionOrder": has_linear_execution_order(notebook),
-                "numberOfClassDefinitions": count_class_defs(notebook),
-                "numberOfFunctionDefinitions": count_func_defs(notebook),
-                "allImportsInFirstCell": are_imports_in_first_cell(notebook),
-                "numberOfMarkdownLines": count_md_lines(notebook),
-                "numberOfMarkdownTitles": count_md_titles(notebook),
-                "bottomMarkdownLinesRatio": get_bottom_md_lines_ratio(
-                    notebook, self.options.bottom_size
-                ),
-                "nonExecutedCells": count_non_executed_cells(notebook),
-                "emptyCells": count_empty_cells(notebook),
-                "bottomNonExecutedCells": count_bottom_non_executed_cells(
-                    notebook, self.options.bottom_size
-                ),
-                "bottomEmptyCells": count_bottom_empty_cells(
-                    notebook, self.options.bottom_size
-                ),
-                "isTitled": is_titled(notebook),
-                "isFilenameCharsetRestr": is_filename_charset_restricted(notebook),
-            },
-        }
-        # if filename_max_length is not None:
-        #     results["lintingResults"]["isFilenameShort"] =
-        #                                                  is_filename_short(
-        #         self, filename_max_length
-        #     )
-
-    def get_linting_results(self):
-        return self.results
-
-
-def count_func_defs(notebook: Notebook):
-    """
-    Count the number of function definitions in a notebook.
-
-    Args:
-        notebook(Notebook): python object representing the notebook
-    Returns:
-        f_num: integer representing the number of function definitions in the code
-
-    A way you might use me is::
-
-       function_defs_count = count_func_defs(nb)
-
-    """
-    code = notebook.script
-    tree = ast.parse(code)
-    f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
-    return f_num
+def non_linear_execution(notebook: Notebook) -> bool:
+    """Check linear execution order of notebook cells."""
+    exec_counters: List[int] = [cell.exec_count for cell in notebook.code_cells]
+    sorted_counters = sorted(exec_counters)
+    return exec_counters != sorted_counters
 
 
 def count_non_executed_cells(notebook: Notebook):
@@ -244,26 +182,6 @@ def has_linear_execution_order(notebook: Notebook):
     return correct_exec
 
 
-def count_class_defs(notebook: Notebook):
-    """
-    Returns the number of class definitions found in the notebook cells.
-
-        Args:
-            notebook(Notebook): python object representing the notebook
-        Returns:
-            class_def_num: integer value representing the number of class definitions
-            in the python code
-
-        A way you might use me is
-
-        class_def_count = count_class_defs(nb)
-    """
-    code = notebook.script
-    tree = ast.parse(code)
-    class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
-    return class_def_num
-
-
 def _non_executed_cells_count(cell_list: List[NotebookNode]):
     """The function takes a list of cells and returns the number of non-executed cells.
 
@@ -395,88 +313,6 @@ def _extract_bottom_cells_of_code(nb_dict: NotebookNode, bottom_size: int):
     return cell_list
 
 
-def count_cells(notebook: Notebook):
-    """
-    The function takes a notebook and returns the number of cells.
-
-        Args:
-            notebook(Notebook): python object representing the notebook
-        Returns:
-            len(nb_dict["cells"]): integer value representing the number of cells
-            in the notebook
-
-        A way you might use me is
-
-        cells_count = count_cells(nb)
-    """
-    nb_dict = notebook.nb_dict
-    return len(nb_dict["cells"])
-
-
-def count_md_cells(notebook: Notebook):
-    """
-    The function takes a notebook and returns the number of markdown cells.
-
-        Args:
-            notebook(Notebook): python object representing the notebook
-        Returns:
-            counter: integer value representing the number of markdown cells
-            in the notebook
-
-        A way you might use me is
-
-        md_cells_count = count_md_cells(nb)
-    """
-    nb_dict = notebook.nb_dict
-    counter = 0
-    for cell in nb_dict["cells"]:
-        if cell["cell_type"] == "markdown":
-            counter = counter + 1
-    return counter
-
-
-def count_code_cells(notebook: Notebook):
-    """
-    The function takes a notebook and returns the number of code cells.
-
-        Args:
-            notebook(Notebook): python object representing the notebook
-        Returns:
-            counter: integer value representing the number of code cells in the notebook
-
-        A way you might use me is
-
-        code_cell_count = count_code_cells(nb)
-    """
-    nb_dict = notebook.nb_dict
-    counter = 0
-    for cell in nb_dict["cells"]:
-        if cell["cell_type"] == "code":
-            counter = counter + 1
-    return counter
-
-
-def count_raw_cells(notebook: Notebook):
-    """
-    The function takes a notebook and returns the number of raw cells.
-
-        Args:
-            notebook(Notebook): python object representing the notebook
-        Returns:
-            counter: integer value representing the number of raw cells in the notebook
-
-        A way you might use me is
-
-        raw_cells_count = count_raw_cells(nb)
-    """
-    nb_dict = notebook.nb_dict
-    counter = 0
-    for cell in nb_dict["cells"]:
-        if cell["cell_type"] == "raw":
-            counter = counter + 1
-    return counter
-
-
 def get_bottom_md_lines_ratio(notebook: Notebook, bottom_size: int = 4):
     """
     Percentage of MD rows in the last cells of a notebook over the total MD rows.
@@ -497,7 +333,7 @@ def get_bottom_md_lines_ratio(notebook: Notebook, bottom_size: int = 4):
     last_ten_cells_md_ratio = get_bottom_md_lines_ratio(nb, 10)
     """
     nb_dict = notebook.nb_dict
-    total_cells = count_cells(notebook)
+    total_cells = len(notebook.cells)
     if bottom_size < total_cells / 3:
         md_first_cells = 0
         md_bottom_cells = 0
@@ -584,3 +420,21 @@ def is_filename_short(notebook: Notebook, filename_max_length: int):
         return False
     else:
         return True
+
+
+notebook_level_lints: List[LintDefinition] = [
+    LintDefinition(
+        slug="non-linear-execution",
+        description="Notebook cells have been executed in non-linear order.",
+        recommendation="Re-run your notebook top to bottom to improve \
+            its reproducibility",
+        linting_function=non_linear_execution,
+    )
+]
+
+cell_level_lints: List[LintDefinition] = []
+
+
+def initialize() -> None:
+    register.register_lints(LintLevel.NOTEBOOK, notebook_level_lints)
+    register.register_lints(LintLevel.CELL, cell_level_lints)

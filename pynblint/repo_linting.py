@@ -1,60 +1,18 @@
 """Linting functions for repositories containing notebooks"""
 
-from typing import Dict, List
 
-from pydantic import BaseModel
+from pathlib import Path
+from typing import List
 
-from pynblint import nb_linting
-from pynblint.nb_linting import NotebookLinter
-from pynblint.repository import Repository
-
-
-class RepoLinterOptions(BaseModel):
-    pass
+from . import lint_register as register
+from . import nb_linting
+from .lint import LintDefinition, LintLevel
+from .repository import Repository
 
 
-class RepoLinter:
-    def __init__(self, repo: Repository) -> None:
-        self.repo = repo
-        self.options: RepoLinterOptions = RepoLinterOptions()
+def duplicate_notebook_filename(repo: Repository) -> List[Path]:
+    """Check the existence of notebooks with the same filename within a repository"""
 
-        self.results: Dict = {
-            "repositoryName": repo.path.name,
-            "lintingResults": {
-                "duplicateFilenames": get_duplicate_notebooks(repo),
-                "untitledNotebooks": get_untitled_notebooks(repo),
-                "isVersioned": repo.versioned,
-            },
-            "notebookLintingResults": self._get_notebooks_results(),
-        }
-
-    def _get_notebooks_results(self) -> List[Dict]:
-        """This function takes the list of notebook objects from the current repository
-        and returns a list of dictionaries containing the related linting results."""
-        data = []
-        for notebook in self.repo.notebooks:
-            nb_linter: NotebookLinter = NotebookLinter(notebook)
-            data.append(nb_linter.get_linting_results())
-        return data
-
-    def get_linting_results(self):
-        return self.results
-
-
-def get_duplicate_notebooks(repo):
-    """
-    The function takes a repository and checks whether two or more notebooks
-    with the same filename are present.
-
-        Args:
-            repo(Repository): python object representing the repository
-        Returns:
-            paths: list containing paths to notebooks with duplicate filenames
-
-        A way you might use me is
-
-        duplicate_nb_in_repo = get_duplicate_notebooks(repo)
-    """
     nb_filenames = []
     duplicate_filanames = []
     paths = []
@@ -89,3 +47,22 @@ def get_untitled_notebooks(repo):
         if not nb_linting.is_titled(notebook):
             untitled_notebooks.append(notebook.path)
     return untitled_notebooks
+
+
+project_level_lints: List[LintDefinition] = []
+
+path_level_lints: List[LintDefinition] = [
+    LintDefinition(
+        slug="duplicate-notebook-filename",
+        description="Two or more notebooks with the same filename exist in this \
+            repository",
+        recommendation="Use different filenames and possibly stick to a \
+            naming confention to make notebooks easily identifiable.",
+        linting_function=duplicate_notebook_filename,
+    )
+]
+
+
+def initialize() -> None:
+    register.register_lints(LintLevel.PROJECT, project_level_lints)
+    register.register_lints(LintLevel.PATH, path_level_lints)
