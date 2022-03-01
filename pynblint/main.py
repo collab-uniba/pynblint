@@ -53,7 +53,7 @@ def main(
         # Analyze GitHub repository
         repo = GitHubRepository(source)
         repo_linter = RepoLinter(repo)
-        console.print(repo_linter.get_linting_results())
+        console.print(repo_linter)
 
     else:
         path: Path = Path(source)
@@ -62,24 +62,20 @@ def main(
             # Analyze local uncompressed directory
             repo = LocalRepository(path)
             repo_linter = RepoLinter(repo)
-            console.print(repo_linter.get_linting_results())
+            console.print(repo_linter)
 
         elif path.suffix == ".ipynb":
             # Analyze standalone notebook
             with open(path) as notebook_file:
                 nb = Notebook(Path(notebook_file.name))
                 nb_linter = NotebookLinter(nb)
-                console.print(nb_linter.notebook_metadata)
-                console.print(nb_linter.notebook_stats)
-                for lint in nb_linter.lints:
-                    if lint.result:
-                        console.print(lint)
+                console.print(nb_linter)
 
         else:
             # Analyze local compressed directory
             repo = LocalRepository(path)
             repo_linter = RepoLinter(repo)
-            console.print(repo_linter.get_linting_results())
+            console.print(repo_linter)
 
 
 if __name__ == "__main__":

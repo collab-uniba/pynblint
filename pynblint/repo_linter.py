@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import List
 
 from pydantic import BaseModel
+from rich.console import Group, group
+from rich.pretty import Pretty
 
 from .lint import PathLevelLint, ProjectLevelLint, RepoLint
 from .lint_register import enabled_path_level_lints, enabled_project_level_lints
@@ -61,25 +63,16 @@ class RepoLinter:
             ]
         )
 
-        # self.results: Dict = {
-        #     "lintingResults": {
-        #         "duplicateFilenames": get_duplicate_notebooks(repo),
-        #         "untitledNotebooks": get_untitled_notebooks(repo),
-        #         "isVersioned": repo.versioned,
-        #     },
-        #     "notebookLintingResults": self._get_notebooks_results(),
-        # }
+    @group()
+    def get_renderable_linting_results(self):
+        for lint in self.lints:
+            if lint.result:
+                yield lint
 
-    # def _get_notebooks_results(self) -> List[Dict]:
-    #     """This function takes the list of notebook objects from the current
-    #       repository
-    #     and returns a list of dictionaries containing the related linting results."""
-    #     data = []
-    #     for notebook in self.repo.notebooks:
-    #         nb_linter: NotebookLinter = NotebookLinter(notebook)
-    #         data.append(nb_linter.get_linting_results())
-    #     return data
-
-    def get_linting_results(self):
-        # return self.results
-        pass
+    def __rich__(self) -> Group:
+        rendered_results = Group(
+            Pretty(self.repository_metadata),
+            Pretty(self.repository_stats),
+            self.get_renderable_linting_results(),
+        )
+        return rendered_results

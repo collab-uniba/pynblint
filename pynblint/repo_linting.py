@@ -54,10 +54,10 @@ project_level_lints: List[LintDefinition] = []
 path_level_lints: List[LintDefinition] = [
     LintDefinition(
         slug="duplicate-notebook-filename",
-        description="Two or more notebooks with the same filename exist in this \
-            repository",
-        recommendation="Use different filenames and possibly stick to a \
-            naming confention to make notebooks easily identifiable.",
+        description="Two or more notebooks with the same filename exist in this "
+        "repository",
+        recommendation="Use different filenames and possibly stick to a "
+        "naming confention to make notebooks easily identifiable.",
         linting_function=duplicate_notebook_filename,
     )
 ]

@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from pydantic import BaseModel
+from rich.console import Group, group
+from rich.pretty import Pretty
 
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
@@ -76,38 +78,6 @@ class NotebookLinter:
             ]
         )
 
-        # self.results: Dict = {
-        #     "lintingResults": {
-        #         "linearExecutionOrder": has_linear_execution_order(notebook),
-        #         "numberOfClassDefinitions": count_class_defs(notebook),
-        #         "numberOfFunctionDefinitions": count_func_defs(notebook),
-        #         "allImportsInFirstCell": are_imports_in_first_cell(notebook),
-        #         "numberOfMarkdownLines": count_md_lines(notebook),
-        #         "numberOfMarkdownTitles": count_md_titles(notebook),
-        #         "bottomMarkdownLinesRatio": get_bottom_md_lines_ratio(
-        #             notebook, self.options.bottom_size
-        #         ),
-        #         "nonExecutedCells": count_non_executed_cells(notebook),
-        #         "emptyCells": count_empty_cells(notebook),
-        #         "bottomNonExecutedCells": count_bottom_non_executed_cells(
-        #             notebook, self.options.bottom_size
-        #         ),
-        #         "bottomEmptyCells": count_bottom_empty_cells(
-        #             notebook, self.options.bottom_size
-        #         ),
-        #         "isTitled": is_titled(notebook),
-        #         "isFilenameCharsetRestr": is_filename_charset_restricted(notebook),
-        #     },
-        # }
-        # # if filename_max_length is not None:
-        # #     results["lintingResults"]["isFilenameShort"] =
-        # #                                                  is_filename_short(
-        # #         self, filename_max_length
-        # #     )
-
-    # def get_linting_results(self):
-    #     return self.results
-
     def count_cells(self) -> int:
         """Computes the total number of cells within a notebook."""
 
@@ -157,3 +127,17 @@ class NotebookLinter:
         tree = ast.parse(code)
         class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
         return class_def_num
+
+    @group()
+    def get_renderable_linting_results(self):
+        for lint in self.lints:
+            if lint.result:
+                yield lint
+
+    def __rich__(self) -> Group:
+        rendered_results = Group(
+            Pretty(self.notebook_metadata),
+            Pretty(self.notebook_stats),
+            self.get_renderable_linting_results(),
+        )
+        return rendered_results

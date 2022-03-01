@@ -426,8 +426,8 @@ notebook_level_lints: List[LintDefinition] = [
     LintDefinition(
         slug="non-linear-execution",
         description="Notebook cells have been executed in non-linear order.",
-        recommendation="Re-run your notebook top to bottom to improve \
-            its reproducibility",
+        recommendation="Re-run your notebook top to bottom to improve "
+        "its reproducibility",
         linting_function=non_linear_execution,
     )
 ]
