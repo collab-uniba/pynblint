@@ -46,6 +46,7 @@ def main(
         settings.display_cell_index = True
 
     # Main procedure
+    console.print("\n")
     console.rule("PYNBLINT", characters="*")
     repo: Repository
 

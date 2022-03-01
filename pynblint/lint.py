@@ -60,9 +60,11 @@ class NotebookLevelLint(NotebookLint):
         return self.linting_function(notebook)
 
     def __rich__(self) -> str:
-        render = f"({self.slug}): {self.description}"
+        render = f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\tRecommendation: {self.recommendation}"
+            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
+
+        render += "\n"
         return render
 
 
@@ -90,13 +92,14 @@ class CellLevelLint(NotebookLint):
         return self.linting_function(notebook)
 
     def __rich__(self):
-        render = f"[{self.slug}]: {self.description}"
+        render = f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\tRecommendation: {self.recommendation}"
+            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
 
-        render += "\n\nCells affected: " + str(
+        render += "\n\t[italic]Cells affected[/italic]: [grey50]indexes[/grey50]" + str(
             [cell.cell_index for cell in self.result]
         )
+        render += "\n"
         return render
 
 
@@ -139,9 +142,9 @@ class ProjectLevelLint(RepoLint):
         return self.linting_function(repository)
 
     def __rich__(self) -> str:
-        render = f"({self.slug}): {self.description}"
+        render = f"[blue bold]({self.slug})[/blue bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\tRecommendation: {self.recommendation}"
+            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
         return render
 
 
@@ -162,8 +165,8 @@ class PathLevelLint(RepoLint):
         return self.linting_function(repository)
 
     def __rich__(self) -> str:
-        render = f"({self.slug}): {self.description}"
+        render = f"[blue bold]({self.slug})[/blue bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\tRecommendation: {self.recommendation}"
-            render += f"\n\tAffected paths: {self.result}"
+            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
+            render += f"\n\t[italic]Affected paths[/italic]: {self.result}"
         return render

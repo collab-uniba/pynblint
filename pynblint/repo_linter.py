@@ -71,8 +71,11 @@ class RepoLinter:
 
     def __rich__(self) -> Group:
         rendered_results = Group(
+            "\n",
             Pretty(self.repository_metadata),
             Pretty(self.repository_stats),
+            "\n",
             self.get_renderable_linting_results(),
+            "\n",
         )
         return rendered_results

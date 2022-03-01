@@ -44,6 +44,9 @@ class Notebook(RichRenderable):
         md_cells = [cell for cell in self.cells if cell.cell_type == CellType.MARKDOWN]
         return md_cells
 
+    def __len__(self) -> int:
+        return len(self.cells)
+
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:

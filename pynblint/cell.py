@@ -56,6 +56,24 @@ class Cell(RichRenderable):
         else:
             self._source_excerpt = self.cell_source
 
+    @property
+    def empty(self) -> bool:
+        """``True`` if the code cell is empty."""
+        if self.cell_type == CellType.CODE:
+            return (self.exec_count is None) and (len(self.cell_source) == 0)
+        else:
+            raise Exception("The `empty` property is defined only for code cells.")
+
+    @property
+    def non_executed(self) -> bool:
+        """``True`` if the non-empty code cell has not been executed."""
+        if self.cell_type == CellType.CODE:
+            return (self.exec_count is None) and (len(self.cell_source) > 0)
+        else:
+            raise Exception(
+                "The `non_executed` property is defined only for code cells."
+            )
+
     def __rich__(self) -> Columns:
 
         if self.cell_type == CellType.CODE:

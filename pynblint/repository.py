@@ -19,7 +19,7 @@ class Repository(ABC):
 
         # Repository info
         self.path = path
-        self.versioned = False
+
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
 
@@ -36,14 +36,8 @@ class Repository(ABC):
                     nb = Notebook(Path(root) / Path(f))
                     self.notebooks.append(nb)
 
-
-class LocalRepository(Repository):
-    """
-    This class stores data about a local code repository.
-    The `source_path` can point either to a local directory or a zip archive
-    """
-
-    def is_versioned(self):
+    @property
+    def is_git_repository(self):
         # Directories to ignore while traversing the tree
         dirs_ignore = [".ipynb_checkpoints"]
         versioned = False
@@ -54,6 +48,13 @@ class LocalRepository(Repository):
                 if d == ".git":
                     versioned = True
         return versioned
+
+
+class LocalRepository(Repository):
+    """
+    This class stores data about a local code repository.
+    The `source_path` can point either to a local directory or a zip archive
+    """
 
     def __init__(self, source_path: Path):
 
@@ -83,7 +84,6 @@ class LocalRepository(Repository):
 
         super().__init__(repo_path)
         self.retrieve_notebooks()
-        self.versioned = self.is_versioned()
 
         # Clean up the temp directory if one was created
         if tmp_dir is not None:
@@ -98,7 +98,6 @@ class GitHubRepository(Repository):
     def __init__(self, github_url: str):
 
         self.url = github_url
-        self.versioned = True
 
         # Clone the repo in a temp directory
         tmp_dir = tempfile.TemporaryDirectory()

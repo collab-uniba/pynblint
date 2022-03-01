@@ -33,6 +33,10 @@ class NotebookStats:
     number_of_functions: int
     number_of_classes: int
 
+    # Markdown usage
+    number_of_md_lines: int
+    number_of_md_titles: int
+
 
 class NotebookLinter:
     def __init__(self, notebook: Notebook) -> None:
@@ -48,6 +52,8 @@ class NotebookLinter:
             number_of_raw_cells=self.count_raw_cells(),
             number_of_functions=self.count_func_defs(),
             number_of_classes=self.count_class_defs(),
+            number_of_md_lines=self.count_md_lines(),
+            number_of_md_titles=self.count_md_titles(),
         )
 
         self.lints: List[NotebookLint] = []
@@ -128,6 +134,27 @@ class NotebookLinter:
         class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
         return class_def_num
 
+    def count_md_lines(self) -> int:
+        """Count the total number of markdown rows within a notebook."""
+        nb_dict = self.notebook.nb_dict
+        markdown_lines = 0
+        for cell in nb_dict["cells"]:
+            if cell["cell_type"] == "markdown":
+                rows = len(cell["source"].split("\n"))
+                markdown_lines += rows
+        return markdown_lines
+
+    def count_md_titles(self) -> int:
+        """Count the total number of markdown titles within a notebook."""
+        nb_dict = self.notebook.nb_dict
+        titles = 0
+        for cell in nb_dict["cells"]:
+            if cell["cell_type"] == "markdown":
+                for row in cell["source"]:
+                    if row.lstrip().startswith("#"):
+                        titles = titles + 1
+        return titles
+
     @group()
     def get_renderable_linting_results(self):
         for lint in self.lints:
@@ -136,8 +163,11 @@ class NotebookLinter:
 
     def __rich__(self) -> Group:
         rendered_results = Group(
+            "\n",
             Pretty(self.notebook_metadata),
             Pretty(self.notebook_stats),
+            "\n",
             self.get_renderable_linting_results(),
+            "\n",
         )
         return rendered_results
