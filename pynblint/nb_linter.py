@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from rich.columns import Columns
 from rich.console import Group, group
 from rich.panel import Panel
+from rich.rule import Rule
 
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
@@ -166,7 +167,7 @@ class NotebookLinter:
 
         # Stats
         cells_stats = "\n"
-        cells_stats += "[green]Total cells[/green] "
+        cells_stats += "[green]Total cells[/green]: "
         cells_stats += f"{self.notebook_stats.number_of_cells}\n"
         cells_stats += "[green]Code cells[/green]: "
         cells_stats += f"{self.notebook_stats.number_of_code_cells}\n"
@@ -194,14 +195,17 @@ class NotebookLinter:
         ]
 
         rendered_results = Group(
-            f"\n[blue bold underline]NOTEBOOK:[/blue bold underline] "
-            f"[green]{self.notebook_metadata.notebook_name}[/green]\n",
+            f"\n[blue bold]NOTEBOOK:[/blue bold] "
+            f"[green]{self.notebook_metadata.notebook_name}[/green]\n"
+            f"[blue]    PATH:[/blue] "
+            f"[grey50]{self.notebook.path.parent}/"
+            f"[bold]{self.notebook.path.name}[bold][/grey50]\n",
             Columns(
                 metadata_panels,
                 equal=True,
             ),
-            "\n[blue bold underline]LINTING RESULTS[/blue bold underline]\n",
+            "\n[blue bold]RESULTS[/blue bold]\n",
             self.get_renderable_linting_results(),
-            "\n",
+            Rule(),
         )
         return rendered_results
