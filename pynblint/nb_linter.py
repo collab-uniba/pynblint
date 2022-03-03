@@ -3,8 +3,9 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from pydantic import BaseModel
+from rich.columns import Columns
 from rich.console import Group, group
-from rich.pretty import Pretty
+from rich.panel import Panel
 
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
@@ -162,11 +163,44 @@ class NotebookLinter:
                 yield lint
 
     def __rich__(self) -> Group:
+
+        # Stats
+        cells_stats = "\n"
+        cells_stats += "[green]Total cells[/green] "
+        cells_stats += f"{self.notebook_stats.number_of_cells}\n"
+        cells_stats += "[green]Code cells[/green]: "
+        cells_stats += f"{self.notebook_stats.number_of_code_cells}\n"
+        cells_stats += "[green]Markdown cells[/green]: "
+        cells_stats += f"{self.notebook_stats.number_of_MD_cells}\n"
+        cells_stats += "[green]Raw cells[/green]: "
+        cells_stats += f"{self.notebook_stats.number_of_raw_cells}\n"
+
+        md_stats = "\n"
+        md_stats += "[green]Markdown titles[/green]: "
+        md_stats += f"{self.notebook_stats.number_of_md_titles}\n"
+        md_stats += "[green]Markdown lines[/green]: "
+        md_stats += f"{self.notebook_stats.number_of_md_lines}\n"
+
+        modularization_stats = "\n"
+        modularization_stats += "[green]Number of functions[/green]: "
+        modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
+        modularization_stats += "[green]Number of classes[/green]: "
+        modularization_stats += f"{self.notebook_stats.number_of_classes}\n"
+
+        metadata_panels = [
+            Panel(cells_stats, title="Cells"),
+            Panel(md_stats, title="Markdown usage"),
+            Panel(modularization_stats, title="Code modularization"),
+        ]
+
         rendered_results = Group(
-            "\n",
-            Pretty(self.notebook_metadata),
-            Pretty(self.notebook_stats),
-            "\n",
+            f"\n[blue bold underline]NOTEBOOK:[/blue bold underline] "
+            f"[green]{self.notebook_metadata.notebook_name}[/green]\n",
+            Columns(
+                metadata_panels,
+                equal=True,
+            ),
+            "\n[blue bold underline]LINTING RESULTS[/blue bold underline]\n",
             self.get_renderable_linting_results(),
             "\n",
         )
