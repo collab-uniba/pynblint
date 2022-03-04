@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 from rich.columns import Columns
-from rich.console import Group, group
+from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
 from rich.rule import Rule
 
@@ -87,6 +87,8 @@ class NotebookLinter:
             ]
         )
 
+        self.has_linting_results = any([lint.result for lint in self.lints])
+
     def count_cells(self) -> int:
         """Computes the total number of cells within a notebook."""
 
@@ -164,9 +166,24 @@ class NotebookLinter:
             if lint.result:
                 yield lint
 
-    def __rich__(self) -> Group:
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
 
-        # Stats
+        # Notebook name and path
+        notebook_name = "\n"
+        notebook_name += "[blue bold underline]NOTEBOOK[/blue bold underline]"
+        notebook_name += "[blue bold]:[/blue bold] "
+        notebook_name += f"[green]{self.notebook_metadata.notebook_name}[/green]\n"
+        notebook_name += "[blue bold]    PATH:[/blue bold] "
+        notebook_name += f"[grey50]{self.notebook.path.parent}/"
+        notebook_name += f"[bold]{self.notebook.path.name}[bold][/grey50]\n"
+        yield notebook_name
+
+        # Statistics panels
+        yield "\n[blue bold]STATS[/blue bold]\n"
+
+        # Cells stats
         cells_stats = "\n"
         cells_stats += "[green]Total cells[/green]: "
         cells_stats += f"{self.notebook_stats.number_of_cells}\n"
@@ -177,12 +194,14 @@ class NotebookLinter:
         cells_stats += "[green]Raw cells[/green]: "
         cells_stats += f"{self.notebook_stats.number_of_raw_cells}\n"
 
+        # Markdown stats
         md_stats = "\n"
         md_stats += "[green]Markdown titles[/green]: "
         md_stats += f"{self.notebook_stats.number_of_md_titles}\n"
         md_stats += "[green]Markdown lines[/green]: "
         md_stats += f"{self.notebook_stats.number_of_md_lines}\n"
 
+        # Modularization stats
         modularization_stats = "\n"
         modularization_stats += "[green]Number of functions[/green]: "
         modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
@@ -194,19 +213,14 @@ class NotebookLinter:
             Panel(md_stats, title="Markdown usage"),
             Panel(modularization_stats, title="Code modularization"),
         ]
-
-        rendered_results = Group(
-            f"\n[blue bold]NOTEBOOK:[/blue bold] "
-            f"[green]{self.notebook_metadata.notebook_name}[/green]\n"
-            f"[blue]    PATH:[/blue] "
-            f"[grey50]{self.notebook.path.parent}/"
-            f"[bold]{self.notebook.path.name}[bold][/grey50]\n",
-            Columns(
-                metadata_panels,
-                equal=True,
-            ),
-            "\n[blue bold]RESULTS[/blue bold]\n",
-            self.get_renderable_linting_results(),
-            Rule(),
+        yield Columns(
+            metadata_panels,
+            equal=True,
         )
-        return rendered_results
+
+        # Linting results
+        if self.has_linting_results:
+            yield "\n[blue bold]RESULTS[/blue bold]\n"
+            yield self.get_renderable_linting_results()
+
+        yield Rule()

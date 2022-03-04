@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 from rich.columns import Columns
-from rich.console import Group, group
+from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
 from rich.rule import Rule
 
@@ -66,9 +66,15 @@ class RepoLinter:
             ]
         )
 
-        self.notebook_level_lints = [
+        self.has_linting_results = any([lint.result for lint in self.lints])
+
+        self.notebook_linters = [
             NotebookLinter(notebook) for notebook in self.repo.notebooks
         ]
+
+        self.has_notebook_level_linting_results = any(
+            [linter.has_linting_results for linter in self.notebook_linters]
+        )
 
     @group()
     def get_renderable_linting_results(self):
@@ -78,38 +84,49 @@ class RepoLinter:
 
     @group()
     def get_renderable_nblevel_linting_results(self):
-        for lint in self.notebook_level_lints:
+        for lint in self.notebook_linters:
             yield lint
 
-    def __rich__(self) -> Group:
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+
+        # Repository name
+        repo_name = "\n"
+        repo_name += "[blue bold underline]REPOSITORY[/blue bold underline]"
+        repo_name += "[blue bold]:[/blue bold] "
+        repo_name += f"[green]{self.repository_metadata.repository_name}[/green]\n"
+        yield repo_name
+
+        # Statistics panels
 
         # Stats
         repo_stats = "\n"
-        repo_stats += "[green]Number of notebooks[/green]: "
+        repo_stats += "[green]Analyzed notebooks[/green]: "
         repo_stats += f"{self.repository_stats.number_of_notebooks}\n"
 
         metadata_panels = [Panel(repo_stats, title="Stats")]
+        yield Columns(metadata_panels, equal=True)
+        yield "\n\n"
 
-        rendered_results = Group(
-            f"\n[blue bold underline]REPOSITORY:[/blue bold underline] "
-            f"[green]{self.repository_metadata.repository_name}[/green]\n",
-            Columns(metadata_panels, equal=True),
-            "\n\n",
-            Rule(
+        # Repo-level linting results
+        if self.has_linting_results:
+            yield Rule(
                 "[turquoise2 bold]REPOSITORY-LEVEL RESULTS[/turquoise2 bold]",
                 align="left",
                 style="",
-            ),
-            "\n",
-            self.get_renderable_linting_results(),
-            "\n\n\n",
-            Rule(
+            )
+            yield "\n"
+            yield self.get_renderable_linting_results()
+            yield "\n\n\n"
+
+        # Notebook-level linting results
+        if self.has_notebook_level_linting_results:
+            yield Rule(
                 "[turquoise2 bold]NOTEBOOK-LEVEL RESULTS[/turquoise2 bold]",
                 align="left",
                 style="",
-            ),
-            "\n",
-            self.get_renderable_nblevel_linting_results(),
-            "\n",
-        )
-        return rendered_results
+            )
+            yield "\n"
+            yield self.get_renderable_nblevel_linting_results()
+        yield "\n"
