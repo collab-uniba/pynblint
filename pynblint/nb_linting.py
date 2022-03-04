@@ -182,6 +182,7 @@ cell_level_lints: List[LintDefinition] = [
         description="Empty cells are present in the notebook.",
         recommendation="Keep your notebook clean by deleting unused cells.",
         linting_function=empty_cells,
+        show_details=False,
     ),
     LintDefinition(
         slug="cell-too-long",

@@ -76,6 +76,8 @@ class Cell(RichRenderable):
 
     def __rich__(self) -> Columns:
 
+        counter = self.exec_count or " "
+
         if self.cell_type == CellType.CODE:
             if settings.display_cell_index:
                 panel_title = f"Index: {self.cell_index}"
@@ -83,10 +85,12 @@ class Cell(RichRenderable):
                 panel_title = None
             rendered_cell = Columns(
                 [
-                    f"\nIn [{self.exec_count}]:",
+                    f"\nIn [{counter}]:",
                     Panel(
-                        Syntax(self._source_excerpt, "python"),
-                        width=int(rich.get_console().size[0] * 0.90),
+                        Syntax(
+                            self._source_excerpt, "python", background_color="default"
+                        ),
+                        width=int(rich.get_console().size[0] * 0.85),
                         title=panel_title,
                     ),
                 ]

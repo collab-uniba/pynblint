@@ -81,6 +81,7 @@ class NotebookLinter:
                     lint.recommendation,
                     lint.linting_function,
                     self.notebook,
+                    lint.show_details,
                 )
                 for lint in enabled_cell_level_lints
             ]
