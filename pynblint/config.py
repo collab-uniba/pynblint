@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     included_lints: Optional[Set[str]] = None
     excluded_lints: Optional[Set[str]] = None
     cell_rendering_mode: CellRenderingMode = CellRenderingMode.COMPACT
+    result_details_indentation: int = 5
     display_cell_index: bool = False
     filename_max_length: int = 0
     max_cells_in_notebook: int = 50

@@ -7,6 +7,7 @@ from typing import Callable, List, Optional, Union
 from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.padding import Padding
 
+from .config import settings
 from .notebook import Cell, Notebook
 from .repository import Repository
 
@@ -70,11 +71,13 @@ class NotebookLevelLint(NotebookLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        render = f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
+        yield f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
-        render += "\n"
-        yield render
+            yield Padding(
+                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                (0, 0, 0, settings.result_details_indentation),
+            )
+        yield "\n"
 
 
 class CellLevelLint(NotebookLint):
@@ -105,7 +108,7 @@ class CellLevelLint(NotebookLint):
     @group()
     def get_renderable_affected_cells(self):
         for cell in self.result:
-            yield Padding(cell, (0, 0, 0, 5))
+            yield Padding(cell, (0, 0, 0, settings.result_details_indentation))
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
@@ -114,13 +117,13 @@ class CellLevelLint(NotebookLint):
         if len(self.recommendation):
             yield Padding(
                 f"[italic]Recommendation[/italic]: {self.recommendation}",
-                (0, 0, 0, 5),
+                (0, 0, 0, settings.result_details_indentation),
             )
 
         yield Padding(
             "[italic]Affected cells[/italic]: [grey50]indexes[/grey50]"
             + str([cell.cell_index for cell in self.result]),
-            (0, 0, 0, 5),
+            (0, 0, 0, settings.result_details_indentation),
         )
         if self.show_details:
             yield self.get_renderable_affected_cells()
@@ -170,10 +173,13 @@ class ProjectLevelLint(RepoLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        render = f"[blue bold]({self.slug})[/blue bold]: {self.description}"
+        yield f"[blue bold]({self.slug})[/blue bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
-        yield render
+            yield Padding(
+                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                (0, 0, 0, settings.result_details_indentation),
+            )
+        yield "\n"
 
 
 class PathLevelLint(RepoLint):
@@ -192,11 +198,26 @@ class PathLevelLint(RepoLint):
     def lint(self, repository: Repository) -> List[Path]:
         return self.linting_function(repository)
 
+    @group()
+    def get_renderable_affected_cells(self):
+        for path in self.result:
+            yield Padding(
+                "  •  [yellow]" + str(path) + "[/yellow]",
+                (0, 0, 0, settings.result_details_indentation),
+            )
+
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        render = f"[blue bold]({self.slug})[/blue bold]: {self.description}"
+        yield f"[blue bold]({self.slug})[/blue bold]: {self.description}"
         if len(self.recommendation):
-            render += f"\n\t[italic]Recommendation[/italic]: {self.recommendation}"
-            render += f"\n\t[italic]Affected paths[/italic]: {self.result}"
-        yield render
+            yield Padding(
+                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                (0, 0, 0, settings.result_details_indentation),
+            )
+
+        yield Padding(
+            "[italic]Affected paths[/italic]:",
+            (0, 0, 0, settings.result_details_indentation),
+        )
+        yield self.get_renderable_affected_cells()
