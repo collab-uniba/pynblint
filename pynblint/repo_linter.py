@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List
 
 from pydantic import BaseModel
@@ -32,7 +33,7 @@ class RepoLinter:
         self.repo = repo
         self.options: RepoLinterOptions = RepoLinterOptions()
         self.repository_metadata: RepositoryMetadata = RepositoryMetadata(
-            repository_name=repo.path.name
+            repository_name=repo.path.name or Path.cwd().name
         )
         self.repository_stats: RepositoryStats = RepositoryStats(
             number_of_notebooks=len(repo.notebooks)
@@ -96,6 +97,9 @@ class RepoLinter:
         repo_name += "[blue bold underline]REPOSITORY[/blue bold underline]"
         repo_name += "[blue bold]:[/blue bold] "
         repo_name += f"[green]{self.repository_metadata.repository_name}[/green]\n"
+        repo_name += "[blue bold]      PATH:[/blue bold] "
+        repo_name += f"[grey50]{self.repo.path.resolve().parent}/"
+        repo_name += f"[bold]{self.repo.path.resolve().name}[bold][/grey50]\n"
         yield repo_name
 
         # Statistics panels
