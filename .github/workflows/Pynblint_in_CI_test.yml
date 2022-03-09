@@ -1,4 +1,4 @@
-name: CI
+name: Test Pynblint in CI
 
 on: workflow_dispatch
   
