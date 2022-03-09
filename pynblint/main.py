@@ -13,7 +13,7 @@ from .repo_linter import RepoLinter
 from .repository import GitHubRepository, LocalRepository, Repository
 
 app = typer.Typer()
-console = Console()
+console = Console(force_terminal=True)
 
 
 loader.load_core_modules()
