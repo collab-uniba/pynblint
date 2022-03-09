@@ -1,0 +1,17 @@
+name: CI
+
+on: workflow_dispatch
+  
+jobs:
+  pynblint-in-CI:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+      - name: Run Pynblint on the cwd
+        run: poetry run pynblint .
