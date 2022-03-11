@@ -36,6 +36,11 @@ def main(
             (i.e., the zero-based position of the cell within the notebook) \
             above rendered cells.",
     ),
+    initial_cells: int = typer.Option(
+        None,
+        help="The number of cells (from a notebook beginning) that Pynblint should "
+        'consider as the set of "initial cells" of the notebook',
+    ),
 ):
 
     # Update settings
@@ -44,6 +49,9 @@ def main(
 
     if display_cell_index:
         settings.display_cell_index = True
+
+    if initial_cells:
+        settings.initial_cells = initial_cells
 
     # Main procedure
     console.print("\n")

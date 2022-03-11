@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from . import lint_register as register
-from .cell import Cell
+from .cell import Cell, CellType
 from .config import settings
 from .lint import LintDefinition, LintLevel
 from .notebook import Notebook
@@ -95,6 +95,28 @@ def imports_beyond_first_cell(notebook: Notebook) -> bool:
     return not correct_position
 
 
+def missing_h1_md_heading(notebook: Notebook) -> bool:
+    """Check that the notebook has an H1 Markdown title in the initial cells.
+
+    Args:
+        notebook (Notebook): the notebook to analyze
+
+    Returns:
+        bool: ``True`` if the notebook does not contain an H1 title in the selected set
+            of initial cells; ``False`` otherwise.
+    """
+    initial_nb_cells = notebook.cells[: settings.initial_cells]
+    md_rows = "\n".join(
+        [
+            cell.cell_source
+            for cell in initial_nb_cells
+            if cell.cell_type == CellType.MARKDOWN
+        ]
+    )
+    pattern = re.compile(r"^\s*#\s*[^#]*$")
+    return not any([pattern.match(line) for line in md_rows.splitlines()])
+
+
 # ========== #
 # CELL LEVEL #
 # ========== #
@@ -166,6 +188,14 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Move import statements to the first code cell to make "
         "your notebook dependencies more explicit.",
         linting_function=imports_beyond_first_cell,
+    ),
+    LintDefinition(
+        slug="missing-h1-MD-heading",
+        description="An H1 Markdown heading is missing from the initial cells "
+        "of the notebook.",
+        recommendation="Clarify the notebook subject by writing an H1 Markdown heading "
+        "in one of the initial cells of your notebook.",
+        linting_function=missing_h1_md_heading,
     ),
 ]
 
