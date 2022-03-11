@@ -19,9 +19,10 @@ class Settings(BaseSettings):
     display_cell_index: bool = False
     filename_max_length: int = 0
     max_cells_in_notebook: int = 50
-    max_lines_in_code_cell: int = 25
+    max_lines_in_code_cell: int = 30
     initial_cells: int = 3
     final_cells: int = 3
+    min_md_code_ratio: float = 0.3
 
     # TODO: custom validation: included_lints OR excluded lints must be None
     #       I.e., something like:

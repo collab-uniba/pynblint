@@ -152,6 +152,28 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
     )
 
 
+def too_few_MD_cells(notebook: Notebook) -> bool:
+    """Check that the number of MD cells is adequate.
+
+    Check that the number of MD cells is adequate with respect
+    to the number of code cells.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook contains too few MD cells with respect
+        to the existing code cells; ``False`` otherwise.
+    """
+    n_of_md_cells = len(notebook.markdown_cells)
+    n_of_code_cells = len(notebook.code_cells)
+    if n_of_code_cells:
+        ratio = n_of_md_cells / n_of_code_cells
+        return ratio < settings.min_md_code_ratio
+    else:
+        return False
+
+
 # ========== #
 # CELL LEVEL #
 # ========== #
@@ -184,9 +206,9 @@ def cells_too_long(notebook: Notebook) -> List[Cell]:
 notebook_level_lints: List[LintDefinition] = [
     LintDefinition(
         slug="non-linear-execution",
-        description="Notebook cells have been executed in non-linear order.",
-        recommendation="Re-run your notebook top to bottom to improve "
-        "its reproducibility",
+        description="Notebook cells have been executed in a non-linear order.",
+        recommendation="Re-run your notebook top to bottom to ensure it is "
+        "reproducible.",
         linting_function=non_linear_execution,
     ),
     LintDefinition(
@@ -250,6 +272,15 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Conclude your notebook by describing what you have accomplished"
         " in one or more concluding Markdown cells.",
         linting_function=missing_closing_MD_text,
+    ),
+    LintDefinition(
+        slug="too-few-MD-cells",
+        description="The notebook contains too few Markdown cells compared to code "
+        "cells (the ratio is below the fixed threshold of "
+        f"{settings.min_md_code_ratio*100}%).",
+        recommendation="Describe the steps of your computation by adding "
+        "a few more Markdown cells.",
+        linting_function=too_few_MD_cells,
     ),
 ]
 

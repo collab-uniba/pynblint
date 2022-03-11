@@ -46,6 +46,11 @@ def main(
         help="The number of cells (from the notebook ending) that Pynblint should "
         'consider as the "final cells" of the notebook',
     ),
+    min_md_code_ratio: float = typer.Option(
+        None,
+        help="The minimum ratio of Markdown cells over code cells. "
+        f"Defaults to {settings.min_md_code_ratio}.",
+    ),
 ):
 
     # Update settings
