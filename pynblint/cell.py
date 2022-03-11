@@ -58,7 +58,7 @@ class Cell(RichRenderable):
 
     @property
     def empty(self) -> bool:
-        """``True`` if the code cell is empty."""
+        """Return ``True`` if the code cell is empty."""
         if self.cell_type == CellType.CODE:
             return (self.exec_count is None) and (len(self.cell_source) == 0)
         else:
@@ -66,7 +66,7 @@ class Cell(RichRenderable):
 
     @property
     def non_executed(self) -> bool:
-        """``True`` if the non-empty code cell has not been executed."""
+        """Return ``True`` if the code cell is not empty and has not been executed."""
         if self.cell_type == CellType.CODE:
             return (self.exec_count is None) and (len(self.cell_source) > 0)
         else:
