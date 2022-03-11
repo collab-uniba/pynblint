@@ -8,6 +8,7 @@ from rich.abc import RichRenderable
 from rich.console import Console, ConsoleOptions, RenderResult
 
 from .cell import Cell, CellType
+from .config import settings
 
 
 class Notebook(RichRenderable):
@@ -43,6 +44,14 @@ class Notebook(RichRenderable):
     def markdown_cells(self) -> List[Cell]:
         md_cells = [cell for cell in self.cells if cell.cell_type == CellType.MARKDOWN]
         return md_cells
+
+    @property
+    def initial_cells(self) -> List[Cell]:
+        return self.cells[: settings.initial_cells]
+
+    @property
+    def final_cells(self) -> List[Cell]:
+        return self.cells[-settings.final_cells :]  # noqa: E203
 
     def __len__(self) -> int:
         return len(self.cells)

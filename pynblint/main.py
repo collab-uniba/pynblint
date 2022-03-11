@@ -38,8 +38,13 @@ def main(
     ),
     initial_cells: int = typer.Option(
         None,
-        help="The number of cells (from a notebook beginning) that Pynblint should "
-        'consider as the set of "initial cells" of the notebook',
+        help="The number of cells (from the notebook beginning) that Pynblint should "
+        'consider as the "initial cells" of the notebook',
+    ),
+    final_cells: int = typer.Option(
+        None,
+        help="The number of cells (from the notebook ending) that Pynblint should "
+        'consider as the "final cells" of the notebook',
     ),
 ):
 
@@ -52,6 +57,9 @@ def main(
 
     if initial_cells:
         settings.initial_cells = initial_cells
+
+    if final_cells:
+        settings.final_cells = final_cells
 
     # Main procedure
     console.print("\n")

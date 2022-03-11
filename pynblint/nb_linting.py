@@ -99,22 +99,57 @@ def missing_h1_md_heading(notebook: Notebook) -> bool:
     """Check that the notebook has an H1 Markdown title in the initial cells.
 
     Args:
-        notebook (Notebook): the notebook to analyze
+        notebook (Notebook): the notebook to be analyzed.
 
     Returns:
         bool: ``True`` if the notebook does not contain an H1 title in the selected set
             of initial cells; ``False`` otherwise.
     """
-    initial_nb_cells = notebook.cells[: settings.initial_cells]
     md_rows = "\n".join(
         [
             cell.cell_source
-            for cell in initial_nb_cells
+            for cell in notebook.initial_cells
             if cell.cell_type == CellType.MARKDOWN
         ]
     )
-    pattern = re.compile(r"^\s*#\s*[^#]*$")
+    pattern = re.compile(r"^\s*#\s*[^#\n]*$")
     return not any([pattern.match(line) for line in md_rows.splitlines()])
+
+
+def missing_opening_MD_text(notebook: Notebook) -> bool:
+    """Check that descriptive MD cells are present among the first cells of a notebook.
+
+    Markdown cells containing just Markdown headings do not count.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook has no MD cells among its fist cells;
+            ``False`` otherwise.
+    """
+    return not any(
+        cell.cell_type == CellType.MARKDOWN and not cell.is_heading
+        for cell in notebook.initial_cells
+    )
+
+
+def missing_closing_MD_text(notebook: Notebook) -> bool:
+    """Check that descriptive MD cells are present among the first cells of a notebook.
+
+    Markdown cells containing just Markdown headings do not count.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook has no MD cells among its fist cells;
+            ``False`` otherwise.
+    """
+    return not any(
+        cell.cell_type == CellType.MARKDOWN and not cell.is_heading
+        for cell in notebook.final_cells
+    )
 
 
 # ========== #
@@ -171,7 +206,8 @@ notebook_level_lints: List[LintDefinition] = [
         slug="non-portable-chars-in-nb-name",
         description="The notebook filename contains non-portable characters "
         "(i.e., characters outside the [A-Za-z0-9_.-] charset).",
-        recommendation="Rename your notebook by using characters from [A-Za-z0-9_.-].",
+        recommendation="Rename your notebook by using characters contained "
+        "in the following portable charset: [A-Za-z0-9_.-].",
         linting_function=notebook_named_with_unrestricted_charset,
     ),
     LintDefinition(
@@ -197,6 +233,24 @@ notebook_level_lints: List[LintDefinition] = [
         "in one of the initial cells of your notebook.",
         linting_function=missing_h1_md_heading,
     ),
+    LintDefinition(
+        slug="missing-opening-MD-text",
+        description="The initial notebook cells "
+        f"(i.e., the first {settings.initial_cells} cells in the notebook) "
+        "contain no Markdown text.",
+        recommendation="Begin your notebook by describing what you intend to do "
+        "in one or more introductory Markdown cells.",
+        linting_function=missing_opening_MD_text,
+    ),
+    LintDefinition(
+        slug="missing-closing-MD-text",
+        description="The final notebook cells "
+        f"(i.e., the last {settings.final_cells} cells in the notebook) "
+        "contain no Markdown text.",
+        recommendation="Conclude your notebook by describing what you have accomplished"
+        " in one or more concluding Markdown cells.",
+        linting_function=missing_closing_MD_text,
+    ),
 ]
 
 cell_level_lints: List[LintDefinition] = [
@@ -218,10 +272,10 @@ cell_level_lints: List[LintDefinition] = [
         slug="cell-too-long",
         description="One or more code cells in this notebook are too long "
         "(i.e., they exceed the fixed threshold "
-        f"of {settings.max_lines_in_code_cell} lines.",
-        recommendation="Consider consolidating your code outside the notebook, "
-        "by moving utility functions to a structured and tested codebase. "
-        "Use this notebook to display results, not to compute them.",
+        f"of {settings.max_lines_in_code_cell} lines).",
+        recommendation="Consider consolidating your code outside the notebook "
+        "by moving utility functions to a structured and tested codebase.\n"
+        "Use notebooks to display results, not to compute them.",
         linting_function=cells_too_long,
     ),
 ]

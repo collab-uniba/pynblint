@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     max_cells_in_notebook: int = 50
     max_lines_in_code_cell: int = 25
     initial_cells: int = 3
+    final_cells: int = 3
 
     # TODO: custom validation: included_lints OR excluded lints must be None
     #       I.e., something like:

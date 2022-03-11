@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 
 import rich
@@ -42,7 +43,7 @@ class Cell(RichRenderable):
             self.exec_count: int = self._cell_dict["execution_count"]
 
         # Cell source and source excerpt (for cell visualization with Rich)
-        self.cell_source = self._cell_dict["source"]
+        self.cell_source: str = self._cell_dict["source"]
         self._source_excerpt: str = ""
 
         if settings.cell_rendering_mode == CellRenderingMode.COMPACT:
@@ -74,11 +75,23 @@ class Cell(RichRenderable):
                 "The `non_executed` property is defined only for code cells."
             )
 
+    @property
+    def is_heading(self) -> bool:
+        """Return ``True`` if the cell is an MD cell containing only MD headings."""
+        if self.cell_type == CellType.MARKDOWN:
+            pattern = re.compile(r"^\s*#{1,6}\s*[^#\n]*$")
+            return all(
+                pattern.match(line)
+                for line in self.cell_source.splitlines()
+                if line and (not line.isspace())
+            )
+        else:
+            return False
+
     def __rich__(self) -> Columns:
 
-        counter = self.exec_count or " "
-
         if self.cell_type == CellType.CODE:
+            counter = self.exec_count or " "
             if settings.display_cell_index:
                 panel_title = f"Index: {self.cell_index}"
             else:
