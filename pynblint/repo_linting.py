@@ -1,6 +1,5 @@
 """Linting functions for repositories containing notebooks"""
 
-
 from pathlib import Path
 from typing import List
 
@@ -60,6 +59,29 @@ def duplicate_notebook_filename(repo: Repository) -> List[Path]:
     return paths
 
 
+def unversioned_large_data_files(repo: Repository) -> List[Path]:
+    """Check the presence of unversioned large data files.
+
+    Check wether large data files are versioned with a data version control system.
+
+    Currently, the only data VCS that Pynblint detects is DVC (https://dvc.org).
+    Alternative solutions will be added soon.
+
+    Args:
+        repo (Repository): The repository to be analyzed.
+
+    Returns:
+        List[Path]: the list of large data files that should be put under
+        version control.
+    """
+
+    large_files = repo.large_file_paths
+    if large_files and not Path(repo.path, ".dvc").is_dir():
+        return large_files
+    else:
+        return []
+
+
 # ================= #
 # LINT REGISTRATION #
 # ================= #
@@ -90,7 +112,16 @@ path_level_lints: List[LintDefinition] = [
         recommendation="Use different filenames to make notebooks easy to recognize; "
         "possibly stick to a naming convention.",
         linting_function=duplicate_notebook_filename,
-    )
+    ),
+    LintDefinition(
+        slug="large-data-file-not-versioned",
+        description="Your repository contains one or more data files that are not "
+        "versioned.",
+        recommendation="Use DVC (https://dvc.org) to put your data under "
+        "version control;\nmake your data available by pushing it to one of the "
+        "supported remotes.",
+        linting_function=unversioned_large_data_files,
+    ),
 ]
 
 

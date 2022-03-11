@@ -2,6 +2,7 @@
 .idea/
 .pynblint
 playground.py
+test_data_file.mov
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
