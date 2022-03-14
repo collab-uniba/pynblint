@@ -2,9 +2,15 @@
 name = "pynblint"
 version = "0.1.0"
 description = "A linter for Jupyter notebooks written in Python."
-authors = ["Luigi Quaranta"]
+authors = ["Luigi Quaranta <luigi.quaranta@uniba.it>"]
 license = "MIT License"
 readme = "README.md"
+homepage = "https://pynblint.readthedocs.io/en/latest/"
+repository = "https://github.com/collab-uniba/pynblint"
+keywords = ["Jupyter", "notebook", "lint", "quality assurance", "static analysis"]
+include = [
+    "LICENSE"
+]
 
 [tool.poetry.scripts]
 pynblint = "pynblint.main:app"
