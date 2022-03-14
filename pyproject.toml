@@ -8,6 +8,11 @@ readme = "README.md"
 homepage = "https://pynblint.readthedocs.io/en/latest/"
 repository = "https://github.com/collab-uniba/pynblint"
 keywords = ["Jupyter", "notebook", "lint", "quality assurance", "static analysis"]
+classifiers = [
+    "Environment :: Console",
+    "Framework :: Jupyter",
+    "Topic :: Software Development :: Quality Assurance"
+]
 include = [
     "LICENSE"
 ]
