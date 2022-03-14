@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from typing import Dict
 
 import rich
 from nbformat.notebooknode import NotebookNode
@@ -87,6 +88,17 @@ class Cell(RichRenderable):
             )
         else:
             return False
+
+    def as_dict(self, source: bool = True) -> Dict:
+        cell_dict = {
+            "index": self.cell_index,
+            "type": str(self.cell_type),
+        }
+        if self.cell_type == CellType.CODE:
+            cell_dict["execution_count"] = self.exec_count
+        if source:
+            cell_dict["source"] = self._source_excerpt
+        return cell_dict
 
     def __rich__(self) -> Columns:
 

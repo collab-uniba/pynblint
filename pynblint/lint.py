@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.padding import Padding
@@ -44,6 +44,16 @@ class NotebookLint(ABC):
     @abstractmethod
     def lint(self, notebook: Notebook) -> Union[bool, List[Cell]]:
         pass
+
+    def as_dict(self, description: bool = True, recommendation: bool = True) -> Dict:
+        lint_dict = {
+            "slug": self.slug,
+        }
+        if description:
+            lint_dict["description"] = self.description
+        if recommendation:
+            lint_dict["recommendation"] = self.recommendation
+        return lint_dict
 
     @abstractmethod
     def __rich_console__(
@@ -105,6 +115,11 @@ class CellLevelLint(NotebookLint):
         """
         return self.linting_function(notebook)
 
+    def as_dict(self, description: bool = True, recommendation: bool = True) -> Dict:
+        lint_dict = super().as_dict(description, recommendation)
+        lint_dict["cells"] = [cell.as_dict(source=False) for cell in self.result]
+        return lint_dict
+
     @group()
     def get_renderable_affected_cells(self):
         for cell in self.result:
@@ -146,6 +161,16 @@ class RepoLint(ABC):
     @abstractmethod
     def lint(self, repository: Repository) -> Union[bool, List[Path]]:
         pass
+
+    def as_dict(self, description: bool = True, recommendation: bool = True) -> Dict:
+        lint_dict = {
+            "slug": self.slug,
+        }
+        if description:
+            lint_dict["description"] = self.description
+        if recommendation:
+            lint_dict["recommendation"] = self.recommendation
+        return lint_dict
 
     @abstractmethod
     def __rich_console__(
@@ -197,6 +222,11 @@ class PathLevelLint(RepoLint):
 
     def lint(self, repository: Repository) -> List[Path]:
         return self.linting_function(repository)
+
+    def as_dict(self, description: bool = True, recommendation: bool = True) -> Dict:
+        lint_dict = super().as_dict(description, recommendation)
+        lint_dict["paths"] = [str(path) for path in self.result]
+        return lint_dict
 
     @group()
     def get_renderable_affected_cells(self):

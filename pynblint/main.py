@@ -1,12 +1,16 @@
 """ Entry point of pynblint. Used when running pynblint from the command line. """
 
+import json
+import sys
 from pathlib import Path
+from typing import Union
 
 import typer
 from rich.console import Console
 
 from . import loader
 from .config import CellRenderingMode, settings
+from .exceptions import ExportFormatNotSupportedError
 from .nb_linter import NotebookLinter
 from .notebook import Notebook
 from .repo_linter import RepoLinter
@@ -25,6 +29,22 @@ def main(
     source: str = typer.Argument(..., exists=True),
     from_github: bool = typer.Option(
         None, help="Whether to interpret the source as the URL of a GitHub repository."
+    ),
+    output_file: Path = typer.Option(
+        None,
+        "--output",
+        "--output-file",
+        "-o",
+        help="Path of the output file. Based on the extension of the specified filename"
+        "Pynblint will chose the output format.\n"
+        "Currently, the only supported export format is 'JSON' (extension: `.json`).",
+    ),
+    yes: bool = typer.Option(
+        False,
+        "--yes",
+        "-y",
+        help="Run pynblint non-interactively by always answering 'yes' "
+        "to command-line prompts.",
     ),
     render_full_cells: bool = typer.Option(
         None,
@@ -66,16 +86,26 @@ def main(
     if final_cells:
         settings.final_cells = final_cells
 
+    if min_md_code_ratio:
+        settings.min_md_code_ratio = min_md_code_ratio
+
+    # Prevent accidental overwriting of previous output
+    if output_file.is_file() and not yes:
+        console.print("[red bold]The specified output file already exists.[/red bold]")
+        ans = input("Do you want to overwrite it? (y/n): ")
+        if ans.lower() != "y":
+            sys.exit()
+
     # Main procedure
     console.print("\n")
     console.rule("PYNBLINT", characters="*")
     repo: Repository
+    linter: Union[NotebookLinter, RepoLinter]
 
     if from_github:
         # Analyze GitHub repository
         repo = GitHubRepository(source)
-        repo_linter = RepoLinter(repo)
-        console.print(repo_linter)
+        linter = RepoLinter(repo)
 
     else:
         path: Path = Path(source)
@@ -83,21 +113,30 @@ def main(
         if path.is_dir():
             # Analyze local uncompressed directory
             repo = LocalRepository(path)
-            repo_linter = RepoLinter(repo)
-            console.print(repo_linter)
+            linter = RepoLinter(repo)
 
         elif path.suffix == ".ipynb":
             # Analyze standalone notebook
             with open(path) as notebook_file:
                 nb = Notebook(Path(notebook_file.name))
-                nb_linter = NotebookLinter(nb)
-                console.print(nb_linter)
+                linter = NotebookLinter(nb)
 
         else:
             # Analyze local compressed directory
             repo = LocalRepository(path)
-            repo_linter = RepoLinter(repo)
-            console.print(repo_linter)
+            linter = RepoLinter(repo)
+
+    if output_file:
+        if output_file.suffix == ".json":
+            with open(output_file, "w") as f:
+                json.dump(linter.as_dict(), f)
+        else:
+            raise ExportFormatNotSupportedError(
+                f"The specified output file extension `{output_file.suffix}` "
+                "is not supported yet."
+            )
+
+    console.print(linter)
 
 
 if __name__ == "__main__":

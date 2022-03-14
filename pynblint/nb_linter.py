@@ -1,6 +1,7 @@
 import ast
+import dataclasses
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 from rich.columns import Columns
@@ -159,6 +160,14 @@ class NotebookLinter:
                     if row.lstrip().startswith("#"):
                         titles = titles + 1
         return titles
+
+    def as_dict(self) -> Dict:
+        results_dict = {
+            "notebook_metadata": dataclasses.asdict(self.notebook_metadata),
+            "notebook_stats": dataclasses.asdict(self.notebook_stats),
+            "lints": [lint.as_dict() for lint in self.lints if lint.result],
+        }
+        return results_dict
 
     @group()
     def get_renderable_linting_results(self):

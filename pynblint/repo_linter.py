@@ -1,6 +1,7 @@
+import dataclasses
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from pydantic import BaseModel
 from rich.columns import Columns
@@ -83,10 +84,21 @@ class RepoLinter:
             if lint.result:
                 yield lint
 
+    def as_dict(self) -> Dict:
+        results_dict = {
+            "repository_metadata": dataclasses.asdict(self.repository_metadata),
+            "repository_stats": dataclasses.asdict(self.repository_stats),
+            "lints": [lint.as_dict() for lint in self.lints if lint.result],
+            "notebook_level_lints": [
+                nb_linter.as_dict() for nb_linter in self.notebook_linters
+            ],
+        }
+        return results_dict
+
     @group()
     def get_renderable_nblevel_linting_results(self):
-        for lint in self.notebook_linters:
-            yield lint
+        for linter in self.notebook_linters:
+            yield linter
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
