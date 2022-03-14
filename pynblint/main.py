@@ -90,7 +90,7 @@ def main(
         settings.min_md_code_ratio = min_md_code_ratio
 
     # Prevent accidental overwriting of previous output
-    if output_file.is_file() and not yes:
+    if output_file and output_file.is_file() and not yes:
         console.print("[red bold]The specified output file already exists.[/red bold]")
         ans = input("Do you want to overwrite it? (y/n): ")
         if ans.lower() != "y":
