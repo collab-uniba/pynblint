@@ -90,25 +90,25 @@ For each guideline, we specify the current state of implementation within Pynbli
 - :hourglass_flowing_sand: = "partially implemented / work in progress"
 - :x: = "not on our roadmap"
 
-| State | Best Practice from [\[1\]](#references) |
-| ----- | ---------------------- |
-| :white_check_mark: | Use version control |
-| :white_check_mark: | Manage project dependencies |
-| :hourglass_flowing_sand: | Use self-contained environments |
-| :white_check_mark: | Put imports at the beginning |
-| :white_check_mark: | Ensure re-executability (re-run notebooks top to bottom) |
-| :hourglass_flowing_sand: | Modularize your code |
-| :hourglass_flowing_sand: | Test your code |
-| :white_check_mark: | Name your notebooks consistently |
-| :hourglass_flowing_sand: | Stick to coding standards |
-| :hourglass_flowing_sand: | Use relative paths |
-| :white_check_mark: | Document your analysis |
-| :white_check_mark: | Leverage Markdown headings to structure your notebook |
-| :white_check_mark: | Keep your notebook clean |
-| :white_check_mark: | Keep your notebook concise |
-| :x: | Distinguish production and development artifacts |
-| :hourglass_flowing_sand: | Make your notebooks available |
-| :white_check_mark: | Make your data available |
+| State                    | Best Practice from [\[1\]](#references)                  |
+| ------------------------ | -------------------------------------------------------- |
+| :white_check_mark:       | Use version control                                      |
+| :white_check_mark:       | Manage project dependencies                              |
+| :hourglass_flowing_sand: | Use self-contained environments                          |
+| :white_check_mark:       | Put imports at the beginning                             |
+| :white_check_mark:       | Ensure re-executability (re-run notebooks top to bottom) |
+| :hourglass_flowing_sand: | Modularize your code                                     |
+| :hourglass_flowing_sand: | Test your code                                           |
+| :white_check_mark:       | Name your notebooks consistently                         |
+| :hourglass_flowing_sand: | Stick to coding standards                                |
+| :hourglass_flowing_sand: | Use relative paths                                       |
+| :white_check_mark:       | Document your analysis                                   |
+| :white_check_mark:       | Leverage Markdown headings to structure your notebook    |
+| :white_check_mark:       | Keep your notebook clean                                 |
+| :white_check_mark:       | Keep your notebook concise                               |
+| :x:                      | Distinguish production and development artifacts         |
+| :hourglass_flowing_sand: | Make your notebooks available                            |
+| :white_check_mark:       | Make your data available                                 |
 
 ## License
 
