@@ -23,7 +23,7 @@ To foster the adoption of these best practices, we have created Pynblint, a stat
 
 ![Pynblint screens](https://user-images.githubusercontent.com/13979989/158661765-7a71e646-cde7-4e69-957d-a8f3af440101.svg)
 
-The core linting rules of Pynblint have been derived as operationalizations of the best practices from our catalog. Nonetheless, the plug-in architecture of Pynblint enables its users to easily extend the core set with their own linting rules.
+The core linting rules of Pynblint have been derived as operationalizations of the best practices from our catalog. Nonetheless, the plug-in architecture of Pynblint enables its users to easily extend the core set of checks with their own linting rules.
 
 ## Requirements
 
