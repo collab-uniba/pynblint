@@ -21,6 +21,8 @@ In previous work (see ["Eliciting Best Practices for Collaboration with Computat
 
 To foster the adoption of these best practices, we have created Pynblint, a static analysis tool for Jupyter notebooks written in Python. Pynblint reveals potential notebook defects and recommends corrective actions. It can be operated either as a standalone CLI application or as part of a CI/CD pipeline.
 
+![Pynblint screens](https://user-images.githubusercontent.com/13979989/158661765-7a71e646-cde7-4e69-957d-a8f3af440101.svg)
+
 The core linting rules of Pynblint have been derived as operationalizations of the best practices from our catalog. Nonetheless, the plug-in architecture of Pynblint enables its users to easily extend the core set with their own linting rules.
 
 ## Requirements
