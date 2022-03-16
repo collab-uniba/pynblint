@@ -1,4 +1,4 @@
-# Pynblint
+![Logo](https://user-images.githubusercontent.com/13979989/158653487-149633b8-ba85-4a11-976a-70eabc7d0df0.svg)
 
 [![PyPI version](https://badge.fury.io/py/pynblint.svg)](https://badge.fury.io/py/pynblint)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pynblint)
@@ -31,7 +31,7 @@ Pynblint can be installed with `pip` or another PyPI package manager:
 pip install pynblint
 ```
 
-After installation, we recommend exploring the command-line interface of the tool by running:
+After installation, we recommend exploring the command-line interface of the tool:
 
 ```bash
 pynblint --help
@@ -82,9 +82,13 @@ For further information on the available options, please refer to the project [d
 
 ## Catalog of best practices
 
-In the following, we report the catalog of empirically-validated best practices extracted from our previous work: ["Eliciting Best Practices for Collaboration with Computational Notebooks"](https://arxiv.org/abs/2202.07233)  [\[1\]](#references).
+In the following, we report the catalog of empirically-validated best practices on which Pynblint is based [\[1\]](#references).
 
-For each guideline, we also specify the current state of implementation within Pynblint (:white_check_mark: = "implemented", :hourglass_flowing_sand: = "partially implemented / work in progress", and :x: = not on our roadmap).
+For each guideline, we specify the current state of implementation within Pynblint:
+
+- :white_check_mark: = "implemented"
+- :hourglass_flowing_sand: = "partially implemented / work in progress"
+- :x: = "not on our roadmap"
 
 | State | Best Practice from [\[1\]](#references) |
 | ----- | ---------------------- |
