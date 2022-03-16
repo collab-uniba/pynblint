@@ -1,5 +1,7 @@
 ![Logo](https://user-images.githubusercontent.com/13979989/158653487-149633b8-ba85-4a11-976a-70eabc7d0df0.svg)
 
+<div align="center">
+
 [![PyPI version](https://badge.fury.io/py/pynblint.svg)](https://badge.fury.io/py/pynblint)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pynblint)
 
@@ -8,6 +10,8 @@
 [![codecov](https://codecov.io/gh/collab-uniba/pynblint/branch/master/graph/badge.svg?token=CSX10BJ1CU)](https://codecov.io/gh/collab-uniba/pynblint)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+</div>
 
 Many professional data scientists use Jupyter Notebook to accomplish their daily tasks, from preliminary data exploration to model prototyping. Notebooks' interactivity is particularly convenient for data-centric programming and their self-documenting nature provides excellent support for the communication of analytical results.
 
