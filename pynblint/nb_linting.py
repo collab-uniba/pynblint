@@ -152,6 +152,14 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
     )
 
 
+def Not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
+    """Check if the duplicate notebook has not been renamed.
+
+    I.e., if it was left with the default title: ``notebook-copy.ipynb``.
+    """
+    return notebook.path.name == notebook.path.name + "-copy"
+
+
 def too_few_MD_cells(notebook: Notebook) -> bool:
     """Check that the number of MD cells is adequate.
 
@@ -281,6 +289,12 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Describe the steps of your computation by adding "
         "a few more Markdown cells.",
         linting_function=too_few_MD_cells,
+    ),
+    LintDefinition(
+        slug="Not_renamed_duplicate_notebook",
+        description="The notebook copy still has the default title: notebook-copy.",
+        recommendation="Give it a meaningful title to make it easy to recognize.",
+        linting_function=Not_renamed_duplicate_notebook,
     ),
 ]
 
