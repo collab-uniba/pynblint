@@ -154,11 +154,11 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
 
 def not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
     """Check if the duplicate notebook has not been renamed.
-
-    I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
-    """
     prv = "-Copy" in notebook.path.name
-    return prv
+        I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
+    """
+
+    return notebook.path.name == "Untitled.ipynb"
 
 
 def too_few_MD_cells(notebook: Notebook) -> bool:
