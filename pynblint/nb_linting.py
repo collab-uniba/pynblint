@@ -3,11 +3,11 @@ import ast
 import re
 from typing import List
 
-from . import lint_register as register
-from .cell import Cell, CellType
-from .config import settings
-from .lint import LintDefinition, LintLevel
-from .notebook import Notebook
+from pynblint import lint_register as register
+from pynblint.cell import Cell, CellType
+from pynblint.config import settings
+from pynblint.lint import LintDefinition, LintLevel
+from pynblint.notebook import Notebook
 
 # ============== #
 # NOTEBOOK LEVEL #
@@ -154,11 +154,11 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
 
 def not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
     """Check if the duplicate notebook has not been renamed.
-    prv = "-Copy" in notebook.path.name
-        I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
+
+    I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
     """
 
-    return notebook.path.name == "Untitled.ipynb"
+    return "-Copy" in notebook.path.name
 
 
 def too_few_MD_cells(notebook: Notebook) -> bool:
@@ -293,7 +293,7 @@ notebook_level_lints: List[LintDefinition] = [
     ),
     LintDefinition(
         slug="Not_renamed_duplicate_notebook",
-        description="The notebook copy still has the default title: notebook-Copy.",
+        description="The notebook copy still has the default title: Notebook-Copy.",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=not_renamed_duplicate_notebook,
     ),
