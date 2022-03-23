@@ -37,92 +37,6 @@ def repos():
 
 @pytest.mark.parametrize(
     "test_input,expected",
-    [("FullNotebook2.ipynb", 3), ("FullNotebookFullNotebookFullNotebook.ipynb", 15)],
-)
-def test_count_cells(test_input, expected, notebooks):
-    assert nb_linting.count_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 5)],
-)
-def test_count_md_cells(test_input, expected, notebooks):
-    assert nb_linting.count_md_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("acs,.-e+.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 9)],
-)
-def test_count_code_cells(test_input, expected, notebooks):
-    assert nb_linting.count_code_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 1)],
-)
-def test_count_raw_cells(test_input, expected, notebooks):
-    assert nb_linting.count_raw_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ("FullNotebook2.ipynb", False),
-        ("FullNotebookFullNotebookFullNotebook.ipynb", True),
-    ],
-)
-def test_has_linear_execution_order(test_input, expected, notebooks):
-    assert nb_linting.has_linear_execution_order(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 1), ("FullNotebookFullNotebookFullNotebook.ipynb", 0)],
-)
-def test_count_class_defs(test_input, expected, notebooks):
-    assert nb_linting.count_class_defs(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 1)],
-)
-def test_count_func_defs(test_input, expected, notebooks):
-    assert nb_linting.count_func_defs(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ("FullNotebook2.ipynb", False),
-        ("FullNotebookFullNotebookFullNotebook.ipynb", True),
-    ],
-)
-def test_are_imports_in_first_cell(test_input, expected, notebooks):
-    assert nb_linting.are_imports_in_first_cell(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 8)],
-)
-def test_count_md_lines(test_input, expected, notebooks):
-    assert nb_linting.count_md_lines(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebook2.ipynb", 0), ("FullNotebookFullNotebookFullNotebook.ipynb", 1)],
-)
-def test_count_md_titles(test_input, expected, notebooks):
-    assert nb_linting.count_md_titles(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
     [
         ("FullNotebook2.ipynb", None),
         ("FullNotebookFullNotebookFullNotebook.ipynb", 0.375),
@@ -130,20 +44,6 @@ def test_count_md_titles(test_input, expected, notebooks):
 )
 def test_get_bottom_md_lines_ratio(test_input, expected, notebooks):
     assert nb_linting.get_bottom_md_lines_ratio(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", 0), ("Untitled.ipynb", 2)]
-)
-def test_count_non_executed_cells(test_input, expected, notebooks):
-    assert nb_linting.count_non_executed_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", 0), ("Untitled.ipynb", 1)]
-)
-def test_count_empty_cells(test_input, expected, notebooks):
-    assert nb_linting.count_empty_cells(notebooks[test_input]) == expected
 
 
 @pytest.mark.parametrize(
@@ -158,32 +58,6 @@ def test_count_bottom_non_executed_cells(test_input, expected, notebooks):
 )
 def test_count_bottom_empty_cells(test_input, expected, notebooks):
     assert nb_linting.count_bottom_empty_cells(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", True), ("Untitled.ipynb", False)]
-)
-def test_is_titled(test_input, expected, notebooks):
-    assert nb_linting.is_titled(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected", [("acs,.-e+.ipynb", False), ("Untitled.ipynb", True)]
-)
-def test_is_filename_charset_restricted(test_input, expected, notebooks):
-    assert nb_linting.is_filename_charset_restricted(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("FullNotebookFullNotebookFullNotebook.ipynb", False), ("Untitled.ipynb", True)],
-)
-def test_is_filename_short(test_input, expected, notebooks):
-    max_title_length = 20
-    assert (
-        nb_linting.is_filename_short(notebooks[test_input], max_title_length)
-        == expected
-    )
 
 
 @pytest.mark.parametrize(
