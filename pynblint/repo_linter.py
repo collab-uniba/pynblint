@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from pydantic import BaseModel
 from rich.columns import Columns
 from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
@@ -13,10 +12,6 @@ from .lint import PathLevelLint, ProjectLevelLint, RepoLint
 from .lint_register import enabled_path_level_lints, enabled_project_level_lints
 from .nb_linter import NotebookLinter
 from .repository import Repository
-
-
-class RepoLinterOptions(BaseModel):
-    pass
 
 
 @dataclass
@@ -32,7 +27,6 @@ class RepositoryStats:
 class RepoLinter:
     def __init__(self, repo: Repository) -> None:
         self.repo = repo
-        self.options: RepoLinterOptions = RepoLinterOptions()
         self.repository_metadata: RepositoryMetadata = RepositoryMetadata(
             repository_name=repo.path.name or Path.cwd().name
         )

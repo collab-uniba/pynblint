@@ -1,9 +1,8 @@
 import ast
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from pydantic import BaseModel
 from rich.columns import Columns
 from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
@@ -12,11 +11,6 @@ from rich.rule import Rule
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
 from .notebook import Notebook
-
-
-class NotebookLinterOptions(BaseModel):
-    bottom_size: int = 4
-    filename_max_length: Optional[int] = None
 
 
 @dataclass
@@ -44,7 +38,6 @@ class NotebookStats:
 class NotebookLinter:
     def __init__(self, notebook: Notebook) -> None:
         self.notebook = notebook
-        self.options: NotebookLinterOptions = NotebookLinterOptions()
         self.notebook_metadata: NotebookMetadata = NotebookMetadata(
             notebook_name=notebook.path.name
         )
