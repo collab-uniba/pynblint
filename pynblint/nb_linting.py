@@ -1,13 +1,13 @@
 """Linting functions for notebooks."""
 import ast
 import re
-from typing import List
+from typing import List, Pattern
 
-from pynblint import lint_register as register
-from pynblint.cell import Cell, CellType
-from pynblint.config import settings
-from pynblint.lint import LintDefinition, LintLevel
-from pynblint.notebook import Notebook
+from . import lint_register as register
+from .cell import Cell, CellType
+from .config import settings
+from .lint import LintDefinition, LintLevel
+from .notebook import Notebook
 
 # ============== #
 # NOTEBOOK LEVEL #
@@ -157,8 +157,11 @@ def not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
 
     I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
     """
-
-    return "-Copy" in notebook.path.name
+    res = False
+    pattern: Pattern[str] = re.compile(r".*-Copy\d+.ipynb")
+    if pattern.match(notebook.path.name):
+        res = True
+    return res
 
 
 def too_few_MD_cells(notebook: Notebook) -> bool:
@@ -292,8 +295,9 @@ notebook_level_lints: List[LintDefinition] = [
         linting_function=too_few_MD_cells,
     ),
     LintDefinition(
-        slug="Not_renamed_duplicate_notebook",
-        description="The notebook copy still has the default title: Notebook-Copy.",
+        slug="not-renamed-duplicate-notebook",
+        description="The duplicated notebook still has the default title: "
+        "<source-notebook-name>-Copy<copy-number>.ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=not_renamed_duplicate_notebook,
     ),
