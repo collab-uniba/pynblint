@@ -12,14 +12,14 @@ enabled_project_level_lints: List[LintDefinition] = []
 def exclude_lints(
     available_lints: List[LintDefinition], lints_to_exclude: Set[str]
 ) -> List[LintDefinition]:
-    """Filter the list of lint definitions based on the setting ``excluded_lints``."""
+    """Filter the list of lint definitions based on the setting ``exclude``."""
     return [lint for lint in available_lints if lint.slug not in lints_to_exclude]
 
 
 def include_lints(
     available_lints: List[LintDefinition], lints_to_include: Set[str]
 ) -> List[LintDefinition]:
-    """Filter the list of lint definitions based on the setting ``included_lints``."""
+    """Filter the list of lint definitions based on the setting ``include``."""
 
     return [lint for lint in available_lints if lint.slug in lints_to_include]
 
@@ -27,10 +27,10 @@ def include_lints(
 def register_lints(lint_level: LintLevel, lint_defs: List[LintDefinition]) -> None:
 
     # filter the list of lint definitions based on the settings
-    if settings.excluded_lints:
-        filtered_lint_defs = exclude_lints(lint_defs, settings.excluded_lints)
-    elif settings.included_lints:
-        filtered_lint_defs = include_lints(lint_defs, settings.included_lints)
+    if settings.exclude:
+        filtered_lint_defs = exclude_lints(lint_defs, settings.exclude)
+    elif settings.include:
+        filtered_lint_defs = include_lints(lint_defs, settings.include)
     else:
         filtered_lint_defs = lint_defs
 

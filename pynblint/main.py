@@ -20,10 +20,6 @@ app = typer.Typer()
 console = Console(force_terminal=True)
 
 
-loader.load_core_modules()
-loader.load_plugins(settings.plugins)
-
-
 @app.command()
 def main(
     source: str = typer.Argument(..., exists=True),
@@ -45,6 +41,28 @@ def main(
         "-y",
         help="Run pynblint non-interactively by always answering 'yes' "
         "to command-line prompts.",
+    ),
+    quiet: bool = typer.Option(
+        False,
+        "--quiet",
+        "-q",
+        help="Analyze the supplied input silently "
+        "(i.e., without writing to the standard output).",
+    ),
+    exclude: str = typer.Option(
+        None,
+        "--exclude",
+        "-e",
+        help="List of slugs of the linting rules to be ignored.\n"
+        "Separate slugs with commas; do not use spaces.",
+    ),
+    include: str = typer.Option(
+        None,
+        "--include",
+        "-i",
+        help="List of slugs of the set of included linting rules.\n"
+        "If you use this option, all the remaining linting rules will be ignored.\n"
+        "Separate slugs with commas; do not use spaces.",
     ),
     hide_stats: bool = typer.Option(
         None,
@@ -86,6 +104,12 @@ def main(
 ):
 
     # Update settings
+    if exclude:
+        settings.exclude = set(json.loads(exclude))
+
+    if include:
+        settings.include = set(json.loads(include))
+
     if hide_stats:
         settings.hide_stats = True
 
@@ -114,9 +138,15 @@ def main(
         if ans.lower() != "y":
             sys.exit()
 
-    # Main procedure
-    console.print("\n")
-    console.rule("PYNBLINT", characters="*")
+    # ============== #
+    # Main procedure #
+    # ============== #
+
+    # Load all modules containing linting rules
+    loader.load_core_modules()
+    loader.load_plugins(settings.plugins)
+
+    # Analyze the supplied input
     repo: Repository
     linter: Union[NotebookLinter, RepoLinter]
 
@@ -144,6 +174,7 @@ def main(
             repo = LocalRepository(path)
             linter = RepoLinter(repo)
 
+    # Generate the output file if requested
     if output_file:
         if output_file.suffix == ".json":
             with open(output_file, "w") as f:
@@ -154,7 +185,11 @@ def main(
                 "is not supported yet."
             )
 
-    console.print(linter)
+    # Print the output to the terminal
+    if not quiet:
+        console.print("\n")
+        console.rule("PYNBLINT", characters="*")
+        console.print(linter)
 
 
 if __name__ == "__main__":
