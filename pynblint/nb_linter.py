@@ -8,6 +8,7 @@ from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
 from rich.rule import Rule
 
+from .config import settings
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
 from .notebook import Notebook
@@ -182,47 +183,48 @@ class NotebookLinter:
         notebook_name += f"[bold]{self.notebook.path.name}[bold][/grey50]\n"
         yield notebook_name
 
-        # Statistics panels
-        yield "\n[blue bold]STATS[/blue bold]\n"
+        if not settings.hide_stats:
+            # Statistics panels
+            yield "\n[blue bold]STATISTICS[/blue bold]\n"
 
-        # Cells stats
-        cells_stats = "\n"
-        cells_stats += "[green]Total cells[/green]: "
-        cells_stats += f"{self.notebook_stats.number_of_cells}\n"
-        cells_stats += "[green]Code cells[/green]: "
-        cells_stats += f"{self.notebook_stats.number_of_code_cells}\n"
-        cells_stats += "[green]Markdown cells[/green]: "
-        cells_stats += f"{self.notebook_stats.number_of_MD_cells}\n"
-        cells_stats += "[green]Raw cells[/green]: "
-        cells_stats += f"{self.notebook_stats.number_of_raw_cells}\n"
+            # Cells stats
+            cells_stats = "\n"
+            cells_stats += "[green]Total cells[/green]: "
+            cells_stats += f"{self.notebook_stats.number_of_cells}\n"
+            cells_stats += "[green]Code cells[/green]: "
+            cells_stats += f"{self.notebook_stats.number_of_code_cells}\n"
+            cells_stats += "[green]Markdown cells[/green]: "
+            cells_stats += f"{self.notebook_stats.number_of_MD_cells}\n"
+            cells_stats += "[green]Raw cells[/green]: "
+            cells_stats += f"{self.notebook_stats.number_of_raw_cells}\n"
 
-        # Markdown stats
-        md_stats = "\n"
-        md_stats += "[green]Markdown titles[/green]: "
-        md_stats += f"{self.notebook_stats.number_of_md_titles}\n"
-        md_stats += "[green]Markdown lines[/green]: "
-        md_stats += f"{self.notebook_stats.number_of_md_lines}\n"
+            # Markdown stats
+            md_stats = "\n"
+            md_stats += "[green]Markdown titles[/green]: "
+            md_stats += f"{self.notebook_stats.number_of_md_titles}\n"
+            md_stats += "[green]Markdown lines[/green]: "
+            md_stats += f"{self.notebook_stats.number_of_md_lines}\n"
 
-        # Modularization stats
-        modularization_stats = "\n"
-        modularization_stats += "[green]Number of functions[/green]: "
-        modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
-        modularization_stats += "[green]Number of classes[/green]: "
-        modularization_stats += f"{self.notebook_stats.number_of_classes}\n"
+            # Modularization stats
+            modularization_stats = "\n"
+            modularization_stats += "[green]Number of functions[/green]: "
+            modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
+            modularization_stats += "[green]Number of classes[/green]: "
+            modularization_stats += f"{self.notebook_stats.number_of_classes}\n"
 
-        metadata_panels = [
-            Panel(cells_stats, title="Cells"),
-            Panel(md_stats, title="Markdown usage"),
-            Panel(modularization_stats, title="Code modularization"),
-        ]
-        yield Columns(
-            metadata_panels,
-            equal=True,
-        )
+            metadata_panels = [
+                Panel(cells_stats, title="Cells"),
+                Panel(md_stats, title="Markdown usage"),
+                Panel(modularization_stats, title="Code modularization"),
+            ]
+            yield Columns(
+                metadata_panels,
+                equal=True,
+            )
 
         # Linting results
         if self.has_linting_results:
-            yield "\n[blue bold]RESULTS[/blue bold]\n"
+            yield "\n[blue bold]LINTING RESULTS[/blue bold]\n"
             yield self.get_renderable_linting_results()
 
         yield Rule()

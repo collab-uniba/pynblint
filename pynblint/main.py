@@ -46,6 +46,18 @@ def main(
         help="Run pynblint non-interactively by always answering 'yes' "
         "to command-line prompts.",
     ),
+    hide_stats: bool = typer.Option(
+        None,
+        "--hide-stats",
+        "-S",
+        help='Hide the "STATISTICS" section from the output.',
+    ),
+    hide_recommendations: bool = typer.Option(
+        None,
+        "--hide-recommendations",
+        "-R",
+        help="Hide recommendations from the output.",
+    ),
     render_full_cells: bool = typer.Option(
         None,
         help="Whether to render full cells or just the first & last line of each cell.",
@@ -74,6 +86,12 @@ def main(
 ):
 
     # Update settings
+    if hide_stats:
+        settings.hide_stats = True
+
+    if hide_recommendations:
+        settings.hide_recommendations = True
+
     if render_full_cells:
         settings.cell_rendering_mode = CellRenderingMode.FULL
 

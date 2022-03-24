@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     plugins: List[str] = []
     included_lints: Optional[Set[str]] = None
     excluded_lints: Optional[Set[str]] = None
+    hide_stats: bool = False
+    hide_recommendations: bool = False
     cell_rendering_mode: CellRenderingMode = CellRenderingMode.COMPACT
     result_details_indentation: int = 5
     display_cell_index: bool = False
