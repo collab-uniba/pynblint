@@ -98,7 +98,7 @@ project_level_lints: List[LintDefinition] = [
         slug="dependencies-unmanaged",
         description="No dependency-management tools appear to be used in this project.",
         recommendation="If you are using `pip`, declare your dependencies in a "
-        "`requirements.txt` file. You can do so by running the following command: "
+        "`requirements.txt` file.\nYou can do so by running the following command: "
         "`pip freeze > requirements.txt`.",
         linting_function=dependencies_unmanaged,
     ),

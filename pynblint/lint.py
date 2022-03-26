@@ -81,10 +81,14 @@ class NotebookLevelLint(NotebookLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        yield f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
-        if len(self.recommendation):
+        yield f"[orange3 bold]({self.slug})[/orange3 bold]"
+        yield Padding(
+            f"{self.description}", (0, 0, 0, settings.result_details_indentation)
+        )
+        if not settings.hide_recommendations and len(self.recommendation):
             yield Padding(
-                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                "[bold underline]Recommendation[/bold underline]: "
+                f"{self.recommendation}",
                 (0, 0, 0, settings.result_details_indentation),
             )
         yield "\n"
@@ -128,15 +132,19 @@ class CellLevelLint(NotebookLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        yield f"[orange3 bold]({self.slug})[/orange3 bold]: {self.description}"
-        if len(self.recommendation):
+        yield f"[orange3 bold]({self.slug})[/orange3 bold]"
+        yield Padding(
+            f"{self.description}", (0, 0, 0, settings.result_details_indentation)
+        )
+        if not settings.hide_recommendations and len(self.recommendation):
             yield Padding(
-                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                "[bold underline]Recommendation[/bold underline]: "
+                f"{self.recommendation}",
                 (0, 0, 0, settings.result_details_indentation),
             )
 
         yield Padding(
-            "[italic]Affected cells[/italic]: [grey50]indexes[/grey50]"
+            "[bold underline]Affected cells[/bold underline]: [grey50]indexes[/grey50]"
             + str([cell.cell_index for cell in self.result]),
             (0, 0, 0, settings.result_details_indentation),
         )
@@ -198,10 +206,14 @@ class ProjectLevelLint(RepoLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        yield f"[blue bold]({self.slug})[/blue bold]: {self.description}"
-        if len(self.recommendation):
+        yield f"[blue bold]({self.slug})[/blue bold]"
+        yield Padding(
+            f"{self.description}", (0, 0, 0, settings.result_details_indentation)
+        )
+        if not settings.hide_recommendations and len(self.recommendation):
             yield Padding(
-                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                "[bold underline]Recommendation[/bold underline]: "
+                f"{self.recommendation}",
                 (0, 0, 0, settings.result_details_indentation),
             )
         yield "\n"
@@ -239,15 +251,20 @@ class PathLevelLint(RepoLint):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        yield f"[blue bold]({self.slug})[/blue bold]: {self.description}"
-        if len(self.recommendation):
+        yield f"[blue bold]({self.slug})[/blue bold]"
+        yield Padding(
+            f"{self.description}", (0, 0, 0, settings.result_details_indentation)
+        )
+        if not settings.hide_recommendations and len(self.recommendation):
             yield Padding(
-                f"[italic]Recommendation[/italic]: {self.recommendation}",
+                "[bold underline]Recommendation[/bold underline]: "
+                f"{self.recommendation}",
                 (0, 0, 0, settings.result_details_indentation),
             )
 
         yield Padding(
-            "[italic]Affected paths[/italic]:",
+            "[bold underline]Affected paths[/bold underline]:",
             (0, 0, 0, settings.result_details_indentation),
         )
         yield self.get_renderable_affected_cells()
+        yield "\n"

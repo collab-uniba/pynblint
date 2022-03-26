@@ -3,20 +3,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from pydantic import BaseModel
 from rich.columns import Columns
 from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.panel import Panel
 from rich.rule import Rule
 
+from .config import settings
 from .lint import PathLevelLint, ProjectLevelLint, RepoLint
 from .lint_register import enabled_path_level_lints, enabled_project_level_lints
 from .nb_linter import NotebookLinter
 from .repository import Repository
-
-
-class RepoLinterOptions(BaseModel):
-    pass
 
 
 @dataclass
@@ -32,7 +28,6 @@ class RepositoryStats:
 class RepoLinter:
     def __init__(self, repo: Repository) -> None:
         self.repo = repo
-        self.options: RepoLinterOptions = RepoLinterOptions()
         self.repository_metadata: RepositoryMetadata = RepositoryMetadata(
             repository_name=repo.path.name or Path.cwd().name
         )
@@ -114,16 +109,19 @@ class RepoLinter:
         repo_name += f"[bold]{self.repo.path.resolve().name}[bold][/grey50]\n"
         yield repo_name
 
-        # Statistics panels
+        if not settings.hide_stats:
 
-        # Stats
-        repo_stats = "\n"
-        repo_stats += "[green]Analyzed notebooks[/green]: "
-        repo_stats += f"{self.repository_stats.number_of_notebooks}\n"
+            # Statistics panels
+            yield "\n[blue bold]STATISTICS[/blue bold]\n"
 
-        metadata_panels = [Panel(repo_stats, title="Stats")]
-        yield Columns(metadata_panels, equal=True)
-        yield "\n\n"
+            # Stats
+            repo_stats = "\n"
+            repo_stats += "[green]Analyzed notebooks[/green]: "
+            repo_stats += f"{self.repository_stats.number_of_notebooks}\n"
+
+            metadata_panels = [Panel(repo_stats, title="Stats")]
+            yield Columns(metadata_panels, equal=True)
+            yield "\n\n"
 
         # Repo-level linting results
         if self.has_linting_results:
