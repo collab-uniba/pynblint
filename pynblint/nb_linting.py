@@ -155,7 +155,7 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
 def not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
     """Check if the duplicate notebook has not been renamed.
 
-    I.e., if it was left with the default title: ``notebook-Copy.ipynb``.
+    I.e., if it was left with the default title: ``NotebookBackupCopy.ipynb``.
     """
     res = False
     pattern: Pattern[str] = re.compile(r".*-Copy\d+.ipynb")
