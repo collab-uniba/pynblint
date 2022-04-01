@@ -152,10 +152,11 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
     )
 
 
-def not_renamed_duplicate_notebook(notebook: Notebook) -> bool:
+def duplicate_notebook_not_renamed(notebook: Notebook) -> bool:
     """Check if the duplicate notebook has not been renamed.
 
-    I.e., if it was left with the default title: ``NotebookBackupCopy.ipynb``.
+    I.e., if it was left with the default title:
+    ``<source-notebook-name>-Copy<copy-number>.ipynb``.
     """
     res = False
     pattern: Pattern[str] = re.compile(r".*-Copy\d+.ipynb")
@@ -295,11 +296,11 @@ notebook_level_lints: List[LintDefinition] = [
         linting_function=too_few_MD_cells,
     ),
     LintDefinition(
-        slug="not-renamed-duplicate-notebook",
-        description="The duplicated notebook still has the default title: "
+        slug="duplicate-notebook-not-renamed",
+        description="The duplicate notebook still has the default title: "
         "<source-notebook-name>-Copy<copy-number>.ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
-        linting_function=not_renamed_duplicate_notebook,
+        linting_function=duplicate_notebook_not_renamed,
     ),
 ]
 
