@@ -34,7 +34,11 @@ def untitled_notebook(notebook: Notebook) -> bool:
 
     I.e., if it was left with the default title: ``Untitled.ipynb``.
     """
-    return notebook.path.name == "Untitled.ipynb"
+    res = False
+    pattern: Pattern[str] = re.compile(r"Untitled\d*.ipynb")
+    if pattern.match(notebook.path.name):
+        res = True
+    return res
 
 
 def notebook_named_with_unrestricted_charset(notebook: Notebook) -> bool:
@@ -233,7 +237,8 @@ notebook_level_lints: List[LintDefinition] = [
     ),
     LintDefinition(
         slug="untitled-notebook",
-        description='The notebook still has the default title: "Untitled.ipynb".',
+        description="The notebook still has the default title: "
+        "Untitled<serial-number>.ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=untitled_notebook,
     ),
