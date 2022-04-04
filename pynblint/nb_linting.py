@@ -238,7 +238,7 @@ notebook_level_lints: List[LintDefinition] = [
     LintDefinition(
         slug="untitled-notebook",
         description="The notebook still has the default title: "
-        "Untitled<serial-number>.ipynb",
+        "Untitled[<number>].ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=untitled_notebook,
     ),
