@@ -91,14 +91,3 @@ def test_notebook_named_with_unrestricted_charset(test_input, expected, notebook
 def test_long_filename(test_input, expected, notebooks):
     settings.filename_max_length = 20
     assert nb_linting.long_filename(notebooks[test_input]) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        ("notebook-Copy1.ipynb", True),
-        ("NotebookBackupCopy.ipynb", False),
-    ],
-)
-def test_duplicate_notebook_not_renamed(test_input, expected, notebooks):
-    assert nb_linting.duplicate_notebook_not_renamed(notebooks[test_input]) == expected

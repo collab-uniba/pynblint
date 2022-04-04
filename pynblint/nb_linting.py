@@ -33,6 +33,14 @@ def untitled_notebook(notebook: Notebook) -> bool:
     """Check whether the notebook is untitled.
 
     I.e., if it was left with the default title: ``Untitled.ipynb``.
+
+     Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook was left with the default creation title;
+              ``False`` otherwise.
+
     """
     res = False
     pattern: Pattern[str] = re.compile(r"Untitled\d*.ipynb")
@@ -154,19 +162,6 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
         cell.cell_type == CellType.MARKDOWN and not cell.is_heading
         for cell in notebook.final_cells
     )
-
-
-def duplicate_notebook_not_renamed(notebook: Notebook) -> bool:
-    """Check if the duplicate notebook has not been renamed.
-
-    I.e., if it was left with the default title:
-    ``<source-notebook-name>-Copy<copy-number>.ipynb``.
-    """
-    res = False
-    pattern: Pattern[str] = re.compile(r".*-Copy\d+.ipynb")
-    if pattern.match(notebook.path.name):
-        res = True
-    return res
 
 
 def too_few_MD_cells(notebook: Notebook) -> bool:
@@ -299,13 +294,6 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Describe the steps of your computation by adding "
         "a few more Markdown cells.",
         linting_function=too_few_MD_cells,
-    ),
-    LintDefinition(
-        slug="duplicate-notebook-not-renamed",
-        description="The duplicate notebook still has the default title: "
-        "<source-notebook-name>-Copy<copy-number>.ipynb",
-        recommendation="Give it a meaningful title to make it easy to recognize.",
-        linting_function=duplicate_notebook_not_renamed,
     ),
 ]
 
