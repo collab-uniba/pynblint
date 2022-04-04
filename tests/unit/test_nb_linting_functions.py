@@ -15,11 +15,15 @@ def notebooks() -> Dict[str, Notebook]:
     nb2 = Notebook(Path("tests/fixtures", "FullNotebookFullNotebookFullNotebook.ipynb"))
     nb3 = Notebook(Path("tests/fixtures", "acs,.-e+.ipynb"))
     nb4 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
+    nb5 = Notebook(Path("tests/fixtures", "notebook-Copy1.ipynb"))
+    nb6 = Notebook(Path("tests/fixtures", "NotebookBackupCopy.ipynb"))
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
         "acs,.-e+.ipynb": nb3,
         "Untitled.ipynb": nb4,
+        "notebook-Copy1.ipynb": nb5,
+        "NotebookBackupCopy.ipynb": nb6,
     }
 
 
@@ -87,3 +91,14 @@ def test_notebook_named_with_unrestricted_charset(test_input, expected, notebook
 def test_long_filename(test_input, expected, notebooks):
     settings.filename_max_length = 20
     assert nb_linting.long_filename(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("notebook-Copy1.ipynb", True),
+        ("NotebookBackupCopy.ipynb", False),
+    ],
+)
+def test_duplicate_notebook_not_renamed(test_input, expected, notebooks):
+    assert nb_linting.duplicate_notebook_not_renamed(notebooks[test_input]) == expected
