@@ -157,6 +157,12 @@ def duplicate_notebook_not_renamed(notebook: Notebook) -> bool:
 
     I.e., if it was left with the default title:
     ``<source-notebook-name>-Copy<copy-number>.ipynb``.
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook was left with the default title;
+            ``False`` otherwise.
     """
     res = False
     pattern: Pattern[str] = re.compile(r".*-Copy\d+.ipynb")
