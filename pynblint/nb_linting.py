@@ -32,7 +32,8 @@ def notebook_too_long(notebook: Notebook) -> bool:
 def untitled_notebook(notebook: Notebook) -> bool:
     """Check whether the notebook is untitled.
 
-    I.e., if it was left with the default title: ``Untitled.ipynb``.
+    I.e., The notebook still has the default title:
+       "Untitled[<number>].ipynb",
 
      Args:
         notebook (Notebook): the notebook to be analyzed.
