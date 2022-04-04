@@ -315,6 +315,13 @@ notebook_level_lints: List[LintDefinition] = [
         "a few more Markdown cells.",
         linting_function=too_few_MD_cells,
     ),
+    LintDefinition(
+        slug="duplicate-notebook-not-renamed",
+        description="The duplicate notebook still has the default title: "
+        "<source-notebook-name>-Copy<copy-number>.ipynb",
+        recommendation="Give it a meaningful title to make it easy to recognize.",
+        linting_function=duplicate_notebook_not_renamed,
+    ),
 ]
 
 cell_level_lints: List[LintDefinition] = [
