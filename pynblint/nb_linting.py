@@ -32,9 +32,22 @@ def notebook_too_long(notebook: Notebook) -> bool:
 def untitled_notebook(notebook: Notebook) -> bool:
     """Check whether the notebook is untitled.
 
-    I.e., if it was left with the default title: ``Untitled.ipynb``.
+    I.e., The notebook still has the default title:
+       "Untitled[<number>].ipynb",
+
+     Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook was left with the default creation title;
+              ``False`` otherwise.
+
     """
-    return notebook.path.name == "Untitled.ipynb"
+    res = False
+    pattern: Pattern[str] = re.compile(r"Untitled\d*.ipynb")
+    if pattern.match(notebook.path.name):
+        res = True
+    return res
 
 
 def notebook_named_with_unrestricted_charset(notebook: Notebook) -> bool:
@@ -239,7 +252,8 @@ notebook_level_lints: List[LintDefinition] = [
     ),
     LintDefinition(
         slug="untitled-notebook",
-        description='The notebook still has the default title: "Untitled.ipynb".',
+        description="The notebook still has the default title: "
+        "Untitled[<number>].ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=untitled_notebook,
     ),
@@ -296,17 +310,10 @@ notebook_level_lints: List[LintDefinition] = [
         slug="too-few-MD-cells",
         description="The notebook contains too few Markdown cells compared to code "
         "cells (the ratio is below the fixed threshold of "
-        f"{settings.min_md_code_ratio*100}%).",
+        f"{settings.min_md_code_ratio * 100}%).",
         recommendation="Describe the steps of your computation by adding "
         "a few more Markdown cells.",
         linting_function=too_few_MD_cells,
-    ),
-    LintDefinition(
-        slug="duplicate-notebook-not-renamed",
-        description="The duplicate notebook still has the default title: "
-        "<source-notebook-name>-Copy<copy-number>.ipynb",
-        recommendation="Give it a meaningful title to make it easy to recognize.",
-        linting_function=duplicate_notebook_not_renamed,
     ),
 ]
 
