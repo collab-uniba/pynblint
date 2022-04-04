@@ -70,7 +70,12 @@ def test_empty_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", False), ("Untitled2.ipynb", True)]
+    "test_input,expected",
+    [
+        ("FullNotebook2.ipynb", False),
+        ("Untitled.ipynb", True),
+        ("Untitled2.ipynb", True),
+    ],
 )
 def test_untitled_notebook(test_input, expected, notebooks):
     assert nb_linting.untitled_notebook(notebooks[test_input]) == expected
