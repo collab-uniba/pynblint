@@ -14,16 +14,18 @@ def notebooks() -> Dict[str, Notebook]:
     nb1 = Notebook(Path("tests/fixtures", "FullNotebook2.ipynb"))
     nb2 = Notebook(Path("tests/fixtures", "FullNotebookFullNotebookFullNotebook.ipynb"))
     nb3 = Notebook(Path("tests/fixtures", "acs,.-e+.ipynb"))
-    nb4 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
+    nb4 = Notebook(Path("tests/fixtures", "Untitled2.ipynb"))
     nb5 = Notebook(Path("tests/fixtures", "notebook-Copy1.ipynb"))
     nb6 = Notebook(Path("tests/fixtures", "NotebookBackupCopy.ipynb"))
+    nb7 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
         "acs,.-e+.ipynb": nb3,
-        "Untitled.ipynb": nb4,
+        "Untitled2.ipynb": nb4,
         "notebook-Copy1.ipynb": nb5,
         "NotebookBackupCopy.ipynb": nb6,
+        "Untitled.ipynb": nb7,
     }
 
 
@@ -68,7 +70,7 @@ def test_empty_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", False), ("Untitled.ipynb", True)]
+    "test_input,expected", [("FullNotebook2.ipynb", False), ("Untitled2.ipynb", True)]
 )
 def test_untitled_notebook(test_input, expected, notebooks):
     assert nb_linting.untitled_notebook(notebooks[test_input]) == expected
