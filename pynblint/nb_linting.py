@@ -31,10 +31,19 @@ def notebook_too_long(notebook: Notebook) -> bool:
 
 def untitled_notebook(notebook: Notebook) -> bool:
     """Check whether the notebook is untitled.
-
-    I.e., if it was left with the default title: ``Untitled.ipynb``.
+    I.e., The notebook still has the default title:
+       "Untitled[<number>].ipynb",
+     Args:
+        notebook (Notebook): the notebook to be analyzed.
+    Returns:
+        bool: ``True`` if the notebook was left with the default creation title;
+              ``False`` otherwise.
     """
-    return notebook.path.name == "Untitled.ipynb"
+    res = False
+    pattern: Pattern[str] = re.compile(r"Untitled\d*.ipynb")
+    if pattern.match(notebook.path.name):
+        res = True
+    return res
 
 
 def notebook_named_with_unrestricted_charset(notebook: Notebook) -> bool:
@@ -239,7 +248,8 @@ notebook_level_lints: List[LintDefinition] = [
     ),
     LintDefinition(
         slug="untitled-notebook",
-        description='The notebook still has the default title: "Untitled.ipynb".',
+        description="The notebook still has the default title: "
+        "Untitled[<number>].ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=untitled_notebook,
     ),
