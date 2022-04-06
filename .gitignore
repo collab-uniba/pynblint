@@ -1,6 +1,7 @@
 # Custom ignores
 .idea/
 .pynblint
+conda-out/
 playground.py
 test_data_file.mov
 

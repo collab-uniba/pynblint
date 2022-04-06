@@ -1,0 +1,27 @@
+package:
+  name: "pynblint"
+  version: "0.1.4"
+
+source:
+  url: https://files.pythonhosted.org/packages/64/8f/56ea2fc539d257167c041287a3a8836dda15c1832b8246c29399b1ea3bda/pynblint-0.1.4.tar.gz
+  sha256: 63646c01fadb9b11848c0d07135b65dd7698fc3384f313f8384af77a89aae030
+
+build:
+  noarch: python
+  script: python -m pip install .
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+about:
+  home: https://pynblint.readthedocs.io/en/latest/?badge=latest
+  dev_url: https://github.com/collab-uniba/pynblint
+  doc_url: https://pynblint.readthedocs.io/en/latest/?badge=latest
+  license: MIT
+  license_familY: MIT
+  license_file: LICENSE
+  summary: "A linter for Python Jupyter notebooks"
