@@ -1,27 +1,53 @@
+{% set name = "pynblint" %}
+{% set version = "0.1.4" %}
+
 package:
-  name: "pynblint"
-  version: "0.1.4"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/64/8f/56ea2fc539d257167c041287a3a8836dda15c1832b8246c29399b1ea3bda/pynblint-0.1.4.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pynblint-{{ version }}.tar.gz
   sha256: 63646c01fadb9b11848c0d07135b65dd7698fc3384f313f8384af77a89aae030
 
 build:
+  entry_points:
+    - pynblint = pynblint.main:app
   noarch: python
-  script: python -m pip install .
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
 
 requirements:
   host:
-    - python
     - pip
+    - python >=3.6,<4.0
   run:
-    - python
+    - gitpython >=3.1.26,<4.0.0
+    - ipython <8
+    - nbconvert >=6.4.0,<7.0.0
+    - nbformat >=5.1.3,<6.0.0
+    - pydantic >=1.9.0,<2.0.0
+    - python >=3.6,<4.0
+    - rich >=11.1.0,<12.0.0
+    - typer >=0.4.0,<0.5.0
+
+test:
+  imports:
+    - pynblint
+  commands:
+    - pip check
+    - pynblint --help
+  requires:
+    - pip
 
 about:
-  home: https://pynblint.readthedocs.io/en/latest/?badge=latest
+  home: https://pynblint.readthedocs.io/en/latest/
   dev_url: https://github.com/collab-uniba/pynblint
   doc_url: https://pynblint.readthedocs.io/en/latest/?badge=latest
+  summary: A linter for Jupyter notebooks written in Python.
   license: MIT
   license_familY: MIT
   license_file: LICENSE
-  summary: "A linter for Python Jupyter notebooks"
+
+extra:
+  recipe-maintainers:
+    - louieQ

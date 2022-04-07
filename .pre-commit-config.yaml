@@ -9,6 +9,7 @@ repos:
       - id: check-json
       - id: check-toml
       - id: check-yaml
+        exclude: conda/
       - id: pretty-format-json
         args: [--autofix, --no-ensure-ascii, --no-sort-keys]
       - id: check-ast
