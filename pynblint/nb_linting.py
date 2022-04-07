@@ -90,12 +90,15 @@ def imports_beyond_first_cell(notebook: Notebook) -> bool:
             if line[0:5] != "# In[":
                 cell = cell + "\n" + line
             else:
-                tree = ast.parse(cell)
-                # once it finds a new cell, it checks if there are any import statements
-                # in the previous cell
-                if sum(isinstance(exp, ast.Import) for exp in tree.body) > 0:
-                    correct_position = False
-                    break
+                try:
+                    tree = ast.parse(cell)
+                    # once it finds a new cell, it checks if there are any import
+                    # statements in the previous cell
+                    if sum(isinstance(exp, ast.Import) for exp in tree.body) > 0:
+                        correct_position = False
+                        break
+                except SyntaxError:
+                    pass  # TODO: handle this exception only during notebook creation
         else:
             if line[0:5] == "# In[":
                 # following instructions are from the second cell of code,
@@ -200,6 +203,19 @@ def too_few_MD_cells(notebook: Notebook) -> bool:
         return ratio < settings.min_md_code_ratio
     else:
         return False
+
+
+def invalid_python_syntax(notebook: Notebook) -> bool:
+    """Check if the notebook contains invalid Python syntax in code cells.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook contains invalid Python syntax
+        (as detected by ``ast.parse``); ``False`` otherwise.
+    """
+    return notebook.has_invalid_python_syntax
 
 
 # ========== #
@@ -317,6 +333,12 @@ notebook_level_lints: List[LintDefinition] = [
         "<source-notebook-name>-Copy<copy-number>.ipynb",
         recommendation="Give it a meaningful title to make it easy to recognize.",
         linting_function=duplicate_notebook_not_renamed,
+    ),
+    LintDefinition(
+        slug="invalid-python-syntax",
+        description="One or more notebook cells contain invalid Python syntax.",
+        recommendation="Fix syntax errors in the notebook code cells.",
+        linting_function=invalid_python_syntax,
     ),
 ]
 

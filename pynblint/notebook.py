@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from typing import List
 
@@ -34,6 +35,14 @@ class Notebook(RichRenderable):
         # Convert the notebook to a Python script
         python_exporter = nbconvert.PythonExporter()
         self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
+
+        # Extract the Python abstract syntax tree
+        # (or set `has_invalid_python_syntax` to True)
+        self.has_invalid_python_syntax: bool = False
+        try:
+            self.ast = ast.parse(self.script)
+        except SyntaxError:
+            self.has_invalid_python_syntax = True
 
     @property
     def code_cells(self) -> List[Cell]:
