@@ -1,7 +1,7 @@
 import ast
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from rich.columns import Columns
 from rich.console import Console, ConsoleOptions, RenderResult, group
@@ -28,8 +28,8 @@ class NotebookStats:
     number_of_raw_cells: int
 
     # Modularization
-    number_of_functions: int
-    number_of_classes: int
+    number_of_functions: Optional[int]
+    number_of_classes: Optional[int]
 
     # Markdown usage
     number_of_md_lines: int
@@ -120,18 +120,28 @@ class NotebookLinter:
                 counter = counter + 1
         return counter
 
-    def count_func_defs(self):
+    def count_func_defs(self) -> Optional[int]:
         """Computes the total number of function definitions within a notebook."""
-        code = self.notebook.script
-        tree = ast.parse(code)
-        f_num = sum(isinstance(exp, ast.FunctionDef) for exp in tree.body)
+
+        # If the input notebook contains invalid Python syntax, the number of function
+        # definitions cannot be determined (as its count is based on `ast`).
+        if self.notebook.has_invalid_python_syntax:
+            return None
+
+        f_num = sum(isinstance(exp, ast.FunctionDef) for exp in self.notebook.ast.body)
         return f_num
 
-    def count_class_defs(self):
+    def count_class_defs(self) -> Optional[int]:
         """Computes the total number of class definitions within a notebook."""
-        code = self.notebook.script
-        tree = ast.parse(code)
-        class_def_num = sum(isinstance(exp, ast.ClassDef) for exp in tree.body)
+
+        # If the input notebook contains invalid Python syntax, the number of class
+        # definitions cannot be determined (as its count is based on `ast`).
+        if self.notebook.has_invalid_python_syntax:
+            return None
+
+        class_def_num = sum(
+            isinstance(exp, ast.ClassDef) for exp in self.notebook.ast.body
+        )
         return class_def_num
 
     def count_md_lines(self) -> int:
@@ -205,18 +215,23 @@ class NotebookLinter:
             md_stats += "[green]Markdown lines[/green]: "
             md_stats += f"{self.notebook_stats.number_of_md_lines}\n"
 
-            # Modularization stats
-            modularization_stats = "\n"
-            modularization_stats += "[green]Number of functions[/green]: "
-            modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
-            modularization_stats += "[green]Number of classes[/green]: "
-            modularization_stats += f"{self.notebook_stats.number_of_classes}\n"
-
             metadata_panels = [
                 Panel(cells_stats, title="Cells"),
                 Panel(md_stats, title="Markdown usage"),
-                Panel(modularization_stats, title="Code modularization"),
             ]
+
+            if not self.notebook.has_invalid_python_syntax:
+                # Modularization stats
+                modularization_stats = "\n"
+                modularization_stats += "[green]Number of functions[/green]: "
+                modularization_stats += f"{self.notebook_stats.number_of_functions}\n"
+                modularization_stats += "[green]Number of classes[/green]: "
+                modularization_stats += f"{self.notebook_stats.number_of_classes}\n"
+
+                metadata_panels.append(
+                    Panel(modularization_stats, title="Code modularization")
+                )
+
             yield Columns(
                 metadata_panels,
                 equal=True,

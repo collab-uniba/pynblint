@@ -17,6 +17,7 @@ def notebooks() -> Dict[str, Notebook]:
     nb4 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     nb5 = Notebook(Path("tests/fixtures", "notebook-Copy1.ipynb"))
     nb6 = Notebook(Path("tests/fixtures", "NotebookBackupCopy.ipynb"))
+    nb7 = Notebook(Path("tests/fixtures", "InvalidSyntax.ipynb"))
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
@@ -24,6 +25,7 @@ def notebooks() -> Dict[str, Notebook]:
         "Untitled.ipynb": nb4,
         "notebook-Copy1.ipynb": nb5,
         "NotebookBackupCopy.ipynb": nb6,
+        "InvalidSyntax.ipynb": nb7,
     }
 
 
@@ -102,3 +104,11 @@ def test_long_filename(test_input, expected, notebooks):
 )
 def test_duplicate_notebook_not_renamed(test_input, expected, notebooks):
     assert nb_linting.duplicate_notebook_not_renamed(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [("FullNotebook2.ipynb", False), ("InvalidSyntax.ipynb", True)],
+)
+def test_invalid_python_syntax(test_input, expected, notebooks):
+    assert nb_linting.invalid_python_syntax(notebooks[test_input]) == expected
