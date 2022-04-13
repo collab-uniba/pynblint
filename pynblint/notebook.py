@@ -35,6 +35,7 @@ class Notebook(RichRenderable):
 
         # Convert the notebook to a Python script
         python_exporter = nbconvert.PythonExporter()
+        python_exporter.exclude_markdown
         self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
 
         # Extract the Python abstract syntax tree
