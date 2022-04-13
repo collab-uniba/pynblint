@@ -19,6 +19,7 @@ def notebooks() -> Dict[str, Notebook]:
     nb6 = Notebook(Path("tests/fixtures", "NotebookBackupCopy.ipynb"))
     nb7 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     nb8 = Notebook(Path("tests/fixtures", "InvalidSyntax.ipynb"))
+    nb9 = Notebook(Path("tests/fixtures", "NonExecutedNotebook.ipynb"))
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
@@ -28,6 +29,7 @@ def notebooks() -> Dict[str, Notebook]:
         "NotebookBackupCopy.ipynb": nb6,
         "Untitled.ipynb": nb7,
         "InvalidSyntax.ipynb": nb8,
+        "NonExecutedNotebook.ipynb": nb9,
     }
 
 
@@ -45,6 +47,18 @@ def test_non_linear_execution(test_input, expected, notebooks):
 @pytest.mark.parametrize(
     "test_input,expected",
     [
+        ("Untitled.ipynb", False),
+        ("NonExecutedNotebook.ipynb", True),
+        ("FullNotebook2.ipynb", False),
+    ],
+)
+def test_non_executed_notebook(test_input, expected, notebooks):
+    assert nb_linting.non_executed_notebook(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
         ("FullNotebook2.ipynb", True),
         ("FullNotebookFullNotebookFullNotebook.ipynb", False),
     ],
@@ -54,7 +68,12 @@ def test_imports_beyond_first_cell(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize(
-    "test_input,expected", [("FullNotebook2.ipynb", 0), ("Untitled.ipynb", 2)]
+    "test_input,expected",
+    [
+        ("FullNotebook2.ipynb", 0),
+        ("Untitled.ipynb", 2),
+        ("NonExecutedNotebook.ipynb", 0),
+    ],
 )
 def test_non_executed_cells(test_input, expected, notebooks):
     non_executed_cells_list: List[Cell] = nb_linting.non_executed_cells(

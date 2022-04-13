@@ -31,6 +31,7 @@ class Notebook(RichRenderable):
             Cell(cell_index, cell_dict)
             for cell_index, cell_dict in enumerate(self.nb_dict.cells)
         ]
+        self.non_executed = all([cell.non_executed for cell in self.code_cells])
 
         # Convert the notebook to a Python script
         python_exporter = nbconvert.PythonExporter()
