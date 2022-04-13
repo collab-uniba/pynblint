@@ -218,14 +218,34 @@ def invalid_python_syntax(notebook: Notebook) -> bool:
     return notebook.has_invalid_python_syntax
 
 
+def non_executed_notebook(notebook: Notebook) -> bool:
+    """Check if all the notebook code cells are not executed.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if all code cells in the notebook are not executed;
+        ``False`` otherwise.
+    """
+    return notebook.non_executed
+
+
 # ========== #
 # CELL LEVEL #
 # ========== #
 
 
 def non_executed_cells(notebook: Notebook) -> List[Cell]:
-    """Check the existence of non executed cells and return their list."""
-    return [cell for cell in notebook.code_cells if cell.non_executed]
+    """Check the existence of non executed cells and return their list.
+
+    This check is deactivated when the whole notebook is non-executed.
+    """
+
+    if notebook.non_executed:
+        return []
+    else:
+        return [cell for cell in notebook.code_cells if cell.non_executed]
 
 
 def empty_cells(notebook: Notebook) -> List[Cell]:
@@ -339,6 +359,13 @@ notebook_level_lints: List[LintDefinition] = [
         description="One or more notebook cells contain invalid Python syntax.",
         recommendation="Fix syntax errors in the notebook code cells.",
         linting_function=invalid_python_syntax,
+    ),
+    LintDefinition(
+        slug="non-executed-notebook",
+        description="All code cells in this notebook are not executed.",
+        recommendation="Before committing, run your notebook top to bottom to ensure "
+        "that all cells are executed.",
+        linting_function=non_executed_notebook,
     ),
 ]
 
