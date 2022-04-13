@@ -32,7 +32,7 @@ ipython = "<8"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.2.8"
-black = "^21.12b0"
+black = "^22.3.0"
 pytest = "^6.2.5"
 bandit = "^1.7.1"
 mypy = "^0.931"
