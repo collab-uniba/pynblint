@@ -33,8 +33,9 @@ class Notebook(RichRenderable):
         ]
         self.non_executed = all([cell.non_executed for cell in self.code_cells])
 
-        # Convert the notebook to a Python script
+        # Convert the notebook to a Python script (excluding Markdown cells)
         python_exporter = nbconvert.PythonExporter()
+        python_exporter.exclude_markdown
         self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
 
         # Extract the Python abstract syntax tree
