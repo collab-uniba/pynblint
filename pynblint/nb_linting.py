@@ -262,6 +262,20 @@ def cells_too_long(notebook: Notebook) -> List[Cell]:
     ]
 
 
+def detect_multiline_comment(notebook: Notebook) -> List[Cell]:
+    """check if the notebook has multiline comment.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook have 3 or more line of comment
+            ``False`` otherwise.
+    """
+    pattern: Pattern[str] = re.compile(r".*#.+\n#.+\n#.+\n*")
+    return [cell for cell in notebook.code_cells if pattern.match(cell.cell_source)]
+
+
 # ================= #
 # LINT REGISTRATION #
 # ================= #
@@ -342,7 +356,7 @@ notebook_level_lints: List[LintDefinition] = [
         slug="too-few-MD-cells",
         description="The notebook contains too few Markdown cells compared to code "
         "cells (the ratio is below the fixed threshold of "
-        f"{settings.min_md_code_ratio*100}%).",
+        f"{settings.min_md_code_ratio * 100}%).",
         recommendation="Describe the steps of your computation by adding "
         "a few more Markdown cells.",
         linting_function=too_few_MD_cells,
@@ -383,6 +397,14 @@ cell_level_lints: List[LintDefinition] = [
         recommendation="Keep your notebook clean by deleting unused cells.",
         linting_function=empty_cells,
         show_details=False,
+    ),
+    LintDefinition(
+        slug="multiline_comment_detected",
+        description="the notebook has an excessive number "
+        "of consecutive comment lines.",
+        recommendation="Use Markdown formatted text to allow "
+        "for greater notebook readability.",
+        linting_function=detect_multiline_comment,
     ),
     LintDefinition(
         slug="cell-too-long",
