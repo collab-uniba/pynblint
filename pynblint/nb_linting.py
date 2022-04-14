@@ -262,7 +262,7 @@ def cells_too_long(notebook: Notebook) -> List[Cell]:
     ]
 
 
-def detect_multiline_comment(notebook: Notebook) -> List[Cell]:
+def long_multiline_python_comment(notebook: Notebook) -> List[Cell]:
     """check if the notebook has multiline comment.
 
     Args:
@@ -272,8 +272,15 @@ def detect_multiline_comment(notebook: Notebook) -> List[Cell]:
         bool: ``True`` if the notebook have 3 or more line of comment
             ``False`` otherwise.
     """
-    pattern: Pattern[str] = re.compile(r".*#.+\n#.+\n#.+\n*")
-    return [cell for cell in notebook.code_cells if pattern.match(cell.cell_source)]
+    pattern: Pattern[str] = re.compile("#.*\n*")
+
+    return [
+        cell
+        for cell in notebook.code_cells
+        if pattern.match(cell.cell_source)
+        for i in range(settings.max_multiline_python_comment)
+        if pattern.match(cell.cell_source) and i.numerator == 0
+    ]
 
 
 # ================= #
@@ -399,12 +406,12 @@ cell_level_lints: List[LintDefinition] = [
         show_details=False,
     ),
     LintDefinition(
-        slug="multiline_comment_detected",
-        description="the notebook has an excessive number "
-        "of consecutive comment lines.",
-        recommendation="Use Markdown formatted text to allow "
-        "for greater notebook readability.",
-        linting_function=detect_multiline_comment,
+        slug="long_multiline_python_comment",
+        description="Many consecutive comment lines detected",
+        recommendation="Prefer Markdown formatted text to long Python comments "
+        "to improve the notebook readability and deliver a "
+        "rich narrative of your analysis.",
+        linting_function=long_multiline_python_comment,
     ),
     LintDefinition(
         slug="cell-too-long",

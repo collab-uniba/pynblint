@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     final_cells: int = 3
     min_md_code_ratio: float = 0.3
     max_data_file_size: int = 10 * 1000000  # 10MB
+    max_multiline_python_comment = 3
 
     # TODO: custom validation: included_lints OR excluded lints must be None
     #       I.e., something like:

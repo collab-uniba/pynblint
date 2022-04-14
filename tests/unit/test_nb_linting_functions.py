@@ -89,8 +89,8 @@ def test_non_executed_cells(test_input, expected, notebooks):
         ("NotebookBackupCopy.ipynb", 0),
     ],
 )
-def test_detect_multiline_comment(test_input, expected, notebooks):
-    multiline_comment_list: List[Cell] = nb_linting.detect_multiline_comment(
+def test_long_multiline_python_comment(test_input, expected, notebooks):
+    multiline_comment_list: List[Cell] = nb_linting.long_multiline_python_comment(
         notebooks[test_input]
     )
     assert len(multiline_comment_list) == expected
