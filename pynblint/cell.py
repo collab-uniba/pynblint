@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Dict
+from typing import Dict, Optional
 
 import rich
 from nbformat.notebooknode import NotebookNode
@@ -22,11 +22,17 @@ class CellType(str, Enum):
 
 
 class Cell(RichRenderable):
-    def __init__(self, cell_index: int, cell_dict: NotebookNode) -> None:
+    def __init__(
+        self,
+        cell_index: int,
+        cell_dict: NotebookNode,
+        cell_offset: Optional[int] = None,
+    ) -> None:
         """Pynblint's representation of a notebook cell."""
 
         self.cell_index: int = cell_index
         self._cell_dict: NotebookNode = cell_dict
+        self.cell_offset: Optional[int] = cell_offset
 
         # Cell type
         self.cell_type: CellType
