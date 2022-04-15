@@ -271,16 +271,11 @@ def long_multiline_python_comment(notebook: Notebook) -> List[Cell]:
     Returns:
         bool: ``True`` if the notebook have 3 or more line of comment
             ``False`` otherwise.
-    """
-    pattern: Pattern[str] = re.compile("#.*\n*")
 
-    return [
-        cell
-        for cell in notebook.code_cells
-        if pattern.match(cell.cell_source)
-        for i in range(settings.max_multiline_python_comment)
-        if pattern.match(cell.cell_source) and i.numerator == 0
-    ]
+    """
+    pattern: Pattern[str] = re.compile("([^\\S\r\n]*#.*\n*){3,}")
+
+    return [cell for cell in notebook.code_cells if pattern.match(cell.cell_source)]
 
 
 # ================= #
