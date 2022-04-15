@@ -69,7 +69,8 @@ class Notebook(RichRenderable):
         # Convert the notebook to a Python script (excluding Markdown cells)
         python_exporter = nbconvert.PythonExporter()
         python_exporter.exclude_markdown = True
-        self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
+        script, _ = python_exporter.from_notebook_node(self.nb_dict)
+        self.script = script.rstrip("\n")
 
         # Lint notebook code with Pylint
         pylint_results: Optional[List[str]] = self.lint_notebook_code_with_pylint()
