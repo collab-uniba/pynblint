@@ -402,10 +402,10 @@ cell_level_lints: List[LintDefinition] = [
     ),
     LintDefinition(
         slug="long_multiline_python_comment",
-        description="Many consecutive comment lines detected",
-        recommendation="Prefer Markdown formatted text to long Python comments "
-        "to improve the notebook readability and deliver a "
-        "rich narrative of your analysis.",
+        description="One or more code cells in this notebook contain Python comments "
+        f"of {settings.max_multiline_python_comment} or more consecutive lines.",
+        recommendation="For improved notebook readability, prefer using Markdown "
+        "formatted text to long multiline Python comments.",
         linting_function=long_multiline_python_comment,
     ),
     LintDefinition(
