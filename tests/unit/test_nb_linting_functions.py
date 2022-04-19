@@ -85,7 +85,7 @@ def test_non_executed_cells(test_input, expected, notebooks):
 @pytest.mark.parametrize(
     "test_input,expected",
     [
-        ("notebook-Copy1.ipynb", 1),
+        ("notebook-Copy1.ipynb", 2),
         ("NotebookBackupCopy.ipynb", 0),
     ],
 )
