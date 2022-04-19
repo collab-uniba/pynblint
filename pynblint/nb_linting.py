@@ -273,7 +273,10 @@ def long_multiline_python_comment(notebook: Notebook) -> List[Cell]:
             ``False`` otherwise.
 
     """
-    pattern: Pattern[str] = re.compile("([^\\S\r\n]*#.*\n*){3,}")
+
+    pattern: Pattern[str] = re.compile(
+        rf"([^\\S\r\n]*#.*\n*){{{settings.max_multiline_python_comment},}}"
+    )
 
     return [cell for cell in notebook.code_cells if pattern.match(cell.cell_source)]
 
