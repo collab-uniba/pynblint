@@ -83,6 +83,20 @@ def test_non_executed_cells(test_input, expected, notebooks):
 
 
 @pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("notebook-Copy1.ipynb", 2),
+        ("NotebookBackupCopy.ipynb", 0),
+    ],
+)
+def test_long_multiline_python_comment(test_input, expected, notebooks):
+    multiline_comment_list: List[Cell] = nb_linting.long_multiline_python_comment(
+        notebooks[test_input]
+    )
+    assert len(multiline_comment_list) == expected
+
+
+@pytest.mark.parametrize(
     "test_input,expected", [("FullNotebook2.ipynb", 0), ("Untitled.ipynb", 1)]
 )
 def test_empty_cells(test_input, expected, notebooks):
