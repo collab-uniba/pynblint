@@ -9,10 +9,9 @@ import nbconvert
 import nbformat
 from nbformat.notebooknode import NotebookNode
 from pylint import epylint
-from rich.abc import RichRenderable
 from rich.console import Console, ConsoleOptions, RenderResult
 
-from .cell import Cell, CellType
+from .cell import Cell, CodeCell, MarkdownCell, RawCell
 from .config import settings
 
 
@@ -25,7 +24,7 @@ class PylintResult:
     msg: str
 
 
-class Notebook(RichRenderable):
+class Notebook:
     """
     This class stores the representations of a notebook
     on which pynblint functions are called
@@ -57,9 +56,11 @@ class Notebook(RichRenderable):
                 )
                 code_cells_so_far += 1
                 code_lines_so_far += len(cell_dict["source"].splitlines())
-                self.cells.append(Cell(cell_index, cell_dict, cell_offset))
+                self.cells.append(CodeCell(cell_index, cell_dict, cell_offset))
+            elif cell_dict["cell_type"] == "markdown":
+                self.cells.append(MarkdownCell(cell_index, cell_dict))
             else:
-                self.cells.append(Cell(cell_index, cell_dict))
+                self.cells.append(RawCell(cell_index, cell_dict))
         # self.cells: List[Cell] = [
         #     Cell(cell_index, cell_dict)
         #     for cell_index, cell_dict in enumerate(self.nb_dict.cells)
@@ -87,13 +88,13 @@ class Notebook(RichRenderable):
             self.has_invalid_python_syntax = True
 
     @property
-    def code_cells(self) -> List[Cell]:
-        code_cells = [cell for cell in self.cells if cell.cell_type == CellType.CODE]
+    def code_cells(self) -> List[CodeCell]:
+        code_cells = [cell for cell in self.cells if isinstance(cell, CodeCell)]
         return code_cells
 
     @property
-    def markdown_cells(self) -> List[Cell]:
-        md_cells = [cell for cell in self.cells if cell.cell_type == CellType.MARKDOWN]
+    def markdown_cells(self) -> List[MarkdownCell]:
+        md_cells = [cell for cell in self.cells if isinstance(cell, MarkdownCell)]
         return md_cells
 
     @property

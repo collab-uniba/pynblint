@@ -3,7 +3,6 @@ from typing import Dict, Optional, Union
 
 import rich
 from nbformat.notebooknode import NotebookNode
-from rich.abc import RichRenderable
 from rich.columns import Columns
 from rich.padding import Padding
 from rich.panel import Panel
@@ -13,7 +12,7 @@ from .config import CellRenderingMode, settings
 from .rich_extensions import NotebookMarkdown
 
 
-class Cell(RichRenderable):
+class Cell:
     def __init__(
         self,
         cell_index: int,
@@ -44,6 +43,10 @@ class Cell(RichRenderable):
         if source:
             cell_dict["source"] = self._source_excerpt
         return cell_dict
+
+    def __rich__(self) -> Columns:
+        rendered_cell = Columns()
+        return rendered_cell
 
 
 class MarkdownCell(Cell):
@@ -130,6 +133,5 @@ class RawCell(Cell):
         cell_dict["type"] = self._cell_dict["cell_type"]
         return cell_dict
 
-    def __rich__(self) -> str:
-        rendered_cell = ""
-        return rendered_cell
+    def __rich__(self) -> Columns:
+        return super().__rich__()

@@ -4,7 +4,7 @@ import re
 from typing import List, Pattern
 
 from . import lint_register as register
-from .cell import Cell, CellType
+from .cell import Cell, MarkdownCell
 from .config import settings
 from .lint import LintDefinition, LintLevel
 from .notebook import Notebook
@@ -121,7 +121,7 @@ def missing_h1_md_heading(notebook: Notebook) -> bool:
         [
             cell.cell_source
             for cell in notebook.initial_cells
-            if cell.cell_type == CellType.MARKDOWN
+            if isinstance(cell, MarkdownCell)
         ]
     )
     pattern = re.compile(r"^\s*#\s*[^#\n]*$")
@@ -141,7 +141,7 @@ def missing_opening_MD_text(notebook: Notebook) -> bool:
             ``False`` otherwise.
     """
     return not any(
-        cell.cell_type == CellType.MARKDOWN and not cell.is_heading
+        isinstance(cell, MarkdownCell) and not cell.is_heading
         for cell in notebook.initial_cells
     )
 
@@ -159,7 +159,7 @@ def missing_closing_MD_text(notebook: Notebook) -> bool:
             ``False`` otherwise.
     """
     return not any(
-        cell.cell_type == CellType.MARKDOWN and not cell.is_heading
+        isinstance(cell, MarkdownCell) and not cell.is_heading
         for cell in notebook.final_cells
     )
 
