@@ -19,7 +19,9 @@ class Notebook(RichRenderable):
     """
 
     def __init__(self, path: Path):
+        self.imported_package = None
         self.path: Path = path
+        self.missing_requiremet: set
 
         # Read the notebook with nbformat
         with open(self.path) as f:
@@ -44,6 +46,10 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
+        self.imported_package = self._get_import_package_set()
+        #  non posso accedere ai set creati nella classe Repository,
+        #  come dovrei procedere?
+        # self.missing_requiremet = self.imported_package.difference(Repository.)
 
     @property
     def code_cells(self) -> List[Cell]:
@@ -62,6 +68,20 @@ class Notebook(RichRenderable):
     @property
     def final_cells(self) -> List[Cell]:
         return self.cells[-settings.final_cells :]  # noqa: E203
+
+    def _get_import_package_set(self):
+        import_set = set()
+        for node in ast.walk(self.ast):
+            if isinstance(node, ast.Import):
+                for name in node.names:
+                    import_set.add(name.name.split(".")[0])
+            elif isinstance(node, ast.ImportFrom):
+                if node.level > 0:
+                    # Relative imports always refer to the current package.
+                    continue
+                # assert node.module
+                import_set.add(node.module.split(".")[0])
+        return import_set
 
     def __len__(self) -> int:
         return len(self.cells)

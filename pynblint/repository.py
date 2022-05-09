@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import zipfile
 from abc import ABC
@@ -23,6 +24,8 @@ class Repository(ABC):
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
+        self.dependencies_module: set = self._get_dependencies()
+        self.core_library: set = self._get_core_dependecies()
 
     def retrieve_notebooks(self):
 
@@ -66,6 +69,50 @@ class Repository(ABC):
                 if os.path.getsize(file_path) > settings.max_data_file_size:
                     large_files.append(file_path)
         return large_files
+
+    def _get_dependencies(self) -> set:
+        dependencies = set()
+        for root, dirs, files in os.walk(self.path):
+            for f in files:
+                # check if exist a requiremets.txt file
+                if f.endswith("requirements.txt"):
+                    try:
+                        with open((Path(root) / Path(f)), "r") as fi:
+                            file_row = fi.read()
+                            # print(file_row)
+                            tmp = file_row.split("\n")
+                            for item in tmp:
+                                dependencies.add(item)
+                            # dependencies.add(file_row)
+                            # dependencies.add(file_row)
+                    except Exception as e:
+                        print(e)
+                elif f.endswith("poetry.lock"):
+                    continue
+                elif f.endswith("pyproject.toml"):
+                    continue
+                elif f.endswith("environment.yml"):
+                    continue
+                elif f.endswith("setup.py"):
+                    continue
+                elif f.endswith("Pipfile"):
+                    continue
+        # print(dependencies)
+
+        return dependencies
+
+    def _get_core_dependecies(self) -> set:
+        coredependecies = set()
+        # path = None
+        for i in sys.path:
+            if i.endswith("\\lib\\site-packages"):
+                for root, dirs, files in os.walk(i):
+                    for f in files:
+                        if f.endswith(".py"):
+                            coredependecies.add(f)
+                break
+
+        return coredependecies
 
 
 class LocalRepository(Repository):
@@ -114,7 +161,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-
         self.url = github_url
 
         # Clone the repo in a temp directory
