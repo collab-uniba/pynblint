@@ -19,7 +19,7 @@ class Notebook(RichRenderable):
     """
 
     def __init__(self, path: Path):
-        self.imported_package = None
+        self.imported_packages = None
         self.path: Path = path
         self.missing_requiremet: set
 
@@ -46,7 +46,7 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
-        self.imported_package = self._get_import_package_set()
+        self.imported_packages = self._get_import_package_set()
         #  non posso accedere ai set creati nella classe Repository,
         #  come dovrei procedere?
         # self.missing_requiremet = self.imported_package.difference(Repository.)

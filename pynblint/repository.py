@@ -1,10 +1,11 @@
 import os
+import re
 import sys
 import tempfile
 import zipfile
 from abc import ABC
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Pattern
 
 import git
 
@@ -21,10 +22,11 @@ class Repository(ABC):
 
         # Repository info
         self.path = path
+        self.dependencies_module: set
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
-        self.dependencies_module: set = self._get_dependencies()
+        self.dependencies_module = self._get_dependencies()
         self.core_library: set = self._get_core_dependecies()
 
     def retrieve_notebooks(self):
@@ -72,45 +74,36 @@ class Repository(ABC):
 
     def _get_dependencies(self) -> set:
         dependencies = set()
-        for root, dirs, files in os.walk(self.path):
-            for f in files:
-                # check if exist a requiremets.txt file
-                if f.endswith("requirements.txt"):
-                    try:
-                        with open((Path(root) / Path(f)), "r") as fi:
-                            file_row = fi.read()
-                            # print(file_row)
-                            tmp = file_row.split("\n")
-                            for item in tmp:
-                                dependencies.add(item)
-                            # dependencies.add(file_row)
-                            # dependencies.add(file_row)
-                    except Exception as e:
-                        print(e)
-                elif f.endswith("poetry.lock"):
-                    continue
-                elif f.endswith("pyproject.toml"):
-                    continue
-                elif f.endswith("environment.yml"):
-                    continue
-                elif f.endswith("setup.py"):
-                    continue
-                elif f.endswith("Pipfile"):
-                    continue
+        path = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.dirname(path)
+        # siccome il file di requirement si toverà nella root di
+        # progetto ho creato un file fittizio con le stesse
+        # informazioni per non spostare quello pre-esistente
+        file = "kk.txt"
+        final_path = os.path.join(path, file)
+        with open(final_path, "r") as fi:
+            file_row = fi.read()
+            tmp = file_row.split("\n")
+            for item in tmp:
+                item.strip()
+                dependencies.add(tuple(item.split("==")))
+
         # print(dependencies)
 
         return dependencies
 
+    # momentaneamente la lascio qui ma quando ma dovo la sposterò
+    # perchè ovviamente non è una funzione che riguarda il repository
     def _get_core_dependecies(self) -> set:
         coredependecies = set()
-        # path = None
-        for i in sys.path:
-            if i.endswith("\\lib\\site-packages"):
-                for root, dirs, files in os.walk(i):
-                    for f in files:
-                        if f.endswith(".py"):
-                            coredependecies.add(f)
-                break
+        modules = sys.modules
+        pattern: Pattern[str] = re.compile(r".*\\\\Python\\\\Python37\\\\lib\\\\.*.py")
+        for i in modules.items():
+            # print(" PPOSIZIONE 0:" + i[0])
+            # print(" PPOSIZIONE 1:" + str(i))
+            if pattern.match(str(i)):
+                coredependecies.add(i[0])
+        print(coredependecies)
 
         return coredependecies
 
