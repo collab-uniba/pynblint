@@ -231,7 +231,27 @@ def non_executed_notebook(notebook: Notebook) -> bool:
     return notebook.non_executed
 
 
-# ========== #
+def function_or_class_never_tested(notebook: Notebook) -> bool:
+    """Check whether the notebook have function or class not tested"""
+
+    func_class_set = set()
+    for node in ast.walk(notebook.ast):
+        if isinstance(node, ast.FunctionDef):
+            for name in node.name:
+                func_class_set.add(name.split(".")[0])
+        elif isinstance(node, ast.ClassDef):
+            func_class_set.add(node.name.split(".")[0])
+
+    if len(func_class_set) > 0:
+        # qui dovrei inserire il contrtrollo sul boolean
+        # 'has_test_file' contenuto nel repository
+        return True
+    else:
+        return False
+
+    # ========== #
+
+
 # CELL LEVEL #
 # ========== #
 
@@ -385,6 +405,13 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Before committing, run your notebook top to bottom to ensure "
         "that all cells are executed.",
         linting_function=non_executed_notebook,
+    ),
+    LintDefinition(
+        slug="function-or-class-not-tested",
+        description="the notebook contains untested functions or classes.",
+        recommendation="Before committing, be sure to always test your "
+        "functions and classes for greater code coverage.",
+        linting_function=function_or_class_never_tested,
     ),
 ]
 

@@ -23,6 +23,14 @@ class Repository(ABC):
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
+        self.has_test_file: bool = self._has_test_file()
+
+    def _has_test_file(self) -> bool:
+        final_path = os.path.join(self.path, "coverage.py")
+        if os.path.exists(final_path):
+            return True
+        else:
+            return False
 
     def retrieve_notebooks(self):
 
@@ -114,7 +122,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-
         self.url = github_url
 
         # Clone the repo in a temp directory

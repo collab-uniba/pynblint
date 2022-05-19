@@ -152,3 +152,11 @@ def test_long_filename(test_input, expected, notebooks):
 )
 def test_invalid_python_syntax(test_input, expected, notebooks):
     assert nb_linting.invalid_python_syntax(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [("FullNotebook2.ipynb", True), ("NotebookBackupCopy.ipynb", False)],
+)
+def test_function_or_class_never_tested(test_input, expected, notebooks):
+    assert nb_linting.function_or_class_never_tested(notebooks[test_input]) == expected
