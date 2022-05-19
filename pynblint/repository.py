@@ -33,7 +33,7 @@ class Repository(ABC):
         self.core_library: set = self._get_core_dependecies()
         self.toml_dependencies: set = self._get_toml_dependencies()
         self.yaml_dependencies: set = self._get_yaml_dependencies()
-        self.Pipfile_dependencies: set = self._get_Pipfile_dependencies
+        self.Pipfile_dependencies: set = self._get_Pipfile_dependencies()
         self.setup_dependencies: set = self._get_Setup_dependencies()
 
     def retrieve_notebooks(self):
@@ -137,7 +137,6 @@ class Repository(ABC):
 
         return toml_config
 
-    @property
     def _get_Pipfile_dependencies(self) -> set:
         pip_dependencies = set()
         tmp = str()
@@ -160,7 +159,7 @@ class Repository(ABC):
                     tmp = tmp2.group()
                     if len(tmp) > 0:
                         pip_dependencies.add(tmp.strip())
-        print(pip_dependencies)
+        # print(pip_dependencies)
 
         return pip_dependencies
 
