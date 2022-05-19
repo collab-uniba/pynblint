@@ -1,13 +1,16 @@
 import os
 import re
-import sys
 import tempfile
 import zipfile
 from abc import ABC
 from pathlib import Path
-from typing import List, Optional, Pattern
+from typing import List, Optional
 
 import git
+from isort.stdlibs.py39 import stdlib
+from pipfile import Pipfile
+from toml import dumps, loads
+from yaml import dump, safe_load
 
 from .config import settings
 from .notebook import Notebook
@@ -26,8 +29,12 @@ class Repository(ABC):
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
-        self.dependencies_module = self._get_dependencies()
+        self.dependencies_module = self._get_txt_dependencies()
         self.core_library: set = self._get_core_dependecies()
+        self.toml_dependencies: set = self._get_toml_dependencies()
+        self.yaml_dependencies: set = self._get_yaml_dependencies()
+        self.Pipfile_dependencies: set = self._get_Pipfile_dependencies
+        self.setup_dependencies: set = self._get_Setup_dependencies()
 
     def retrieve_notebooks(self):
 
@@ -72,39 +79,118 @@ class Repository(ABC):
                     large_files.append(file_path)
         return large_files
 
-    def _get_dependencies(self) -> set:
-        dependencies = set()
-        path = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.dirname(path)
-        # siccome il file di requirement si toverà nella root di
-        # progetto ho creato un file fittizio con le stesse
-        # informazioni per non spostare quello pre-esistente
-        file = "kk.txt"
-        final_path = os.path.join(path, file)
-        with open(final_path, "r") as fi:
-            file_row = fi.read()
-            tmp = file_row.split("\n")
-            for item in tmp:
-                item.strip()
-                dependencies.add(tuple(item.split("==")))
+    def _get_txt_dependencies(self) -> set:
+        txt_dependencies = set()
+        final_path = os.path.join(self.path, "reqirement.txt")
+        if os.path.exists(final_path):
+            with open(final_path, "r") as fi:
+                file_row = fi.read()
+                tmp = file_row.split("\n")
+                for item in tmp:
+                    item.strip()
+                    txt_dependencies.add(item.split("==")[0])
+            # print("TXT DEPENDENCIES: \n")
+            # print(txt_dependencies)
 
-        # print(dependencies)
+        return txt_dependencies
 
-        return dependencies
+    def _get_yaml_dependencies(self) -> set:
+        yaml_config = set()
+        final_path = os.path.join(self.path, "enviroment.yaml")
+        if os.path.exists(final_path):
+            with open(final_path, "r") as fi:
+                file_row = fi.read()
+                data = safe_load(file_row)
+                data_sorted = dump(data, sort_keys=True)
+                data_line = data_sorted.split("\n")
+                pattern = re.compile(r".*(-)\s(\w*){1}(\d)*(==).*$")
+                for i in data_line:
+                    if pattern.match(i):
+                        tmp = i.replace("-", "")
+                        tmp = tmp.split("==")[0]
+                        yaml_config.add(tmp)
+                # print("\n after add:\n")
+                # for i in yaml_config:
+                # print(i)
 
-    # momentaneamente la lascio qui ma quando ma dovo la sposterò
-    # perchè ovviamente non è una funzione che riguarda il repository
+        return yaml_config
+
+    def _get_toml_dependencies(self) -> set:
+        toml_config = set()
+        final_path = os.path.join(self.path, "pyproject.toml")
+        if os.path.exists(final_path):
+            with open(final_path, "r") as fi:
+                file_row = fi.read()
+                tmp = loads(file_row)
+                new_toml_string = dumps(tmp)
+                tmp_str = new_toml_string.split("\n")
+                # print("\n\ntoml file: \n")
+                pattern = re.compile(r".*(\w){1}(\d)*\s(=)\s\"\^(\d.)+$")
+                for item in tmp_str:
+                    if pattern.match(item):
+                        item = item.replace("^", " ")
+                        item = item.split("=")[0]
+                        toml_config.add(item)
+                """print("\nafter add\n\n")
+                for i in toml_config:
+                    print(i)"""
+
+        return toml_config
+
+    @property
+    def _get_Pipfile_dependencies(self) -> set:
+        pip_dependencies = set()
+        tmp = str()
+        pattern = re.compile(r"^(\w)*(\d)*")
+        final_path = os.path.join(self.path, "Pipfile")
+
+        if os.path.exists(final_path):
+            parsed = Pipfile.load(filename=final_path)
+            row_data = parsed.contents
+            # il motivo per cui ho svolto in questo modo i successivi
+            # 2 passaggi vorrei spiegarglielo durante il prossimo meeting
+            low = row_data.find("[dev-packages]") + len("[dev-packages]")
+            high = row_data.find("[scripts]")
+            row3 = row_data[low:high]
+            row3.strip()
+
+            for i in row3.split("\n"):
+                tmp2 = re.search(pattern, i)
+                if tmp2 is not None:
+                    tmp = tmp2.group()
+                    if len(tmp) > 0:
+                        pip_dependencies.add(tmp.strip())
+        print(pip_dependencies)
+
+        return pip_dependencies
+
+    def _get_Setup_dependencies(self) -> set:
+        setup_dependencies = set()
+        final_path = os.path.join(self.path, "setup.py")
+        if os.path.exists(final_path):
+            with open(final_path, "r") as fi:
+                file_row = fi.read()
+                tmp_str = file_row.split("\n")
+                pattern = re.compile(r".*\"(\w)*\s(>)*(<)*(=)*\s(\d.)*(.\d)*\"")
+                for item in tmp_str:
+                    if pattern.match(item):
+                        item.strip()
+                        item = item.replace("    install_requires=[", "")
+                        item = item.replace("]", "")
+                        item = item.replace('"', "")
+                        item = item.replace("<", "")
+                        item = item.replace(">", "")
+                        item_split = item.split(",")
+                        for i in item_split:
+                            setup_dependencies.add(i.split("=")[0].strip())
+                        # for k in setup_dependencies:
+                        # print(k)
+        return setup_dependencies
+
     def _get_core_dependecies(self) -> set:
         coredependecies = set()
-        modules = sys.modules
-        pattern: Pattern[str] = re.compile(r".*\\\\Python\\\\Python37\\\\lib\\\\.*.py")
-        for i in modules.items():
-            # print(" PPOSIZIONE 0:" + i[0])
-            # print(" PPOSIZIONE 1:" + str(i))
-            if pattern.match(str(i)):
-                coredependecies.add(i[0])
-        print(coredependecies)
-
+        for name in sorted(stdlib):
+            coredependecies.add(name)
         return coredependecies
 
 

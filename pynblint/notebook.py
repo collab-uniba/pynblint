@@ -46,9 +46,8 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
-        self.imported_packages = self._get_import_package_set()
-        #  non posso accedere ai set creati nella classe Repository,
-        #  come dovrei procedere?
+        # self.imported_packages = self._get_import_package_set()
+
         # self.missing_requiremet = self.imported_package.difference(Repository.)
 
     @property
