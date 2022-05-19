@@ -232,7 +232,15 @@ def non_executed_notebook(notebook: Notebook) -> bool:
 
 
 def function_or_class_never_tested(notebook: Notebook) -> bool:
-    """Check whether the notebook have function or class not tested"""
+    """Check whether the notebook have function or class not tested
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed.
+
+    Returns:
+        bool: ``True`` if the notebook contains class or function
+        but not the coverage file; ``False`` otherwise.
+    """
 
     func_class_set = set()
     for node in ast.walk(notebook.ast):
@@ -241,7 +249,6 @@ def function_or_class_never_tested(notebook: Notebook) -> bool:
                 func_class_set.add(name.split(".")[0])
         elif isinstance(node, ast.ClassDef):
             func_class_set.add(node.name.split(".")[0])
-
     if len(func_class_set) > 0:
         # qui dovrei inserire il contrtrollo sul boolean
         # 'has_test_file' contenuto nel repository
