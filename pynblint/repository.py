@@ -33,8 +33,8 @@ class Repository(ABC):
         self.core_library: set = self._get_core_dependecies()
         self.toml_dependencies: set = self._get_toml_dependencies()
         self.yaml_dependencies: set = self._get_yaml_dependencies()
-        self.Pipfile_dependencies: set = self._get_Pipfile_dependencies()
-        self.setup_dependencies: set = self._get_Setup_dependencies()
+        self.pipfile_dependencies: set = self._get_pipfile_dependencies()
+        self.setup_dependencies: set = self._get_setup_dependencies()
 
     def retrieve_notebooks(self):
 
@@ -137,7 +137,7 @@ class Repository(ABC):
 
         return toml_config
 
-    def _get_Pipfile_dependencies(self) -> set:
+    def _get_pipfile_dependencies(self) -> set:
         pip_dependencies = set()
         tmp = str()
         pattern = re.compile(r"^(\w)*(\d)*")
@@ -147,7 +147,7 @@ class Repository(ABC):
             parsed = Pipfile.load(filename=final_path)
             row_data = parsed.contents
             # il motivo per cui ho svolto in questo modo i successivi
-            # 2 passaggi vorrei spiegarglielo durante il prossimo meeting
+            # 3 passaggi vorrei spiegarglielo durante il prossimo meeting
             low = row_data.find("[dev-packages]") + len("[dev-packages]")
             high = row_data.find("[scripts]")
             row3 = row_data[low:high]
@@ -158,12 +158,13 @@ class Repository(ABC):
                 if tmp2 is not None:
                     tmp = tmp2.group()
                     if len(tmp) > 0:
-                        pip_dependencies.add(tmp.strip())
-        # print(pip_dependencies)
+                        pip_dependencies.add(tmp)
+        print(pip_dependencies)
+        # print(type(pip_dependencies))
 
         return pip_dependencies
 
-    def _get_Setup_dependencies(self) -> set:
+    def _get_setup_dependencies(self) -> set:
         setup_dependencies = set()
         final_path = os.path.join(self.path, "setup.py")
         if os.path.exists(final_path):
