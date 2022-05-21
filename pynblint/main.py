@@ -10,11 +10,10 @@ from rich.console import Console
 
 from . import loader
 from .config import CellRenderingMode, settings
+from .core_models import GitHubRepository, LocalRepository, Notebook, Repository
 from .exceptions import ExportFormatNotSupportedError
 from .nb_linter import NotebookLinter
-from .notebook import Notebook
 from .repo_linter import RepoLinter
-from .repository import GitHubRepository, LocalRepository, Repository
 
 app = typer.Typer()
 console = Console(force_terminal=True)

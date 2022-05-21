@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import List
 
 from . import lint_register as register
+from .core_models import Repository
 from .lint import LintDefinition, LintLevel
-from .repository import Repository
 
 # ============= #
 # PROJECT LEVEL #

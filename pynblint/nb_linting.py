@@ -4,10 +4,9 @@ import re
 from typing import List, Pattern
 
 from . import lint_register as register
-from .cell import Cell, CellType
 from .config import settings
+from .core_models import Cell, CellType, Notebook
 from .lint import LintDefinition, LintLevel
-from .notebook import Notebook
 
 # ============== #
 # NOTEBOOK LEVEL #

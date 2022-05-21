@@ -3,8 +3,7 @@ from pathlib import Path
 import pytest
 
 from pynblint import nb_linting, repo_linting
-from pynblint.notebook import Notebook
-from pynblint.repository import LocalRepository
+from pynblint.core_models import LocalRepository, Notebook
 
 if __name__ == "__main__":
     pytest.main()

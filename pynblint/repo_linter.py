@@ -9,10 +9,10 @@ from rich.panel import Panel
 from rich.rule import Rule
 
 from .config import settings
+from .core_models import Repository
 from .lint import PathLevelLint, ProjectLevelLint, RepoLint
 from .lint_register import enabled_path_level_lints, enabled_project_level_lints
 from .nb_linter import NotebookLinter
-from .repository import Repository
 
 
 @dataclass
