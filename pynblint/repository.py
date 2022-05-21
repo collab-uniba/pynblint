@@ -142,7 +142,6 @@ class Repository(ABC):
         tmp = str()
         pattern = re.compile(r"^(\w)*(\d)*")
         final_path = os.path.join(self.path, "Pipfile")
-
         if os.path.exists(final_path):
             parsed = Pipfile.load(filename=final_path)
             row_data = parsed.contents
@@ -159,8 +158,6 @@ class Repository(ABC):
                     tmp = tmp2.group()
                     if len(tmp) > 0:
                         pip_dependencies.add(tmp)
-        print(pip_dependencies)
-        # print(type(pip_dependencies))
 
         return pip_dependencies
 

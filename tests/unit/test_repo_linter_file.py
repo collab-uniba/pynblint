@@ -51,18 +51,14 @@ def test__get_yaml_dependencies(test_input, expected, repo_linters):
     assert Repository._get_yaml_dependencies(repo_linters[test_input]) == expected
 
 
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [("Pipfile", len(set()) > 0)],
-)
-def test__get_Pipfile_dependencies(test_input, expected, repo_linters):
-
-    assert Repository._get_pipfile_dependencies == expected
+@pytest.mark.parametrize("test_input,expected", [("Pipfile", set())])
+def test__get_pipfile_dependencies(test_input, expected, repo_linters):
+    assert Repository._get_pipfile_dependencies(repo_linters[test_input]) == expected
 
 
 @pytest.mark.parametrize(
     "test_input,expected",
     [("setup.py", set())],
 )
-def test__get_Setup_dependencies(test_input, expected, repo_linters):
+def test__get_setup_dependencies(test_input, expected, repo_linters):
     assert Repository._get_setup_dependencies(repo_linters[test_input]) == expected
