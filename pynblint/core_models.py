@@ -47,7 +47,7 @@ class Repository(ABC):
             dirs[:] = [d for d in dirs if d not in dirs_ignore]
             for f in files:
                 if f.endswith(".ipynb"):
-                    nb = Notebook(Path(root) / Path(f))
+                    nb = Notebook(Path(root) / Path(f), self)
                     self.notebooks.append(nb)
 
     @property
@@ -267,8 +267,9 @@ class Notebook(RichRenderable):
     on which pynblint functions are called
     """
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, repository: Optional[Repository] = None):
         self.path: Path = path
+        self.repository: Optional[Repository] = repository
 
         # Read the notebook with nbformat
         with open(self.path) as f:
