@@ -1,6 +1,6 @@
 import ast
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 import nbconvert
 import nbformat
@@ -19,9 +19,7 @@ class Notebook(RichRenderable):
     """
 
     def __init__(self, path: Path):
-        self.imported_packages = None
         self.path: Path = path
-        self.missing_requiremet: set
 
         # Read the notebook with nbformat
         with open(self.path) as f:
@@ -46,7 +44,9 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
-        self.imported_packages = self._get_import_package_set()
+
+        # Get the set of imported Python packages
+        self.imported_packages: Set = self._get_imported_packages()
 
         # self.missing_requiremet = self.imported_package.difference(Repository.)
 
@@ -68,8 +68,8 @@ class Notebook(RichRenderable):
     def final_cells(self) -> List[Cell]:
         return self.cells[-settings.final_cells :]  # noqa: E203
 
-    def _get_import_package_set(self):
-        import_set = set()
+    def _get_imported_packages(self) -> Set:
+        import_set: Set = set()
         for node in ast.walk(self.ast):
             if isinstance(node, ast.Import):
                 for name in node.names:
@@ -78,8 +78,8 @@ class Notebook(RichRenderable):
                 if node.level > 0:
                     # Relative imports always refer to the current package.
                     continue
-                # assert node.module
-                import_set.add(node.module.split(".")[0])
+                if node.module:
+                    import_set.add(node.module.split(".")[0])
         return import_set
 
     def __len__(self) -> int:
