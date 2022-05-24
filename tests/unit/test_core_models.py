@@ -24,4 +24,4 @@ def notebooks() -> Dict[str, Notebook]:
     ],
 )
 def test_get_imported_packages(test_input, expected, notebooks):
-    assert Notebook.get_imported_packages(notebooks[test_input]) == expected
+    assert Notebook._get_imported_packages(notebooks[test_input]) == expected

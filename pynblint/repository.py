@@ -92,6 +92,8 @@ class Repository(ABC):
         return path
 
     def _get_dependencies_from_txt(self) -> set:
+        """this function after fetching the location of the
+        .txt file reads it and scans it for dependencies"""
         txt_dependencies = set()
         path = self.retrieve_file(name="requirement.txt")
         with open(path, "r") as fi:

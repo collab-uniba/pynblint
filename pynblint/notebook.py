@@ -48,8 +48,6 @@ class Notebook(RichRenderable):
         # Get the set of imported Python packages
         self.imported_packages: Set = self._get_imported_packages()
 
-        # self.missing_requiremet = self.imported_package.difference(Repository.)
-
     @property
     def code_cells(self) -> List[Cell]:
         code_cells = [cell for cell in self.cells if cell.cell_type == CellType.CODE]
