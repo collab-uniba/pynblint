@@ -46,7 +46,7 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
-        self.imported_packages = self._get_import_package_set()
+        self.imported_packages = self.get_imported_packages()
 
         # self.missing_requiremet = self.imported_package.difference(Repository.)
 
@@ -68,18 +68,19 @@ class Notebook(RichRenderable):
     def final_cells(self) -> List[Cell]:
         return self.cells[-settings.final_cells :]  # noqa: E203
 
-    def _get_import_package_set(self):
+    def get_imported_packages(self) -> set:
         import_set = set()
         for node in ast.walk(self.ast):
             if isinstance(node, ast.Import):
                 for name in node.names:
-                    import_set.add(name.name.split(".")[0])
+                    if node.names is not None:
+                        import_set.add(name.name.split(".")[0])
             elif isinstance(node, ast.ImportFrom):
                 if node.level > 0:
                     # Relative imports always refer to the current package.
                     continue
-                # assert node.module
-                import_set.add(node.module.split(".")[0])
+                elif node.module is not None:
+                    import_set.add(node.module.split(".")[0])
         return import_set
 
     def __len__(self) -> int:
