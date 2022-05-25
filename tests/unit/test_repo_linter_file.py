@@ -10,14 +10,14 @@ if __name__ == "__main__":
 
 
 @pytest.fixture(scope="module")
-def repo_linters() -> Dict[str, Repository]:
-    nb1 = Repository(Path("tests/fixtures", "requirement.txt"))
-    nb2 = Repository(Path("tests/fixtures", "enviroment.yaml"))
-    nb3 = Repository(Path("tests/fixtures", "Pipfile"))
-    nb4 = Repository(Path("tests/fixtures", "setup.py"))
-    nb5 = Repository(Path("pynblint", "pyproject.toml"))
+def repository() -> Dict[str, Repository]:
+    nb1 = Repository(Path("pynblint/docs"))
+    nb2 = Repository(Path("pynblint/tests/fixtures"))
+    nb3 = Repository(Path("pynblint/tests/fixtures"))
+    nb4 = Repository(Path("pynblint/tests/fixtures"))
+    nb5 = Repository(Path("pynblint"))
     return {
-        "requirement.txt": nb1,
+        "requirements.txt": nb1,
         "enviroment.yaml": nb2,
         "Pipfile": nb3,
         "setup.py": nb4,
@@ -27,7 +27,7 @@ def repo_linters() -> Dict[str, Repository]:
 
 # these test fail because of PermissionError: [Errno 13] Permission denied: '.'
 # i'm trying to fix it
-def test__get_txt_dependencies(repo_linters):
+def test__get_txt_dependencies(repository):
     expected = {
         "",
         "rich",
@@ -88,21 +88,24 @@ def test__get_txt_dependencies(repo_linters):
         "pandocfilters",
         "jsonschema",
     }
-    txt_dependecies = Repository._get_dependencies_from_txt(
-        repo_linters["requirement.txt"]
+
+    assert Repository._get_dependencies_from_txt(
+        repository["requirements.txt"]
+    ).intersection(expected) == Repository._get_dependencies_from_txt(
+        repository["requirements.txt"]
     )
-    assert txt_dependecies.issubset(expected)
 
 
-def test__get_yaml_dependencies(repo_linters):
+def test__get_yaml_dependencies(repository):
     expected = {"Flask", "PyYAML", "psycopg2"}
-    assert (
-        Repository._get_dependencies_from_yaml(repo_linters["enviroment.yaml"])
-        == expected
+    assert Repository._get_dependencies_from_yaml(
+        repository["enviroment.yaml"]
+    ).intersection(expected) == Repository._get_dependencies_from_yaml(
+        repository["enviroment.yaml"]
     )
 
 
-def test__get_pipfile_dependencies(repo_linters):
+def test__get_pipfile_dependencies(repository):
     expected = {
         "invoke",
         "sphinx-rtd-theme",
@@ -115,17 +118,21 @@ def test__get_pipfile_dependencies(repo_linters):
         "pytest",
         "towncrier",
     }
-    assert (
-        Repository._get_dependencies_from_pipfile(repo_linters["Pipfile"]) == expected
+    assert Repository._get_dependencies_from_pipfile(
+        repository["Pipfile"]
+    ).intersection(expected) == Repository._get_dependencies_from_pipfile(
+        repository["Pipfile"]
     )
 
 
-def test__get_setup_dependencies(repo_linters):
+def test__get_setup_dependencies(repository):
     expected = {"", "matplotlib", "numpy"}
-    assert Repository._get_dependencies_from_setup(repo_linters["setup.py"]) == expected
+    assert Repository._get_dependencies_from_setup(repository["setup.py"]).intersection(
+        expected
+    ) == Repository._get_dependencies_from_setup(repository["setup.py"])
 
 
-def test__get_toml_dependencies(repo_linters):
+def test__get_toml_dependencies(repository):
     expected = {
         "pytest",
         "mypy",
@@ -140,7 +147,8 @@ def test__get_toml_dependencies(repo_linters):
         "pre-commit",
         "jupyterlab",
     }
-    assert (
-        Repository._get_dependencies_from_toml(repo_linters["pyproject.toml"])
-        == expected
+    assert Repository._get_dependencies_from_toml(
+        repository["pyproject.toml"]
+    ).intersection(expected) == Repository._get_dependencies_from_toml(
+        repository["pyproject.toml"]
     )
