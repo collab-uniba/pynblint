@@ -24,6 +24,7 @@ from rich.syntax import Syntax
 from yaml import safe_load
 
 from .config import CellRenderingMode, settings
+from .exceptions import InvalidRequirementsFileError
 from .rich_extensions import NotebookMarkdown
 
 
@@ -132,7 +133,6 @@ class Repository(ABC):
                     for item in tmp:
                         item.strip()
                     txt_dependencies.add(item.split("==")[0])
-                    fi.close()
 
         except KeyError:
             return txt_dependencies
@@ -166,7 +166,6 @@ class Repository(ABC):
                     tmp_list = [x.split("==")[0] for x in data["requirements"]]
                     for i in tmp_list:
                         yaml_dependencies.add(i)
-                fi.close()
 
         except KeyError:
             return yaml_dependencies
@@ -188,29 +187,31 @@ class Repository(ABC):
         return pip_dependencies
 
     def _get_dependencies_from_setup(self) -> set:
-        setup_dependencies = set()
-        try:
-            path = self.dependecies_file_found["setup.py"]
-            if path is not None:
-                with open(path, "r") as fi:
-                    row_file = fi.read()
-                    point = row_file.find("install_requires")
-                    if point != -1:
-                        tmp = row_file[point:-2]
-                        tmp = tmp.replace("install_requires=[", "")
-                        tmp = tmp.replace("]", "").strip()
-                        tmp = tmp.replace('"', "").strip()
-                        tmp = tmp.replace("<", "").strip()
-                        tmp = tmp.replace(">", "").strip()
-                        tmp_split = tmp.split(",")
-                        for x in tmp_split:
-                            tmp = x.split("=")[0]
-                            setup_dependencies.add(tmp.strip())
-                fi.close()
-        except KeyError:
-            return setup_dependencies
-
-        return setup_dependencies
+        requirements = set()
+        path = self.dependecies_file_found["setup.py"]
+        if path is not None:
+            with open(path, "r") as fi:
+                try:
+                    parsed_setup_file = ast.parse(fi.read())
+                except (Exception):
+                    raise InvalidRequirementsFileError(
+                        "Project requirements could not be parsed in `setup.py`: "
+                        "invalid Python syntax."
+                    )
+                for node in ast.walk(parsed_setup_file):
+                    if (
+                        isinstance(node, ast.Call)
+                        and node.func.id == "setup"  # type: ignore
+                    ):
+                        for keyword in node.keywords:
+                            if keyword.arg == "install_requires":
+                                raw_requirements_list = ast.literal_eval(keyword.value)
+                                processed_requirements_list = [
+                                    re.split(r"[><=]=", req)[0]
+                                    for req in raw_requirements_list
+                                ]
+                                requirements.update(processed_requirements_list)
+        return requirements
 
     def _get_core_dependecies(self) -> set:
         coredependecies = set()
