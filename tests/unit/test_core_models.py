@@ -56,6 +56,9 @@ def test_get_imported_packages(test_input, expected, notebooks):
 # TEST REPOSITORY #
 # *************** #
 
+# Parsing project requirements from:
+# environment.yaml
+
 
 @pytest.fixture()
 def environment_yaml() -> Dict[str, Path]:
@@ -108,4 +111,62 @@ def test_get_yaml_dependencies(
     assert (
         Repository._get_requirements_from_yaml(environment_yaml[test_input])
         == environment_yaml_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# requirements.txt
+
+
+@pytest.fixture()
+def requirements_txt() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/pip/")
+    requirements_txt_1: Path = BASE_PATH / "requirements_1.txt"
+    requirements_txt_2: Path = BASE_PATH / "requirements_2.txt"
+    requirements_txt_3: Path = BASE_PATH / "requirements_3.txt"
+
+    return {
+        "requirements_1.txt": requirements_txt_1,
+        "requirements_2.txt": requirements_txt_2,
+        "requirements_3.txt": requirements_txt_3,
+    }
+
+
+@pytest.fixture()
+def requirements_txt_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/pip/")
+    requirements_txt_1_keys_file_path: Path = BASE_PATH / "requirements_1_txt.txt"
+    with open(requirements_txt_1_keys_file_path, "r") as f:
+        requirements_txt_1_keys = {line.rstrip() for line in f.readlines()}
+
+    requirements_txt_2_keys_file_path: Path = BASE_PATH / "requirements_2_txt.txt"
+    with open(requirements_txt_2_keys_file_path, "r") as f:
+        requirements_txt_2_keys = {line.rstrip() for line in f.readlines()}
+
+    requirements_txt_3_keys_file_path: Path = BASE_PATH / "requirements_3_txt.txt"
+    with open(requirements_txt_3_keys_file_path, "r") as f:
+        requirements_txt_3_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "requirements_1.txt": requirements_txt_1_keys,
+        "requirements_2.txt": requirements_txt_2_keys,
+        "requirements_3.txt": requirements_txt_3_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("requirements_1.txt", "requirements_1.txt"),
+        ("requirements_2.txt", "requirements_2.txt"),
+        ("requirements_3.txt", "requirements_3.txt"),
+    ],
+)
+def test_get_txt_dependencies(
+    test_input, expected, requirements_txt, requirements_txt_keys
+):
+    assert (
+        Repository._get_requirements_from_txt(requirements_txt[test_input])
+        == requirements_txt_keys[expected]
     )

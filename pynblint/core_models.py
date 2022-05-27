@@ -119,8 +119,12 @@ class Repository(ABC):
     @staticmethod
     def _get_requirements_from_txt(path: Path) -> set:
         with open(path, "r") as fi:
-            lines = fi.readlines()
-        return {dependency.split("==")[0] for dependency in lines}
+            lines = [
+                line
+                for line in fi.readlines()
+                if line.strip() != "" and not line.startswith("#")
+            ]
+        return {re.split(r"[><=]=", dependency)[0].rstrip() for dependency in lines}
 
     @staticmethod
     def _get_requirements_from_toml(path: Path) -> set:
