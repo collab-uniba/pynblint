@@ -3,8 +3,8 @@ from typing import Dict
 
 import pytest
 
+from pynblint.core_models import Notebook
 from pynblint.nb_linter import NotebookLinter
-from pynblint.notebook import Notebook
 
 if __name__ == "__main__":
     pytest.main()

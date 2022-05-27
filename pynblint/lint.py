@@ -8,8 +8,7 @@ from rich.console import Console, ConsoleOptions, RenderResult, group
 from rich.padding import Padding
 
 from .config import settings
-from .notebook import Cell, Notebook
-from .repository import Repository
+from .core_models import Cell, Notebook, Repository
 
 
 class LintLevel(str, Enum):

@@ -4,9 +4,8 @@ from typing import Dict, List
 import pytest
 
 from pynblint import nb_linting
-from pynblint.cell import Cell
 from pynblint.config import settings
-from pynblint.notebook import Notebook
+from pynblint.core_models import Cell, Notebook
 
 
 @pytest.fixture(scope="module")

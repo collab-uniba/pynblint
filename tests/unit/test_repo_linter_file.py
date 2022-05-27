@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest
 
-from pynblint.repository import Repository
+from pynblint.core_models import Repository
 
 if __name__ == "__main__":
     pytest.main()

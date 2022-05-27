@@ -49,6 +49,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+!tests/fixtures/test_repo/versioned_repo_with_coverage/.coverage
 .cache
 nosetests.xml
 coverage.xml

@@ -9,9 +9,9 @@ from rich.panel import Panel
 from rich.rule import Rule
 
 from .config import settings
+from .core_models import Notebook
 from .lint import CellLevelLint, NotebookLevelLint, NotebookLint
 from .lint_register import enabled_cell_level_lints, enabled_notebook_level_lints
-from .notebook import Notebook
 
 
 @dataclass
