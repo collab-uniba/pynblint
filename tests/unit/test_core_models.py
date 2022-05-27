@@ -105,7 +105,7 @@ def environment_yaml_keys() -> Dict[str, Set[str]]:
         ("environment_3.yaml", "environment_3.yaml"),
     ],
 )
-def test_get_yaml_dependencies(
+def test_get_requirements_from_yaml(
     test_input, expected, environment_yaml, environment_yaml_keys
 ):
     assert (
@@ -163,10 +163,60 @@ def requirements_txt_keys() -> Dict[str, Set[str]]:
         ("requirements_3.txt", "requirements_3.txt"),
     ],
 )
-def test_get_txt_dependencies(
+def test_get_requirements_from_txt(
     test_input, expected, requirements_txt, requirements_txt_keys
 ):
     assert (
         Repository._get_requirements_from_txt(requirements_txt[test_input])
         == requirements_txt_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# pyproject.toml
+
+
+@pytest.fixture()
+def pyproject_toml() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/poetry/")
+    pyproject_toml_1: Path = BASE_PATH / "pyproject_1.toml"
+    pyproject_toml_2: Path = BASE_PATH / "pyproject_2.toml"
+
+    return {
+        "pyproject_1.toml": pyproject_toml_1,
+        "pyproject_2.toml": pyproject_toml_2,
+    }
+
+
+@pytest.fixture()
+def pyproject_toml_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/poetry/")
+    pyproject_toml_1_keys_file_path: Path = BASE_PATH / "pyproject_1_toml.txt"
+    with open(pyproject_toml_1_keys_file_path, "r") as f:
+        pyproject_toml_1_keys = {line.rstrip() for line in f.readlines()}
+
+    pyproject_toml_2_keys_file_path: Path = BASE_PATH / "pyproject_2_toml.txt"
+    with open(pyproject_toml_2_keys_file_path, "r") as f:
+        pyproject_toml_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "pyproject_1.toml": pyproject_toml_1_keys,
+        "pyproject_2.toml": pyproject_toml_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("pyproject_1.toml", "pyproject_1.toml"),
+        ("pyproject_2.toml", "pyproject_2.toml"),
+    ],
+)
+def test_get_requirements_from_toml(
+    test_input, expected, pyproject_toml, pyproject_toml_keys
+):
+    assert (
+        Repository._get_requirements_from_toml(pyproject_toml[test_input])
+        == pyproject_toml_keys[expected]
     )

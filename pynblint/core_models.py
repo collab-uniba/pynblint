@@ -129,9 +129,7 @@ class Repository(ABC):
     @staticmethod
     def _get_requirements_from_toml(path: Path) -> set:
         parsed_toml = toml.load(path)
-        return {
-            req.split("=")[0] for req in parsed_toml["tool"]["poetry"]["dependencies"]
-        }
+        return set(parsed_toml["tool"]["poetry"]["dependencies"].keys())
 
     @staticmethod
     def _get_requirements_from_yaml(path: Path) -> set:
