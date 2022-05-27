@@ -168,7 +168,8 @@ class Repository(ABC):
                     if keyword.arg == "install_requires":
                         raw_requirements_list = ast.literal_eval(keyword.value)
                         processed_requirements_list = [
-                            re.split(r"[><=]=", req)[0] for req in raw_requirements_list
+                            re.split(r"[><=]=", req)[0].rstrip()
+                            for req in raw_requirements_list
                         ]
                         requirements.update(processed_requirements_list)
         return requirements

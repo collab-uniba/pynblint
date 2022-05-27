@@ -220,3 +220,51 @@ def test_get_requirements_from_toml(
         Repository._get_requirements_from_toml(pyproject_toml[test_input])
         == pyproject_toml_keys[expected]
     )
+
+
+# Parsing project requirements from:
+# setup.py
+
+
+@pytest.fixture()
+def setup_py() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/setup/")
+    setup_py_1: Path = BASE_PATH / "setup_1.py"
+    setup_py_2: Path = BASE_PATH / "setup_2.py"
+
+    return {
+        "setup_1.py": setup_py_1,
+        "setup_2.py": setup_py_2,
+    }
+
+
+@pytest.fixture()
+def setup_py_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/setup/")
+    setup_py_1_keys_file_path: Path = BASE_PATH / "setup_1_py.txt"
+    with open(setup_py_1_keys_file_path, "r") as f:
+        setup_py_1_keys = {line.rstrip() for line in f.readlines()}
+
+    setup_py_2_keys_file_path: Path = BASE_PATH / "setup_2_py.txt"
+    with open(setup_py_2_keys_file_path, "r") as f:
+        setup_py_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "setup_1.py": setup_py_1_keys,
+        "setup_2.py": setup_py_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("setup_1.py", "setup_1.py"),
+        ("setup_2.py", "setup_2.py"),
+    ],
+)
+def test_get_requirements_from_setup(test_input, expected, setup_py, setup_py_keys):
+    assert (
+        Repository._get_requirements_from_setup(setup_py[test_input])
+        == setup_py_keys[expected]
+    )
