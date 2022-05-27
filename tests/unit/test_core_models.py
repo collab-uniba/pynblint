@@ -268,3 +268,51 @@ def test_get_requirements_from_setup(test_input, expected, setup_py, setup_py_ke
         Repository._get_requirements_from_setup(setup_py[test_input])
         == setup_py_keys[expected]
     )
+
+
+# Parsing project requirements from:
+# Pipfile
+
+
+@pytest.fixture()
+def pipfile() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/pipfile/")
+    pipfile_1: Path = BASE_PATH / "Pipfile_1"
+    pipfile_2: Path = BASE_PATH / "Pipfile_2"
+
+    return {
+        "Pipfile_1": pipfile_1,
+        "Pipfile_2": pipfile_2,
+    }
+
+
+@pytest.fixture()
+def pipfile_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/pipfile/")
+    pipfile_1_keys_file_path: Path = BASE_PATH / "Pipfile_1.txt"
+    with open(pipfile_1_keys_file_path, "r") as f:
+        pipfile_1_keys = {line.rstrip() for line in f.readlines()}
+
+    pipfile_2_keys_file_path: Path = BASE_PATH / "Pipfile_2.txt"
+    with open(pipfile_2_keys_file_path, "r") as f:
+        pipfile_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "Pipfile_1": pipfile_1_keys,
+        "Pipfile_2": pipfile_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("Pipfile_1", "Pipfile_1"),
+        ("Pipfile_2", "Pipfile_2"),
+    ],
+)
+def test_get_requirements_from_pipfile(test_input, expected, pipfile, pipfile_keys):
+    assert (
+        Repository._get_requirements_from_pipfile(pipfile[test_input])
+        == pipfile_keys[expected]
+    )

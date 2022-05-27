@@ -149,7 +149,7 @@ class Repository(ABC):
     @staticmethod
     def _get_requirements_from_pipfile(path: Path) -> set:
         parsed_pipfile = toml.load(path)
-        return {req.split("=")[0] for req in parsed_pipfile["packages"]}
+        return set(parsed_pipfile["packages"].keys())
 
     @staticmethod
     def _get_requirements_from_setup(path: Path) -> set:
