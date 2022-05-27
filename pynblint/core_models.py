@@ -40,8 +40,7 @@ class Repository(ABC):
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
-        self.dependecies_file_found: Dict[str, Path] = self.retrieve_file()
-        self.declare_dependencies: set = self.get_requirement_from_file()
+        self.declared_requirements: Set = self._parse_requirements()
 
     def retrieve_notebooks(self):
 
@@ -86,131 +85,90 @@ class Repository(ABC):
                     large_files.append(file_path)
         return large_files
 
-    def get_requirement_from_file(self) -> set:
-        requirement_set = set()
+    def _parse_requirements(self) -> Set:
 
-        requirement_set.update(self._get_dependencies_from_txt())
-        requirement_set.update(self._get_dependencies_from_setup())
-        requirement_set.update(self._get_dependencies_from_yaml())
-        requirement_set.update(self._get_dependencies_from_toml())
-        requirement_set.update(self._get_dependencies_from_pipfile())
+        supported_requirement_formats = [
+            "requirements.txt",
+            "enviroment.yaml",
+            "pyproject.toml",
+            "setup.py",
+            "Pipfile",
+        ]
+        paths: List[Path] = []
 
-        return requirement_set
-
-    def retrieve_file(self) -> Dict[str, Path]:
-        path = Path()
-        list_of_path: Dict[str, Path] = {}
-        for root, dirs, files in os.walk(self.path):
-            dirs[:] = [d for d in dirs]
+        for root, _, files in os.walk(self.path):
             for f in files:
-                if f.endswith("enviroment.yaml"):
-                    path = Path(root) / Path(f)
-                    list_of_path["enviroment.yaml"] = path
-                elif f.endswith("Pipfile"):
-                    path = Path(root) / Path(f)
-                    list_of_path["Pipfile"] = path
-                elif f.endswith("setup.py"):
-                    path = Path(root) / Path(f)
-                    list_of_path["setup.py"] = path
-                elif f.endswith("pyproject.toml"):
-                    path = Path(root) / Path(f)
-                    list_of_path["pyproject.toml"] = path
-                elif f.endswith("requirements.txt"):
-                    path = Path(root) / Path(f)
-                    list_of_path["requirements.txt"] = path
-        return list_of_path
+                if f in supported_requirement_formats:
+                    paths.append(Path(root) / f)
 
-    def _get_dependencies_from_txt(self) -> set:
-        """this function after fetching the location of the
-        .txt file reads it and scans it for dependencies"""
-        txt_dependencies = set()
-        try:
-            path = self.dependecies_file_found["requirements.txt"]
-            if path is not None:
-                with open(path, "r") as fi:
-                    row_file = fi.read()
-                    tmp = row_file.split("\n")
-                    for item in tmp:
-                        item.strip()
-                    txt_dependencies.add(item.split("==")[0])
+        declared_requirements = set()
+        for path in paths:
+            if path.name == "requirements.txt":
+                declared_requirements.update(self._get_requirements_from_txt(path))
+            elif path.name == "enviroment.yaml":
+                declared_requirements.update(self._get_requirements_from_yaml(path))
+            elif path.name == "pyproject.toml":
+                declared_requirements.update(self._get_requirements_from_toml(path))
+            elif path.name == "setup.py":
+                declared_requirements.update(self._get_requirements_from_setup(path))
+            elif path.name == "Pipfile":
+                declared_requirements.update(self._get_requirements_from_pipfile(path))
 
-        except KeyError:
-            return txt_dependencies
+        return declared_requirements
 
-        return txt_dependencies
+    @staticmethod
+    def _get_requirements_from_txt(path: Path) -> set:
+        with open(path, "r") as fi:
+            lines = fi.readlines()
+        return {dependency.split("==")[0] for dependency in lines}
 
-    def _get_dependencies_from_toml(self) -> set:
-        toml_dependencies = set()
-        try:
-            path = self.dependecies_file_found["pyproject.toml"]
-            if path is not None:
-                data = toml.load(path)
-                tmp_list = [
-                    x.split("=")[0] for x in data["tool"]["poetry"]["dev-dependencies"]
-                ]
-                for i in tmp_list:
-                    toml_dependencies.add(i)
-        except KeyError:
-            return toml_dependencies
+    @staticmethod
+    def _get_requirements_from_toml(path: Path) -> set:
+        parsed_toml = toml.load(path)
+        return {
+            req.split("=")[0] for req in parsed_toml["tool"]["poetry"]["dependencies"]
+        }
 
-        return toml_dependencies
+    @staticmethod
+    def _get_requirements_from_yaml(path: Path) -> set:
+        with open(path, "r") as fi:
+            parsed_yaml = safe_load(fi.read())
 
-    def _get_dependencies_from_yaml(self) -> set:
-        yaml_dependencies = set()
-        try:
-            path = self.dependecies_file_found["enviroment.yaml"]
-            if path is not None:
-                with open(path, "r") as fi:
-                    row_file = fi.read()
-                    data = safe_load(row_file)
-                    tmp_list = [x.split("==")[0] for x in data["requirements"]]
-                    for i in tmp_list:
-                        yaml_dependencies.add(i)
+        raw_deps = []
+        for item in parsed_yaml["dependencies"]:
+            if type(item) is str:
+                raw_deps.append(item)
+            else:
+                pip_dependencies = item.get("pip")
+                if pip_dependencies:
+                    raw_deps.extend(pip_dependencies)
+        return {re.split(r"[><=]?=", req)[0] for req in raw_deps}
 
-        except KeyError:
-            return yaml_dependencies
+    @staticmethod
+    def _get_requirements_from_pipfile(path: Path) -> set:
+        parsed_pipfile = toml.load(path)
+        return {req.split("=")[0] for req in parsed_pipfile["packages"]}
 
-        return yaml_dependencies
-
-    def _get_dependencies_from_pipfile(self) -> set:
-        pip_dependencies = set()
-        try:
-            path = self.dependecies_file_found["Pipfile"]
-            if path is not None:
-                data = toml.load(path)
-                tmp_list = [x.split("=")[0] for x in data["dev-packages"]]
-                for i in tmp_list:
-                    pip_dependencies.add(i)
-        except KeyError:
-            return pip_dependencies
-
-        return pip_dependencies
-
-    def _get_dependencies_from_setup(self) -> set:
-        requirements = set()
-        path = self.dependecies_file_found["setup.py"]
-        if path is not None:
-            with open(path, "r") as fi:
-                try:
-                    parsed_setup_file = ast.parse(fi.read())
-                except (Exception):
-                    raise InvalidRequirementsFileError(
-                        "Project requirements could not be parsed in `setup.py`: "
-                        "invalid Python syntax."
-                    )
-                for node in ast.walk(parsed_setup_file):
-                    if (
-                        isinstance(node, ast.Call)
-                        and node.func.id == "setup"  # type: ignore
-                    ):
-                        for keyword in node.keywords:
-                            if keyword.arg == "install_requires":
-                                raw_requirements_list = ast.literal_eval(keyword.value)
-                                processed_requirements_list = [
-                                    re.split(r"[><=]=", req)[0]
-                                    for req in raw_requirements_list
-                                ]
-                                requirements.update(processed_requirements_list)
+    @staticmethod
+    def _get_requirements_from_setup(path: Path) -> set:
+        with open(path, "r") as fi:
+            try:
+                parsed_setup_file = ast.parse(fi.read())
+            except (Exception):
+                raise InvalidRequirementsFileError(
+                    "Project requirements could not be parsed in `setup.py`: "
+                    "invalid Python syntax."
+                )
+        requirements: Set = set()
+        for node in ast.walk(parsed_setup_file):
+            if isinstance(node, ast.Call) and node.func.id == "setup":  # type: ignore
+                for keyword in node.keywords:
+                    if keyword.arg == "install_requires":
+                        raw_requirements_list = ast.literal_eval(keyword.value)
+                        processed_requirements_list = [
+                            re.split(r"[><=]=", req)[0] for req in raw_requirements_list
+                        ]
+                        requirements.update(processed_requirements_list)
         return requirements
 
     def _get_core_dependecies(self) -> set:
