@@ -128,13 +128,25 @@ class Repository(ABC):
 
     @staticmethod
     def _get_requirements_from_toml(path: Path) -> set:
-        parsed_toml = toml.load(path)
+        try:
+            parsed_toml = toml.load(path)
+        except (Exception):
+            raise InvalidRequirementsFileError(
+                "Project requirements could not be parsed in `pyproject.toml`: "
+                "invalid toml syntax."
+            )
         return set(parsed_toml["tool"]["poetry"]["dependencies"].keys())
 
     @staticmethod
     def _get_requirements_from_yaml(path: Path) -> set:
         with open(path, "r") as fi:
-            parsed_yaml = safe_load(fi.read())
+            try:
+                parsed_yaml = safe_load(fi.read())
+            except (Exception):
+                raise InvalidRequirementsFileError(
+                    "Project requirements could not be parsed from `environment.yml`: "
+                    "invalid yaml syntax."
+                )
 
         raw_deps = []
         for item in parsed_yaml["dependencies"]:
@@ -148,7 +160,13 @@ class Repository(ABC):
 
     @staticmethod
     def _get_requirements_from_pipfile(path: Path) -> set:
-        parsed_pipfile = toml.load(path)
+        try:
+            parsed_pipfile = toml.load(path)
+        except (Exception):
+            raise InvalidRequirementsFileError(
+                "Project requirements could not be parsed from `Pipfile`: "
+                "invalid toml syntax."
+            )
         return set(parsed_pipfile["packages"].keys())
 
     @staticmethod
@@ -158,7 +176,7 @@ class Repository(ABC):
                 parsed_setup_file = ast.parse(fi.read())
             except (Exception):
                 raise InvalidRequirementsFileError(
-                    "Project requirements could not be parsed in `setup.py`: "
+                    "Project requirements could not be parsed from `setup.py`: "
                     "invalid Python syntax."
                 )
         requirements: Set = set()
