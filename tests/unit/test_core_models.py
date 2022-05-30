@@ -18,7 +18,16 @@ if __name__ == "__main__":
 def notebooks() -> Dict[str, Notebook]:
     nb1 = Notebook(Path("tests/fixtures", "FullNotebook2.ipynb"))
     nb2 = Notebook(Path("tests/fixtures", "Untitled2.ipynb"))
-    return {"FullNotebook2.ipynb": nb1, "Untitled2.ipynb": nb2}
+    nb3 = Notebook(
+        Path("tests/fixtures", "titanic-gradientboostingclassifier-Copy1.ipynb")
+    )
+    nb4 = Notebook(Path("tests/fixtures", "LongNotebook.ipynb"))
+    return {
+        "FullNotebook2.ipynb": nb1,
+        "Untitled2.ipynb": nb2,
+        "titanic-gradientboostingclassifier-Copy1.ipynb": nb3,
+        "LongNotebook.ipynb": nb4,
+    }
 
 
 def test_standalone_notebook_constructor():
@@ -45,7 +54,35 @@ def test_notebook_from_repo_constructor():
     "test_input,expected",
     [
         ("FullNotebook2.ipynb", {"os"}),
+        (
+            "titanic-gradientboostingclassifier-Copy1.ipynb",
+            {
+                "pandas",
+                "numpy",
+                "matplotlib",
+                "seaborn",
+                "missingno",
+                "pycaret",
+                "warnings",
+            },
+        ),
         ("Untitled2.ipynb", set()),
+        (
+            "LongNotebook.ipynb",
+            {
+                "time",
+                "psutil",
+                "os",
+                "tqdm",
+                "math",
+                "numpy",
+                "pandas",
+                "matplotlib",
+                "mpl_toolkits",
+                "seaborn",
+                "plotly",
+            },
+        ),
     ],
 )
 def test_get_imported_packages(test_input, expected, notebooks):

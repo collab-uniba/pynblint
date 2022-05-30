@@ -1,4 +1,5 @@
 import ast
+import copy
 import os
 import re
 import tempfile
@@ -402,8 +403,13 @@ class Notebook(RichRenderable):
         self.non_executed = all([cell.non_executed for cell in self.code_cells])
 
         # Convert the notebook to a Python script
+        nb_dict_no_magic = copy.deepcopy(self.nb_dict)
+        for cell in nb_dict_no_magic.cells:
+            cell.source = "\n".join(
+                [line for line in cell.source.splitlines() if not line.startswith("%")]
+            )
         python_exporter = nbconvert.PythonExporter()
-        self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
+        self.script, _ = python_exporter.from_notebook_node(nb_dict_no_magic)
 
         # Extract the Python abstract syntax tree
         # (or set `has_invalid_python_syntax` to True)
