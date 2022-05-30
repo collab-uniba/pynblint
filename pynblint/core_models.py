@@ -14,7 +14,6 @@ import nbconvert
 import nbformat
 import rich
 import toml
-from isort.stdlibs.py39 import stdlib
 from nbformat.notebooknode import NotebookNode
 from rich.abc import RichRenderable
 from rich.columns import Columns
@@ -192,12 +191,6 @@ class Repository(ABC):
                         ]
                         requirements.update(processed_requirements_list)
         return requirements
-
-    def _get_core_dependecies(self) -> set:
-        coredependecies = set()
-        for name in sorted(stdlib):
-            coredependecies.add(name)
-        return coredependecies
 
 
 class LocalRepository(Repository):

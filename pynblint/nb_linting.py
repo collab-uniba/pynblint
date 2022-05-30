@@ -1,7 +1,10 @@
 """Linting functions for notebooks."""
 import ast
 import re
+import sys
 from typing import List, Pattern
+
+from isort import stdlibs
 
 from . import lint_register as register
 from .config import settings
@@ -230,6 +233,64 @@ def non_executed_notebook(notebook: Notebook) -> bool:
     return notebook.non_executed
 
 
+def undeclared_dependencies(notebook: Notebook) -> bool:
+    """Check if the dependencies of the notebook are properly declared.
+
+    This check is performed only when notebooks belong to a repository.
+
+    Args:
+        notebook (Notebook): the notebook to be analyzed
+
+    Returns:
+        bool: ``True`` if the notebook contains import statements referred to
+        packages that are not part of the core Python libraries and are not declared
+        in a dependency management file: ``requirements.txt``, ``setup.py``,
+        ``environment.yml``, ``pyproject.toml``, or ``Pipfile``; ``False`` otherwise.
+    """
+
+    # Check that the notebook is part of a repository (if not, exit)
+    if not notebook.repository or notebook.has_invalid_python_syntax:
+        return False
+    else:
+        print("NOTEBOOK PATH: ", notebook.path)
+
+        # Set of python core modules and packages
+        minor_python_version = sys.version_info.minor
+
+        if minor_python_version == 7:
+            stdlib = stdlibs.py37.stdlib
+        elif minor_python_version == 8:
+            stdlib = stdlibs.py38.stdlib
+        elif minor_python_version == 9:
+            stdlib = stdlibs.py39.stdlib
+        elif minor_python_version == 10:
+            stdlib = stdlibs.py310.stdlib
+        else:
+            raise Exception(
+                "Python version not supported: Pynblint currently supports "
+                "Python versions from 3.7 to 3.10."
+            )
+
+        core_dependecies = set(stdlib)
+
+        # Modules and packages imported in the notebook, excluding core ones
+        external_dependencies = notebook.imported_packages - core_dependecies
+        print("EXTERNAL DEPENDENCIES")
+        print(external_dependencies)
+
+        # Modules and packages that are not declared in dependency management files
+        undeclared_dependencies = (
+            external_dependencies - notebook.repository.declared_requirements
+        )
+        print("UNDECLAREDE DEPENDENCIES")
+        print(undeclared_dependencies)
+
+        if len(undeclared_dependencies) > 0:
+            return True
+        else:
+            return False
+
+
 # ========== #
 # CELL LEVEL #
 # ========== #
@@ -384,6 +445,16 @@ notebook_level_lints: List[LintDefinition] = [
         recommendation="Before committing, run your notebook top to bottom to ensure "
         "that all cells are executed.",
         linting_function=non_executed_notebook,
+    ),
+    LintDefinition(
+        slug="undeclared-dependencies",
+        description="The notebook has external dependencies that are not declared "
+        "in a dependency management file (e.g., `requirements.txt`, `setup.py`, "
+        "`environment.yml`, `pyproject.toml`, or `Pipfile`)",
+        recommendation="Use a dependency management tool (e.g., `pip`, `conda`, or "
+        "`Poetry`) to declare your dependencies or to refresh the set "
+        "of declared dependencies.",
+        linting_function=undeclared_dependencies,
     ),
 ]
 
