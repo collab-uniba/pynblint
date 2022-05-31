@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import List
 
 from . import lint_register as register
+from .core_models import Repository
 from .lint import LintDefinition, LintLevel
-from .repository import Repository
 
 # ============= #
 # PROJECT LEVEL #
@@ -33,6 +33,17 @@ def dependencies_unmanaged(repo: Repository) -> bool:
     ]
 
     return not any(map(lambda x: x.exists(), paths))
+
+
+def coverage_data_not_available(repo: Repository) -> bool:
+    """Check the absence of coverage data produced by ``coverage.py``.
+
+    The absence of coverage data is considered a hint that the project
+    might be not tested.
+    """
+
+    path = repo.path / ".coverage"
+    return not path.exists()
 
 
 # ========== #
@@ -101,6 +112,15 @@ project_level_lints: List[LintDefinition] = [
         "`requirements.txt` file.\nYou can do so by running the following command: "
         "`pip freeze > requirements.txt`.",
         linting_function=dependencies_unmanaged,
+    ),
+    LintDefinition(
+        slug="test-coverage-data-not-available",
+        description="Test coverage data is not available in the current repository "
+        "(i.e., there is no `.coverage` file in the project root path).",
+        recommendation="Make sure that your code is properly tested. "
+        "If the testing framework that you are using does not produce a `.coverage` "
+        "data file, please ignore this warning.",
+        linting_function=coverage_data_not_available,
     ),
 ]
 

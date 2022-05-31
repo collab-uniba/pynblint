@@ -1,7 +1,0 @@
-package: example
-version: 0.0.1
-py_version: 2.7.10
-requirements:
-  - Flask==0.10.1
-  - psycopg2==2.6.1
-  - PyYAML==3.11
