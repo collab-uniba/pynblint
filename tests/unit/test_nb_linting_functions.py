@@ -19,6 +19,13 @@ def notebooks() -> Dict[str, Notebook]:
     nb7 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     nb8 = Notebook(Path("tests/fixtures", "InvalidSyntax.ipynb"))
     nb9 = Notebook(Path("tests/fixtures", "NonExecutedNotebook.ipynb"))
+    nb10 = Notebook(
+        Path("tests/fixtures/test_repo/dependenciesNotDeclared", "Repo_notebook2.ipynb")
+    )
+    nb11 = Notebook(
+        Path("tests/fixtures/test_repo/UntitledNoDuplicates", "Repo_notebook.ipynb")
+    )
+
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
@@ -29,6 +36,8 @@ def notebooks() -> Dict[str, Notebook]:
         "Untitled.ipynb": nb7,
         "InvalidSyntax.ipynb": nb8,
         "NonExecutedNotebook.ipynb": nb9,
+        "Repo_notebook2.ipynb": nb10,
+        "Repo_notebook.ipynb": nb11,
     }
 
 
@@ -151,3 +160,12 @@ def test_long_filename(test_input, expected, notebooks):
 )
 def test_invalid_python_syntax(test_input, expected, notebooks):
     assert nb_linting.invalid_python_syntax(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [("Repo_notebook2.ipynb", True), ("Repo_notebook.ipynb", False)],
+)
+def test_undeclared_dependencies(test_input, expected, notebooks):
+    if notebooks[test_input].repository:
+        assert nb_linting.undeclared_dependencies(notebooks[test_input]) == expected

@@ -90,6 +90,7 @@ class Repository(ABC):
         supported_requirement_formats = [
             "requirements.txt",
             "enviroment.yaml",
+            "enviroment.yml",
             "pyproject.toml",
             "setup.py",
             "Pipfile",
@@ -105,7 +106,7 @@ class Repository(ABC):
         for path in paths:
             if path.name == "requirements.txt":
                 declared_requirements.update(self._get_requirements_from_txt(path))
-            elif path.name == "enviroment.yaml":
+            elif path.name == "enviroment.yaml" or path.name == "enviroment.yml":
                 declared_requirements.update(self._get_requirements_from_yaml(path))
             elif path.name == "pyproject.toml":
                 declared_requirements.update(self._get_requirements_from_toml(path))
@@ -130,7 +131,7 @@ class Repository(ABC):
     def _get_requirements_from_toml(path: Path) -> set:
         try:
             parsed_toml = toml.load(path)
-        except (Exception):
+        except Exception:
             raise InvalidRequirementsFileError(
                 "Project requirements could not be parsed in `pyproject.toml`: "
                 "invalid toml syntax."
@@ -142,7 +143,7 @@ class Repository(ABC):
         with open(path, "r") as fi:
             try:
                 parsed_yaml = safe_load(fi.read())
-            except (Exception):
+            except Exception:
                 raise InvalidRequirementsFileError(
                     "Project requirements could not be parsed from `environment.yml`: "
                     "invalid yaml syntax."
@@ -162,7 +163,7 @@ class Repository(ABC):
     def _get_requirements_from_pipfile(path: Path) -> set:
         try:
             parsed_pipfile = toml.load(path)
-        except (Exception):
+        except Exception:
             raise InvalidRequirementsFileError(
                 "Project requirements could not be parsed from `Pipfile`: "
                 "invalid toml syntax."
@@ -174,7 +175,7 @@ class Repository(ABC):
         with open(path, "r") as fi:
             try:
                 parsed_setup_file = ast.parse(fi.read())
-            except (Exception):
+            except Exception:
                 raise InvalidRequirementsFileError(
                     "Project requirements could not be parsed from `setup.py`: "
                     "invalid Python syntax."

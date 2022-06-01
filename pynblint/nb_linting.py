@@ -252,7 +252,6 @@ def undeclared_dependencies(notebook: Notebook) -> bool:
     if not notebook.repository or notebook.has_invalid_python_syntax:
         return False
     else:
-        print("NOTEBOOK PATH: ", notebook.path)
 
         # Set of python core modules and packages
         minor_python_version = sys.version_info.minor
@@ -275,15 +274,11 @@ def undeclared_dependencies(notebook: Notebook) -> bool:
 
         # Modules and packages imported in the notebook, excluding core ones
         external_dependencies = notebook.imported_packages - core_dependecies
-        print("EXTERNAL DEPENDENCIES")
-        print(external_dependencies)
 
         # Modules and packages that are not declared in dependency management files
         undeclared_dependencies = (
             external_dependencies - notebook.repository.declared_requirements
         )
-        print("UNDECLAREDE DEPENDENCIES")
-        print(undeclared_dependencies)
 
         if len(undeclared_dependencies) > 0:
             return True
