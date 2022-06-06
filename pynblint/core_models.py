@@ -89,8 +89,8 @@ class Repository(ABC):
 
         supported_requirement_formats = [
             "requirements.txt",
-            "enviroment.yaml",
-            "enviroment.yml",
+            "environment.yaml",
+            "environment.yml",
             "pyproject.toml",
             "setup.py",
             "Pipfile",
@@ -106,7 +106,7 @@ class Repository(ABC):
         for path in paths:
             if path.name == "requirements.txt":
                 declared_requirements.update(self._get_requirements_from_txt(path))
-            elif path.name == "enviroment.yaml" or path.name == "enviroment.yml":
+            elif path.name == "environment.yaml" or path.name == "environment.yml":
                 declared_requirements.update(self._get_requirements_from_yaml(path))
             elif path.name == "pyproject.toml":
                 declared_requirements.update(self._get_requirements_from_toml(path))
@@ -240,7 +240,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-
         self.url = github_url
 
         # Clone the repo in a temp directory
