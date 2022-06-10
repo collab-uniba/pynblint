@@ -1,0 +1,13 @@
+python
+numpy
+pandas
+scipy
+seaborn
+numba
+tqdm
+bcftools
+pysam
+freebayes
+samtools
+openssl
+biopython

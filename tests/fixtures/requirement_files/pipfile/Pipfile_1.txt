@@ -1,0 +1,13 @@
+cryptography
+django
+boto3
+django-storages
+psycopg2
+waitress
+whitenoise
+djangorestframework
+django-bootstrap4
+packaging
+drf-yasg
+pytest
+factory-boy

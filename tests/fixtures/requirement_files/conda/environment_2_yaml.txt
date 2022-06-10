@@ -1,0 +1,9 @@
+anyio
+argon2-cffi
+asgiref
+asttokens
+attrs
+babel
+backports
+backports.functools_lru_cache
+beautifulsoup4

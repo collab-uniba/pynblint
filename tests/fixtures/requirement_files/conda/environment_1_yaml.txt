@@ -1,0 +1,14 @@
+python
+pip
+cudatoolkit
+pytorch
+torchvision
+numpy
+ftfy
+lpips
+regex
+pytorch-lightning
+lmdb
+wandb
+git+https://github.com/openai/CLIP.git
+kornia

@@ -1,11 +1,33 @@
 from pathlib import Path
+from typing import Dict, Set
 
 import pytest
 
-from pynblint.core_models import LocalRepository, Notebook
+from pynblint.core_models import LocalRepository, Notebook, Repository
 
 if __name__ == "__main__":
     pytest.main()
+
+
+# ************* #
+# TEST NOTEBOOK #
+# ************* #
+
+
+@pytest.fixture(scope="module")
+def notebooks() -> Dict[str, Notebook]:
+    nb1 = Notebook(Path("tests/fixtures", "FullNotebook2.ipynb"))
+    nb2 = Notebook(Path("tests/fixtures", "Untitled2.ipynb"))
+    nb3 = Notebook(
+        Path("tests/fixtures", "titanic-gradientboostingclassifier-Copy1.ipynb")
+    )
+    nb4 = Notebook(Path("tests/fixtures", "LongNotebook.ipynb"))
+    return {
+        "FullNotebook2.ipynb": nb1,
+        "Untitled2.ipynb": nb2,
+        "titanic-gradientboostingclassifier-Copy1.ipynb": nb3,
+        "LongNotebook.ipynb": nb4,
+    }
 
 
 def test_standalone_notebook_constructor():
@@ -26,3 +48,308 @@ def test_notebook_from_repo_constructor():
 
     assert notebook.repository is not None
     assert notebook.repository.path == repo_path
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("FullNotebook2.ipynb", {"os"}),
+        (
+            "titanic-gradientboostingclassifier-Copy1.ipynb",
+            {
+                "pandas",
+                "numpy",
+                "matplotlib",
+                "seaborn",
+                "missingno",
+                "pycaret",
+                "warnings",
+            },
+        ),
+        ("Untitled2.ipynb", set()),
+        (
+            "LongNotebook.ipynb",
+            {
+                "time",
+                "psutil",
+                "os",
+                "tqdm",
+                "math",
+                "numpy",
+                "pandas",
+                "matplotlib",
+                "mpl_toolkits",
+                "seaborn",
+                "plotly",
+            },
+        ),
+    ],
+)
+def test_get_imported_packages(test_input, expected, notebooks):
+    assert Notebook._get_imported_packages(notebooks[test_input]) == expected
+
+
+# *************** #
+# TEST REPOSITORY #
+# *************** #
+
+# Parsing project requirements from:
+# environment.yaml
+
+
+@pytest.fixture()
+def environment_yaml() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/conda/")
+    environment_yaml_1: Path = BASE_PATH / "environment_1.yaml"
+    environment_yaml_2: Path = BASE_PATH / "environment_2.yaml"
+    environment_yaml_3: Path = BASE_PATH / "environment_3.yaml"
+
+    return {
+        "environment_1.yaml": environment_yaml_1,
+        "environment_2.yaml": environment_yaml_2,
+        "environment_3.yaml": environment_yaml_3,
+    }
+
+
+@pytest.fixture()
+def environment_yaml_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/conda/")
+    environment_yaml_1_keys_file_path: Path = BASE_PATH / "environment_1_yaml.txt"
+    with open(environment_yaml_1_keys_file_path, "r") as f:
+        environment_yaml_1_keys = {line.rstrip() for line in f.readlines()}
+
+    environment_yaml_2_keys_file_path: Path = BASE_PATH / "environment_2_yaml.txt"
+    with open(environment_yaml_2_keys_file_path, "r") as f:
+        environment_yaml_2_keys = {line.rstrip() for line in f.readlines()}
+
+    environment_yaml_3_keys_file_path: Path = BASE_PATH / "environment_3_yaml.txt"
+    with open(environment_yaml_3_keys_file_path, "r") as f:
+        environment_yaml_3_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "environment_1.yaml": environment_yaml_1_keys,
+        "environment_2.yaml": environment_yaml_2_keys,
+        "environment_3.yaml": environment_yaml_3_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("environment_1.yaml", "environment_1.yaml"),
+        ("environment_2.yaml", "environment_2.yaml"),
+        ("environment_3.yaml", "environment_3.yaml"),
+    ],
+)
+def test_get_requirements_from_yaml(
+    test_input, expected, environment_yaml, environment_yaml_keys
+):
+    assert (
+        Repository._get_requirements_from_yaml(environment_yaml[test_input])
+        == environment_yaml_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# requirements.txt
+
+
+@pytest.fixture()
+def requirements_txt() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/pip/")
+    requirements_txt_1: Path = BASE_PATH / "requirements_1.txt"
+    requirements_txt_2: Path = BASE_PATH / "requirements_2.txt"
+    requirements_txt_3: Path = BASE_PATH / "requirements_3.txt"
+
+    return {
+        "requirements_1.txt": requirements_txt_1,
+        "requirements_2.txt": requirements_txt_2,
+        "requirements_3.txt": requirements_txt_3,
+    }
+
+
+@pytest.fixture()
+def requirements_txt_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/pip/")
+    requirements_txt_1_keys_file_path: Path = BASE_PATH / "requirements_1_txt.txt"
+    with open(requirements_txt_1_keys_file_path, "r") as f:
+        requirements_txt_1_keys = {line.rstrip() for line in f.readlines()}
+
+    requirements_txt_2_keys_file_path: Path = BASE_PATH / "requirements_2_txt.txt"
+    with open(requirements_txt_2_keys_file_path, "r") as f:
+        requirements_txt_2_keys = {line.rstrip() for line in f.readlines()}
+
+    requirements_txt_3_keys_file_path: Path = BASE_PATH / "requirements_3_txt.txt"
+    with open(requirements_txt_3_keys_file_path, "r") as f:
+        requirements_txt_3_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "requirements_1.txt": requirements_txt_1_keys,
+        "requirements_2.txt": requirements_txt_2_keys,
+        "requirements_3.txt": requirements_txt_3_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("requirements_1.txt", "requirements_1.txt"),
+        ("requirements_2.txt", "requirements_2.txt"),
+        ("requirements_3.txt", "requirements_3.txt"),
+    ],
+)
+def test_get_requirements_from_txt(
+    test_input, expected, requirements_txt, requirements_txt_keys
+):
+    assert (
+        Repository._get_requirements_from_txt(requirements_txt[test_input])
+        == requirements_txt_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# pyproject.toml
+
+
+@pytest.fixture()
+def pyproject_toml() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/poetry/")
+    pyproject_toml_1: Path = BASE_PATH / "pyproject_1.toml"
+    pyproject_toml_2: Path = BASE_PATH / "pyproject_2.toml"
+
+    return {
+        "pyproject_1.toml": pyproject_toml_1,
+        "pyproject_2.toml": pyproject_toml_2,
+    }
+
+
+@pytest.fixture()
+def pyproject_toml_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/poetry/")
+    pyproject_toml_1_keys_file_path: Path = BASE_PATH / "pyproject_1_toml.txt"
+    with open(pyproject_toml_1_keys_file_path, "r") as f:
+        pyproject_toml_1_keys = {line.rstrip() for line in f.readlines()}
+
+    pyproject_toml_2_keys_file_path: Path = BASE_PATH / "pyproject_2_toml.txt"
+    with open(pyproject_toml_2_keys_file_path, "r") as f:
+        pyproject_toml_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "pyproject_1.toml": pyproject_toml_1_keys,
+        "pyproject_2.toml": pyproject_toml_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("pyproject_1.toml", "pyproject_1.toml"),
+        ("pyproject_2.toml", "pyproject_2.toml"),
+    ],
+)
+def test_get_requirements_from_toml(
+    test_input, expected, pyproject_toml, pyproject_toml_keys
+):
+    assert (
+        Repository._get_requirements_from_toml(pyproject_toml[test_input])
+        == pyproject_toml_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# setup.py
+
+
+@pytest.fixture()
+def setup_py() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/setup/")
+    setup_py_1: Path = BASE_PATH / "setup_1.py"
+    setup_py_2: Path = BASE_PATH / "setup_2.py"
+
+    return {
+        "setup_1.py": setup_py_1,
+        "setup_2.py": setup_py_2,
+    }
+
+
+@pytest.fixture()
+def setup_py_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/setup/")
+    setup_py_1_keys_file_path: Path = BASE_PATH / "setup_1_py.txt"
+    with open(setup_py_1_keys_file_path, "r") as f:
+        setup_py_1_keys = {line.rstrip() for line in f.readlines()}
+
+    setup_py_2_keys_file_path: Path = BASE_PATH / "setup_2_py.txt"
+    with open(setup_py_2_keys_file_path, "r") as f:
+        setup_py_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "setup_1.py": setup_py_1_keys,
+        "setup_2.py": setup_py_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("setup_1.py", "setup_1.py"),
+        ("setup_2.py", "setup_2.py"),
+    ],
+)
+def test_get_requirements_from_setup(test_input, expected, setup_py, setup_py_keys):
+    assert (
+        Repository._get_requirements_from_setup(setup_py[test_input])
+        == setup_py_keys[expected]
+    )
+
+
+# Parsing project requirements from:
+# Pipfile
+
+
+@pytest.fixture()
+def pipfile() -> Dict[str, Path]:
+
+    BASE_PATH = Path("tests/fixtures/requirement_files/pipfile/")
+    pipfile_1: Path = BASE_PATH / "Pipfile_1"
+    pipfile_2: Path = BASE_PATH / "Pipfile_2"
+
+    return {
+        "Pipfile_1": pipfile_1,
+        "Pipfile_2": pipfile_2,
+    }
+
+
+@pytest.fixture()
+def pipfile_keys() -> Dict[str, Set[str]]:
+    BASE_PATH = Path("tests/fixtures/requirement_files/pipfile/")
+    pipfile_1_keys_file_path: Path = BASE_PATH / "Pipfile_1.txt"
+    with open(pipfile_1_keys_file_path, "r") as f:
+        pipfile_1_keys = {line.rstrip() for line in f.readlines()}
+
+    pipfile_2_keys_file_path: Path = BASE_PATH / "Pipfile_2.txt"
+    with open(pipfile_2_keys_file_path, "r") as f:
+        pipfile_2_keys = {line.rstrip() for line in f.readlines()}
+
+    return {
+        "Pipfile_1": pipfile_1_keys,
+        "Pipfile_2": pipfile_2_keys,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("Pipfile_1", "Pipfile_1"),
+        ("Pipfile_2", "Pipfile_2"),
+    ],
+)
+def test_get_requirements_from_pipfile(test_input, expected, pipfile, pipfile_keys):
+    assert (
+        Repository._get_requirements_from_pipfile(pipfile[test_input])
+        == pipfile_keys[expected]
+    )

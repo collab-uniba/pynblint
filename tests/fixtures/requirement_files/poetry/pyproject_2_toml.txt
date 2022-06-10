@@ -1,0 +1,14 @@
+python
+nbformat
+nbconvert
+GitPython
+rich
+typer
+pydantic
+ipython
+isort
+types-toml
+yml
+types-PyYAML
+toml
+poetry-types

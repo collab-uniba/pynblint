@@ -1,0 +1,23 @@
+name: enhancing
+package: example
+version: 0.0.1
+py_version: 2.7.10
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.8.5
+  - pip=20.3
+  - cudatoolkit=10.2
+  - pytorch=1.7.1
+  - torchvision=0.8.2
+  - numpy=1.19.2
+  - pip:
+    - ftfy==6.1.1
+    - lpips==0.1.4
+    - regex==2021.10.8
+    - pytorch-lightning==1.6.3
+    - lmdb==1.0.0
+    - wandb==0.12.7
+    - git+https://github.com/openai/CLIP.git
+    - kornia==0.5.11
