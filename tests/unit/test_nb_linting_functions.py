@@ -5,7 +5,7 @@ import pytest
 
 from pynblint import nb_linting
 from pynblint.config import settings
-from pynblint.core_models import Cell, Notebook, Repository
+from pynblint.core_models import Cell, LocalRepository, Notebook
 
 
 @pytest.fixture(scope="module")
@@ -34,10 +34,10 @@ def notebooks() -> Dict[str, Notebook]:
 
 
 @pytest.fixture(scope="module")
-def notebook_from_repository() -> Dict[str, Notebook]:
+def notebooks_from_repositories() -> Dict[str, Notebook]:
     repo_fixtures_base_path: Path = Path("tests/fixtures/test_repo")
-    repo1 = Repository(repo_fixtures_base_path / "UntitledNoDuplicates")
-    repo2 = Repository(repo_fixtures_base_path / "dependenciesNotDeclared")
+    repo1 = LocalRepository(repo_fixtures_base_path / "UntitledNoDuplicates")
+    repo2 = LocalRepository(repo_fixtures_base_path / "dependenciesNotDeclared")
     nb1 = repo1.notebooks[0]
     nb2 = repo2.notebooks[0]
     return {
@@ -169,11 +169,11 @@ def test_invalid_python_syntax(test_input, expected, notebooks):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    [("UntitledNoDuplicates", True), ("dependenciesNotDeclared", False)],
+    [("UntitledNoDuplicates", False), ("dependenciesNotDeclared", True)],
 )
-def test_undeclared_dependencies(test_input, expected, notebook_from_repository):
+def test_undeclared_dependencies(test_input, expected, notebooks_from_repositories):
 
     assert (
-        nb_linting.undeclared_dependencies(notebook_from_repository[test_input])
+        nb_linting.undeclared_dependencies(notebooks_from_repositories[test_input])
         == expected
     )
