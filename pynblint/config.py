@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     cell_rendering_mode: CellRenderingMode = CellRenderingMode.COMPACT
     result_details_indentation: int = 5
     display_cell_index: bool = False
-    filename_max_length: int = 0
     max_cells_in_notebook: int = 50
     max_lines_in_code_cell: int = 30
     initial_cells: int = 3
@@ -27,6 +26,7 @@ class Settings(BaseSettings):
     min_md_code_ratio: float = 0.3
     max_data_file_size: int = 10 * 1000000  # 10MB
     max_multiline_python_comment: int = 4
+    max_filename_length: int = 0  # TODO: enable CLI configuration of this option.
 
     # TODO: custom validation: included_lints OR excluded lints must be None
     #       I.e., something like:

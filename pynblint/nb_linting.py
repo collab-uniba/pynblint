@@ -56,8 +56,8 @@ def notebook_named_with_unrestricted_charset(notebook: Notebook) -> bool:
 
 def long_filename(notebook: Notebook) -> bool:
     """Check if the notebook title exceedes the fixed character threshold."""
-    if settings.filename_max_length:
-        return len(notebook.path.name) > settings.filename_max_length
+    if settings.max_filename_length:
+        return len(notebook.path.name) > settings.max_filename_length
     else:
         return False
 
@@ -318,7 +318,7 @@ notebook_level_lints: List[LintDefinition] = [
     LintDefinition(
         slug="notebook-name-too-long",
         description="The notebook filename is too long (i.e., it exceeds the "
-        f"fixed threshold of {settings.filename_max_length} characters).",
+        f"fixed threshold of {settings.max_filename_length} characters).",
         recommendation="Use a shorter filename and leverage Markdown titles to convey "
         "detailed information.",
         linting_function=long_filename,

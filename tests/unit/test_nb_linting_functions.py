@@ -141,7 +141,7 @@ def test_duplicate_notebook_not_renamed(test_input, expected, notebooks):
     [("FullNotebookFullNotebookFullNotebook.ipynb", True), ("Untitled.ipynb", False)],
 )
 def test_long_filename(test_input, expected, notebooks):
-    settings.filename_max_length = 20
+    settings.max_filename_length = 20
     assert nb_linting.long_filename(notebooks[test_input]) == expected
 
 
