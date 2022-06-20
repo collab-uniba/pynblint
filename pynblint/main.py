@@ -85,6 +85,18 @@ def main(
             (i.e., the zero-based position of the cell within the notebook) \
             above rendered cells.",
     ),
+    max_cells_in_notebook: int = typer.Option(
+        None,
+        help="Maximum number of cells that a notebooks should countain. "
+        "Notebooks exceding this threshold get the `notebook-too-long` warning; "
+        "any kind of cell counts (i.e., both code and Markdown cells).",
+    ),
+    max_lines_in_code_cell: int = typer.Option(
+        None,
+        help="Maximum number of code lines that code cells should contain. "
+        "Notebooks containing cells longer than this threshold get the "
+        "`cell-too-long` warning.",
+    ),
     initial_cells: int = typer.Option(
         None,
         help="The number of cells (from the notebook beginning) that Pynblint should "
@@ -99,6 +111,19 @@ def main(
         None,
         help="The minimum ratio of Markdown cells over code cells. "
         f"Defaults to {settings.min_md_code_ratio}.",
+    ),
+    max_data_file_size: int = typer.Option(
+        None,
+        help="If a repository contains data files larger than this size (in bytes) "
+        "and such files are not properly handled with a data version control system "
+        "like DVC (https://dvc.org), then the `large-data-file-not-versioned` "
+        "warning is raised.",
+    ),
+    max_multiline_python_comment: int = typer.Option(
+        None,
+        "Maximum number of lines of a multi-line comment that a code cell should "
+        "contain. To leverage the narrative capabilities of notebooks, longer comments "
+        "should be rather written in Markdown cells.",
     ),
 ):
 
@@ -120,6 +145,18 @@ def main(
 
     if display_cell_index:
         settings.display_cell_index = True
+
+    if max_cells_in_notebook:
+        settings.max_cells_in_notebook = max_cells_in_notebook
+
+    if max_lines_in_code_cell:
+        settings.max_lines_in_code_cell = max_lines_in_code_cell
+
+    if max_data_file_size:
+        settings.max_data_file_size = max_data_file_size
+
+    if max_multiline_python_comment:
+        settings.max_multiline_python_comment = max_multiline_python_comment
 
     if initial_cells:
         settings.initial_cells = initial_cells
