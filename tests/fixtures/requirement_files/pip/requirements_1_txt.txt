@@ -1,0 +1,10 @@
+alabaster
+attrs
+certifi
+charset-normalizer
+commonmark
+idna
+imagesize
+ipython-genutils
+git+https://github.com/path/to/package-two@releases/tag/v3.7.1#egg=package-two
+Jinja2

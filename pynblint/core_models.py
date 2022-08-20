@@ -1,4 +1,5 @@
 import ast
+import copy
 import os
 import re
 import tempfile
@@ -6,12 +7,13 @@ import zipfile
 from abc import ABC
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 import git
 import nbconvert
 import nbformat
 import rich
+import toml
 from nbformat.notebooknode import NotebookNode
 from rich.abc import RichRenderable
 from rich.columns import Columns
@@ -19,8 +21,10 @@ from rich.console import Console, ConsoleOptions, RenderResult
 from rich.padding import Padding
 from rich.panel import Panel
 from rich.syntax import Syntax
+from yaml import safe_load
 
 from .config import CellRenderingMode, settings
+from .exceptions import InvalidRequirementsFileError
 from .rich_extensions import NotebookMarkdown
 
 
@@ -36,6 +40,7 @@ class Repository(ABC):
 
         # Extracted content
         self.notebooks: List[Notebook] = []  # List of Notebook objects
+        self.declared_requirements: Set = self._parse_requirements()
 
     def retrieve_notebooks(self):
 
@@ -79,6 +84,114 @@ class Repository(ABC):
                 if os.path.getsize(file_path) > settings.max_data_file_size:
                     large_files.append(file_path)
         return large_files
+
+    def _parse_requirements(self) -> Set:
+
+        supported_requirement_formats = [
+            "requirements.txt",
+            "environment.yaml",
+            "environment.yml",
+            "pyproject.toml",
+            "setup.py",
+            "Pipfile",
+        ]
+        paths: List[Path] = []
+
+        for root, _, files in os.walk(self.path):
+            for f in files:
+                if f in supported_requirement_formats:
+                    paths.append(Path(root) / f)
+
+        declared_requirements = set()
+        for path in paths:
+            if path.name == "requirements.txt":
+                declared_requirements.update(self._get_requirements_from_txt(path))
+            elif path.name == "environment.yaml" or path.name == "environment.yml":
+                declared_requirements.update(self._get_requirements_from_yaml(path))
+            elif path.name == "pyproject.toml":
+                declared_requirements.update(self._get_requirements_from_toml(path))
+            elif path.name == "setup.py":
+                declared_requirements.update(self._get_requirements_from_setup(path))
+            elif path.name == "Pipfile":
+                declared_requirements.update(self._get_requirements_from_pipfile(path))
+
+        return declared_requirements
+
+    @staticmethod
+    def _get_requirements_from_txt(path: Path) -> set:
+        with open(path, "r") as fi:
+            lines = [
+                line
+                for line in fi.readlines()
+                if line.strip() != "" and not line.startswith("#")
+            ]
+        return {re.split(r"[><=]=", dependency)[0].rstrip() for dependency in lines}
+
+    @staticmethod
+    def _get_requirements_from_toml(path: Path) -> set:
+        try:
+            parsed_toml = toml.load(path)
+        except Exception:
+            raise InvalidRequirementsFileError(
+                "Project requirements could not be parsed in `pyproject.toml`: "
+                "invalid toml syntax."
+            )
+        return set(parsed_toml["tool"]["poetry"]["dependencies"].keys())
+
+    @staticmethod
+    def _get_requirements_from_yaml(path: Path) -> set:
+        with open(path, "r") as fi:
+            try:
+                parsed_yaml = safe_load(fi.read())
+            except Exception:
+                raise InvalidRequirementsFileError(
+                    "Project requirements could not be parsed from `environment.yml`: "
+                    "invalid yaml syntax."
+                )
+
+        raw_deps = []
+        for item in parsed_yaml["dependencies"]:
+            if type(item) is str:
+                raw_deps.append(item)
+            else:
+                pip_dependencies = item.get("pip")
+                if pip_dependencies:
+                    raw_deps.extend(pip_dependencies)
+        return {re.split(r"[><=]?=", req)[0] for req in raw_deps}
+
+    @staticmethod
+    def _get_requirements_from_pipfile(path: Path) -> set:
+        try:
+            parsed_pipfile = toml.load(path)
+        except Exception:
+            raise InvalidRequirementsFileError(
+                "Project requirements could not be parsed from `Pipfile`: "
+                "invalid toml syntax."
+            )
+        return set(parsed_pipfile["packages"].keys())
+
+    @staticmethod
+    def _get_requirements_from_setup(path: Path) -> set:
+        with open(path, "r") as fi:
+            try:
+                parsed_setup_file = ast.parse(fi.read())
+            except Exception:
+                raise InvalidRequirementsFileError(
+                    "Project requirements could not be parsed from `setup.py`: "
+                    "invalid Python syntax."
+                )
+        requirements: Set = set()
+        for node in ast.walk(parsed_setup_file):
+            if isinstance(node, ast.Call) and node.func.id == "setup":  # type: ignore
+                for keyword in node.keywords:
+                    if keyword.arg == "install_requires":
+                        raw_requirements_list = ast.literal_eval(keyword.value)
+                        processed_requirements_list = [
+                            re.split(r"[><=]=", req)[0].rstrip()
+                            for req in raw_requirements_list
+                        ]
+                        requirements.update(processed_requirements_list)
+        return requirements
 
 
 class LocalRepository(Repository):
@@ -127,7 +240,6 @@ class GitHubRepository(Repository):
     """
 
     def __init__(self, github_url: str):
-
         self.url = github_url
 
         # Clone the repo in a temp directory
@@ -284,8 +396,13 @@ class Notebook(RichRenderable):
         self.non_executed = all([cell.non_executed for cell in self.code_cells])
 
         # Convert the notebook to a Python script
+        nb_dict_no_magic = copy.deepcopy(self.nb_dict)
+        for cell in nb_dict_no_magic.cells:
+            cell.source = "\n".join(
+                [line for line in cell.source.splitlines() if not line.startswith("%")]
+            )
         python_exporter = nbconvert.PythonExporter()
-        self.script, _ = python_exporter.from_notebook_node(self.nb_dict)
+        self.script, _ = python_exporter.from_notebook_node(nb_dict_no_magic)
 
         # Extract the Python abstract syntax tree
         # (or set `has_invalid_python_syntax` to True)
@@ -294,6 +411,10 @@ class Notebook(RichRenderable):
             self.ast = ast.parse(self.script)
         except SyntaxError:
             self.has_invalid_python_syntax = True
+
+        # Get the set of imported Python packages
+        if not self.has_invalid_python_syntax:
+            self.imported_packages: Set = self._get_imported_packages()
 
     @property
     def code_cells(self) -> List[Cell]:
@@ -312,6 +433,36 @@ class Notebook(RichRenderable):
     @property
     def final_cells(self) -> List[Cell]:
         return self.cells[-settings.final_cells :]  # noqa: E203
+
+    def _get_imported_packages(self) -> Set:
+        """Builds the set of packages and modules imported in the notebook.
+
+        Sice it relies on the ``ast`` module, this function works only for notebooks
+        with a valid Python syntax. Therefore, a ``ValueError`` exception is raised if
+        this function is invoked on a notebook containing syntactic Python errors.
+
+        Returns:
+            Set: the set of packages and modules imported in the notebook.
+        """
+
+        if self.has_invalid_python_syntax:
+            raise ValueError(
+                "Imported packages cannot be parsed in notebooks with invalid "
+                "Python syntax."
+            )
+
+        imported_packages: Set = set()
+        for node in ast.walk(self.ast):
+            if isinstance(node, ast.Import):
+                for name in node.names:
+                    imported_packages.add(name.name.split(".")[0])
+            elif isinstance(node, ast.ImportFrom):
+                if node.level > 0:
+                    # Relative imports always refer to the current package.
+                    continue
+                if node.module:
+                    imported_packages.add(node.module.split(".")[0])
+        return imported_packages
 
     def __len__(self) -> int:
         return len(self.cells)

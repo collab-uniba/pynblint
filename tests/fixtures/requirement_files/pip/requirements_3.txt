@@ -1,0 +1,20 @@
+## Python==3.9.12
+
+rubika
+requests
+urlib
+
+# Streamlit
+streamlit==1.9.0
+watchdog==2.1.7
+
+# FastAPI
+fastapi==0.77.1
+uvicorn==0.17.6
+email-validator==1.2.1
+
+# lxml
+lxml==4.8.0
+
+# tynybb
+tinydb==4.7.0

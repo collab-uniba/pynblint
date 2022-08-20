@@ -5,7 +5,7 @@ import pytest
 
 from pynblint import nb_linting
 from pynblint.config import settings
-from pynblint.core_models import Cell, Notebook
+from pynblint.core_models import Cell, LocalRepository, Notebook
 
 
 @pytest.fixture(scope="module")
@@ -19,6 +19,7 @@ def notebooks() -> Dict[str, Notebook]:
     nb7 = Notebook(Path("tests/fixtures", "Untitled.ipynb"))
     nb8 = Notebook(Path("tests/fixtures", "InvalidSyntax.ipynb"))
     nb9 = Notebook(Path("tests/fixtures", "NonExecutedNotebook.ipynb"))
+
     return {
         "FullNotebook2.ipynb": nb1,
         "FullNotebookFullNotebookFullNotebook.ipynb": nb2,
@@ -29,6 +30,19 @@ def notebooks() -> Dict[str, Notebook]:
         "Untitled.ipynb": nb7,
         "InvalidSyntax.ipynb": nb8,
         "NonExecutedNotebook.ipynb": nb9,
+    }
+
+
+@pytest.fixture(scope="module")
+def notebooks_from_repositories() -> Dict[str, Notebook]:
+    repo_fixtures_base_path: Path = Path("tests/fixtures/test_repo")
+    repo1 = LocalRepository(repo_fixtures_base_path / "UntitledNoDuplicates")
+    repo2 = LocalRepository(repo_fixtures_base_path / "dependenciesNotDeclared")
+    nb1 = repo1.notebooks[0]
+    nb2 = repo2.notebooks[0]
+    return {
+        "UntitledNoDuplicates": nb1,
+        "dependenciesNotDeclared": nb2,
     }
 
 
@@ -151,3 +165,15 @@ def test_long_filename(test_input, expected, notebooks):
 )
 def test_invalid_python_syntax(test_input, expected, notebooks):
     assert nb_linting.invalid_python_syntax(notebooks[test_input]) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [("UntitledNoDuplicates", False), ("dependenciesNotDeclared", True)],
+)
+def test_undeclared_dependencies(test_input, expected, notebooks_from_repositories):
+
+    assert (
+        nb_linting.undeclared_dependencies(notebooks_from_repositories[test_input])
+        == expected
+    )

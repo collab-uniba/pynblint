@@ -9,7 +9,6 @@ from pynblint.core_models import Repository
 
 @pytest.fixture(scope="module")
 def repositories() -> Dict[str, Repository]:
-
     repo_fixtures_base_path: Path = Path("tests/fixtures/test_repo")
 
     repo1 = Repository(repo_fixtures_base_path / "UntitledNoDuplicates")
@@ -28,3 +27,11 @@ def test_coverage_data_not_available(test_input, expected, repositories):
     assert (
         repo_linting.coverage_data_not_available(repositories[test_input]) == expected
     )
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [("UntitledNoDuplicates", False), ("versioned_repo_with_coverage", True)],
+)
+def test_dependencies_unmanaged(test_input, expected, repositories):
+    assert repo_linting.dependencies_unmanaged(repositories[test_input]) == expected

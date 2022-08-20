@@ -1,0 +1,13 @@
+numpy
+pandas
+sklearn
+Pillow
+streamlit
+cufflinks
+matplotlib
+pickle-mixin
+pickleshare
+seaborn
+scikit-learn
+plotly
+plotly-express

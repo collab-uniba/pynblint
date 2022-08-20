@@ -1,0 +1,10 @@
+rubika
+requests
+urlib
+streamlit
+watchdog
+fastapi
+uvicorn
+email-validator
+lxml
+tinydb
