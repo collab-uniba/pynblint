@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Set
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class CellRenderingMode(str, Enum):
