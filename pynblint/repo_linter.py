@@ -92,8 +92,7 @@ class RepoLinter:
 
     @group()
     def get_renderable_nblevel_linting_results(self):
-        for linter in self.notebook_linters:
-            yield linter
+        yield from self.notebook_linters
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions

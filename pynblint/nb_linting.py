@@ -1,4 +1,5 @@
 """Linting functions for notebooks."""
+
 import ast
 import re
 from typing import List, Pattern
