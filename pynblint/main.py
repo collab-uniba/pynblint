@@ -121,7 +121,7 @@ def main(
     ),
     max_multiline_python_comment: int = typer.Option(
         None,
-        "Maximum number of lines of a multi-line comment that a code cell should "
+        help="Maximum number of lines of a multi-line comment that a code cell should "
         "contain. To leverage the narrative capabilities of notebooks, longer comments "
         "should be rather written in Markdown cells.",
     ),
