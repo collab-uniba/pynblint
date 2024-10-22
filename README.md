@@ -88,14 +88,15 @@ For further information on the available options, please refer to the project [d
 
 ## Catalog of best practices
 
-Pynblint currently implements 22 linting rules based on empirically-validated best practices for collaborative Jupyter notebook usage:
-- 17 rules applicable to standalone notebooks
-- 5 rules applicable to entire data science repositories
+Pynblint currently implements 22 linting rules:
 
-These rules are derived from our comprehensive catalog of best practices collaborative notebook development [\[1\]](#references). Below is the current implementation state of linting rules associated with each best practice:
+- 17 rules applicable to standalone notebooks;
+- 5 rules applicable to entire data science repositories.
+
+These rules are derived from our comprehensive catalog of best practices for collaborative notebook development [\[1\]](#references). Below is the current implementation state of linting rules associated with each best practice:
 
 - :white_check_mark: Complete: Fully implemented
-- :puzzle_piece: Partial: Partially implemented with planned improvements
+- :jigsaw: Partial: Partially implemented with planned improvements
 - :hourglass_flowing_sand: In Progress: Implementation planned for future releases
 - :x: Not Planned: No implementation planned
 
@@ -106,10 +107,10 @@ These rules are derived from our comprehensive catalog of best practices collabo
 | 3. *Use self-contained environments*                          | :hourglass_flowing_sand: In Progress: | *Planned*: detection of<br>- Python virtual environments (e.g., created with `venv`, `pyenv`, or `conda`)<br>- containerized environments (e.g., Docker).   |
 | 4. *Put imports at the beginning*                             | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
 | 5. *Ensure re-executability (re-run notebooks top to bottom)* | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
-| 6. *Modularize your code*                                     | :puzzle_piece: Partial                | *Current*: detection of modularization constructs in notebooks.<br>*Planned*: modularization-focused refactoring recommendations based on detected patterns |
-| 7. *Test your code*                                           | :puzzle_piece: Partial                | *Current*: repository-level detection of coverage data.<br>*Planned*: detection of test modules/functions independent of coverage tools                     |
+| 6. *Modularize your code*                                     | :jigsaw: Partial                | *Current*: detection of modularization constructs in notebooks.<br>*Planned*: modularization-focused refactoring recommendations based on detected patterns |
+| 7. *Test your code*                                           | :jigsaw: Partial                | *Current*: repository-level detection of coverage data.<br>*Planned*: detection of test modules/functions independent of coverage tools                     |
 | 8. *Name your notebooks consistently*                         | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
-| 9. *Stick to coding standards*                                | :puzzle_piece: Partial                | *Current*: detection of cells with invalid Python syntax.<br>*Planned*: Integration of Python linters such as pylint, flake8, and ruff                      |
+| 9. *Stick to coding standards*                                | :jigsaw: Partial                | *Current*: detection of cells with invalid Python syntax.<br>*Planned*: Integration of Python linters such as pylint, flake8, and ruff                      |
 | 10. *Use relative paths*                                      | :hourglass_flowing_sand: In Progress: | *Planned*: identification of absolute paths instances in notebooks and recommendation of corresponding relative paths                                       |
 | 11. *Document your analysis*                                  | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
 | 12. *Leverage Markdown headings to structure your notebook*   | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
