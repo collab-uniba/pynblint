@@ -118,7 +118,8 @@ These rules are derived from our comprehensive catalog of best practices for col
 | 14. *Keep your notebook concise*                              | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
 | 15. *Distinguish production and development artifacts*        | :x: Not Planned                       | Implementation deemed infeasible (see the note below)                                                                                                       |
 | 16. *Make your notebooks available*                           | :hourglass_flowing_sand: In Progress: | *Planned*: Pynblint will ensure that notebooks marked as published in its configuration are available online                                                |
-| 17. *Make your data available*                                | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 17. *Make your data available*                                | :white_check_mark: Complete           | Fully implemented                                                                                      |
+
 **Note**: Best practice #15 (Distinguishing Production/Development Artifacts) will not be implemented as there are no objective criteria for determining this distinction through static analysis of notebooks or repositories.
 
 ## License
