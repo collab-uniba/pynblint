@@ -88,33 +88,37 @@ For further information on the available options, please refer to the project [d
 
 ## Catalog of best practices
 
-In the following, we report the catalog of empirically-validated best practices on which Pynblint is based [\[1\]](#references).
+Pynblint currently implements 22 linting rules based on empirically-validated best practices for collaborative Jupyter notebook usage:
+- 17 rules applicable to standalone notebooks
+- 5 rules applicable to entire data science repositories
 
-For each guideline, we specify the current state of implementation within Pynblint:
+These rules are derived from our comprehensive catalog of best practices collaborative notebook development [\[1\]](#references). Below is the current implementation state of linting rules associated with each best practice:
 
-- :white_check_mark: = "implemented"
-- :hourglass_flowing_sand: = "partially implemented / work in progress"
-- :x: = "not on our roadmap"
+- :white_check_mark: Complete: Fully implemented
+- :puzzle_piece: Partial: Partially implemented with planned improvements
+- :hourglass_flowing_sand: In Progress: Implementation planned for future releases
+- :x: Not Planned: No implementation planned
 
-| State                    | Best Practice from [\[1\]](#references)                  |
-| ------------------------ | -------------------------------------------------------- |
-| :white_check_mark:       | Use version control                                      |
-| :white_check_mark:       | Manage project dependencies                              |
-| :hourglass_flowing_sand: | Use self-contained environments                          |
-| :white_check_mark:       | Put imports at the beginning                             |
-| :white_check_mark:       | Ensure re-executability (re-run notebooks top to bottom) |
-| :hourglass_flowing_sand: | Modularize your code                                     |
-| :hourglass_flowing_sand: | Test your code                                           |
-| :white_check_mark:       | Name your notebooks consistently                         |
-| :hourglass_flowing_sand: | Stick to coding standards                                |
-| :hourglass_flowing_sand: | Use relative paths                                       |
-| :white_check_mark:       | Document your analysis                                   |
-| :white_check_mark:       | Leverage Markdown headings to structure your notebook    |
-| :white_check_mark:       | Keep your notebook clean                                 |
-| :white_check_mark:       | Keep your notebook concise                               |
-| :x:                      | Distinguish production and development artifacts         |
-| :hourglass_flowing_sand: | Make your notebooks available                            |
-| :white_check_mark:       | Make your data available                                 |
+| Best Practice from [\[1\]](#references)                       | **Status**                            | Details                                                                                                                                                     |
+| ------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. *Use version control*                                      | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 2. *Manage project dependencies*                              | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 3. *Use self-contained environments*                          | :hourglass_flowing_sand: In Progress: | *Planned*: detection of<br>- Python virtual environments (e.g., created with `venv`, `pyenv`, or `conda`)<br>- containerized environments (e.g., Docker).   |
+| 4. *Put imports at the beginning*                             | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 5. *Ensure re-executability (re-run notebooks top to bottom)* | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 6. *Modularize your code*                                     | :puzzle_piece: Partial                | *Current*: detection of modularization constructs in notebooks.<br>*Planned*: modularization-focused refactoring recommendations based on detected patterns |
+| 7. *Test your code*                                           | :puzzle_piece: Partial                | *Current*: repository-level detection of coverage data.<br>*Planned*: detection of test modules/functions independent of coverage tools                     |
+| 8. *Name your notebooks consistently*                         | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 9. *Stick to coding standards*                                | :puzzle_piece: Partial                | *Current*: detection of cells with invalid Python syntax.<br>*Planned*: Integration of Python linters such as pylint, flake8, and ruff                      |
+| 10. *Use relative paths*                                      | :hourglass_flowing_sand: In Progress: | *Planned*: identification of absolute paths instances in notebooks and recommendation of corresponding relative paths                                       |
+| 11. *Document your analysis*                                  | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 12. *Leverage Markdown headings to structure your notebook*   | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 13. *Keep your notebook clean*                                | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 14. *Keep your notebook concise*                              | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+| 15. *Distinguish production and development artifacts*        | :x: Not Planned                       | Implementation deemed infeasible (see the note below)                                                                                                       |
+| 16. *Make your notebooks available*                           | :hourglass_flowing_sand: In Progress: | *Planned*: Pynblint will ensure that notebooks marked as published in its configuration are available online                                                |
+| 17. *Make your data available*                                | :white_check_mark: Complete           | Fully implemented                                                                                                                                           |
+**Note**: Best practice #15 (Distinguishing Production/Development Artifacts) will not be implemented as there are no objective criteria for determining this distinction through static analysis of notebooks or repositories.
 
 ## License
 
